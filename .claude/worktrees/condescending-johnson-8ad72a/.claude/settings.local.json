@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('main:', d.get\\('main'\\)\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\)\")",
+      "Bash(npm view *)",
+      "Bash(npm ls *)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('exports:'\\); import pprint; pprint.pp\\(d.get\\('exports'\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000/api/users)",
+      "Bash(curl -s -i http://localhost:3000/api/users)",
+      "Bash(curl -s -i http://localhost:8000/users)",
+      "Bash(curl -s -i http://localhost:8000/users/)",
+      "Bash(curl -s -i http://localhost:8000/demo/seed -X POST)",
+      "Bash(curl -s -i http://localhost:8000/newcomers)",
+      "Bash(curl -s -i http://localhost:8000/newcomers/1)",
+      "Bash(curl -s -i \"http://localhost:8000/mentor-dashboard?mentor_id=1\")",
+      "Bash(curl -s -i \"http://localhost:3000/api/users/\")",
+      "Bash(grep -l \"skipTrailingSlashRedirect\\\\|trailingSlash\" \"C:\\\\Users\\\\yassi\\\\OneDrive\\\\Desktop\\\\ai-onboarding-service-frontend\\\\frontend\\\\node_modules\\\\next\\\\dist\\\\docs\\\\01-app\\\\03-api-reference\\\\05-config\\\\01-next-config-js\\\\\" 2>&1 | head -5)",
+      "Bash(curl -s -i \"http://localhost:3000/api/users\")",
+      "Bash(curl -s -i \"http://localhost:8000/users\")"
+    ]
+  }
+}
