@@ -82,7 +82,7 @@ export default function TaskDetailPage() {
         description={task.description}
         actions={
           <>
-            <BlockedTrigger />
+            <BlockedTrigger taskId={task.id} />
             <Button asChild variant="outline">
               <Link href={`/newcomer/ask?q=${encodeURIComponent(task.title)}`}>
                 <Sparkles className="h-4 w-4" /> Ask AI
@@ -162,17 +162,22 @@ export default function TaskDetailPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             {data.people_to_ask?.length ? (
-              data.people_to_ask.map((p, i) => (
-                <div key={`${p.name}-${i}`} className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{getInitials(p.name)}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-[color:var(--color-fg)] truncate">{p.name}</div>
-                    {p.role ? <div className="text-xs text-[color:var(--color-fg-muted)] truncate">{p.role}</div> : null}
+              data.people_to_ask.map((p, i) => {
+                const name = p.name ?? p.full_name ?? "Unknown teammate";
+                const role = p.role ?? p.team;
+
+                return (
+                  <div key={`${name}-${i}`} className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-[color:var(--color-fg)] truncate">{name}</div>
+                      {role ? <div className="text-xs text-[color:var(--color-fg-muted)] truncate">{role}</div> : null}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-xs text-[color:var(--color-fg-muted)]">AI will recommend people once you have more context.</p>
             )}

@@ -31,13 +31,19 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { getMentorNewcomerDetail } from "@/services/dashboards";
 import { getNewcomerPlan } from "@/services/newcomers";
 import { detectSignals, ignoreSignal, resolveSignal } from "@/services/signals";
+import { listBlockedForNewcomer } from "@/services/blocked";
+import { draftMentorMessage } from "@/services/mentor-actions";
+import { applyAdjustment, approveAdjustment } from "@/services/plan-adjustments";
 import { toApiError } from "@/lib/api";
 import { getInitials } from "@/lib/utils";
+import type { BlockedReport } from "@/types";
 
 export default function NewcomerProfilePage() {
   const params = useParams<{ id: string }>();
   const id = Number(params?.id);
   const qc = useQueryClient();
+  const [tab, setTab] = React.useState("plan");
+  const [drafts, setDrafts] = React.useState<Record<number, string>>({});
 
   const detail = useQuery({
     queryKey: ["mentor-newcomer-detail", id],
@@ -50,6 +56,12 @@ export default function NewcomerProfilePage() {
     queryFn: () => getNewcomerPlan(id),
     enabled: Number.isFinite(id),
     retry: false,
+  });
+
+  const blockedReports = useQuery({
+    queryKey: ["blocked-reports", id],
+    queryFn: () => listBlockedForNewcomer(id),
+    enabled: Number.isFinite(id),
   });
 
   const detectMut = useMutation({
@@ -84,6 +96,36 @@ export default function NewcomerProfilePage() {
     onError: (err) => toast.error("Couldn't ignore", { description: toApiError(err).message }),
   });
 
+  const draftMut = useMutation({
+    mutationFn: (report: BlockedReport) =>
+      draftMentorMessage({
+        newcomer_id: id,
+        blocked_report_id: report.id,
+        tone: "supportive",
+      }),
+    onSuccess: (resp, report) => {
+      setDrafts((prev) => ({ ...prev, [report.id]: resp.message }));
+      toast.success("Draft ready", { description: "Review it before sending." });
+    },
+    onError: (err) => toast.error("Draft failed", { description: toApiError(err).message }),
+  });
+
+  const applyAdjustmentMut = useMutation({
+    mutationFn: async (adjustmentId: number) => {
+      await approveAdjustment(adjustmentId);
+      return applyAdjustment(adjustmentId);
+    },
+    onSuccess: () => {
+      toast.success("Plan changes applied", {
+        description: "The suggested tasks were added to the onboarding plan.",
+      });
+      qc.invalidateQueries({ queryKey: ["mentor-newcomer-detail", id] });
+      qc.invalidateQueries({ queryKey: ["newcomer-plan", id] });
+      qc.invalidateQueries({ queryKey: ["mentor-dashboard"] });
+    },
+    onError: (err) => toast.error("Couldn't apply changes", { description: toApiError(err).message }),
+  });
+
   if (detail.isLoading || !detail.data) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-4">
@@ -102,6 +144,9 @@ export default function NewcomerProfilePage() {
     (t) => (t.day_number ?? (t.week_number ?? 1) * 7) > 30 && (t.day_number ?? (t.week_number ?? 1) * 7) <= 60,
   );
   const phase3 = tasks.filter((t) => (t.day_number ?? (t.week_number ?? 1) * 7) > 60);
+  const tasksById = new Map(tasks.map((task) => [task.id, task]));
+  const blockedTasks = tasks.filter((task) => task.status === "blocked");
+  const reports = blockedReports.data ?? [];
 
   const progressPct = newcomer.progress_percent ?? 0;
   const openSignals = data.signals?.filter((s) => s.status === "open") ?? [];
@@ -162,6 +207,12 @@ export default function NewcomerProfilePage() {
         </Card>
       </div>
 
+      {newcomer.blocked_tasks > 0 ? (
+        <Button variant="outline" onClick={() => setTab("blocked")}>
+          <MessageSquare className="h-4 w-4" /> Review blocked task comments
+        </Button>
+      ) : null}
+
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section className="space-y-5">
           {pendingAdjustment ? (
@@ -174,7 +225,14 @@ export default function NewcomerProfilePage() {
                   <Button size="sm" variant="outline">
                     <GitBranch className="h-3.5 w-3.5" /> Preview
                   </Button>
-                  <Button size="sm" variant="ai">Approve changes</Button>
+                  <Button
+                    size="sm"
+                    variant="ai"
+                    disabled={applyAdjustmentMut.isPending}
+                    onClick={() => applyAdjustmentMut.mutate(pendingAdjustment.id)}
+                  >
+                    {applyAdjustmentMut.isPending ? "Applying…" : "Approve changes"}
+                  </Button>
                 </>
               }
             >
@@ -207,9 +265,10 @@ export default function NewcomerProfilePage() {
             </AIInsightCard>
           ) : null}
 
-          <Tabs defaultValue="plan">
+          <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               <TabsTrigger value="plan">Plan</TabsTrigger>
+              <TabsTrigger value="blocked">Blocked ({newcomer.blocked_tasks})</TabsTrigger>
               <TabsTrigger value="signals">Signals ({openSignals.length})</TabsTrigger>
               <TabsTrigger value="skills">Skills</TabsTrigger>
             </TabsList>
@@ -233,6 +292,98 @@ export default function NewcomerProfilePage() {
                       </a>
                     </Button>
                   }
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="blocked" className="space-y-3 pt-2">
+              {blockedReports.isLoading || plan.isLoading ? (
+                <Skeleton className="h-40" />
+              ) : reports.length || blockedTasks.length ? (
+                <>
+                  {reports.map((report) => {
+                    const task = report.task_id ? tasksById.get(report.task_id) : undefined;
+                    const draft = drafts[report.id];
+
+                    return (
+                      <Card key={report.id}>
+                        <CardHeader>
+                          <CardTitle>{task?.title ?? humanizeBlocker(report.blocker_type)}</CardTitle>
+                          <CardDescription>
+                            {task ? `${task.task_type} · ${task.priority} priority` : "General blocker"} · {report.status}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/60 p-3">
+                            <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                              Newcomer comment
+                            </div>
+                            <p className="mt-1 text-sm text-[color:var(--color-fg)]">
+                              {report.details || "No comment was added."}
+                            </p>
+                          </div>
+                          {report.ai_suggestion ? (
+                            <div className="rounded-lg border border-[color:var(--color-primary-ring)] bg-[color:var(--color-primary-soft)] p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-active)]">
+                                <Sparkles className="h-3 w-3" /> AI suggestion
+                              </div>
+                              <p className="mt-1 text-sm text-[color:var(--color-fg)]">{report.ai_suggestion}</p>
+                            </div>
+                          ) : null}
+                          {draft ? (
+                            <div className="rounded-lg border border-[color:var(--color-border)] bg-white p-3">
+                              <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                                Draft message
+                              </div>
+                              <p className="mt-1 text-sm text-[color:var(--color-fg)]">{draft}</p>
+                            </div>
+                          ) : null}
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              size="sm"
+                              variant="ai"
+                              disabled={draftMut.isPending}
+                              onClick={() => draftMut.mutate(report)}
+                            >
+                              <MessageSquare className="h-3.5 w-3.5" />
+                              {draft ? "Regenerate draft" : "Draft message"}
+                            </Button>
+                            {draft ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  void navigator.clipboard?.writeText(draft);
+                                  toast.success("Draft copied");
+                                }}
+                              >
+                                Copy
+                              </Button>
+                            ) : null}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  {blockedTasks
+                    .filter((task) => !reports.some((report) => report.task_id === task.id))
+                    .map((task) => (
+                      <Card key={task.id}>
+                        <CardHeader>
+                          <CardTitle>{task.title}</CardTitle>
+                          <CardDescription>{task.task_type} · {task.priority} priority</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-[color:var(--color-fg-muted)]">
+                            This task is marked blocked, but no newcomer comment was attached.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </>
+              ) : (
+                <EmptyState
+                  title="No blocked tasks"
+                  description="When a newcomer reports a blocker from a task, the comment and AI suggestion will appear here."
                 />
               )}
             </TabsContent>
@@ -328,4 +479,10 @@ export default function NewcomerProfilePage() {
       </div>
     </div>
   );
+}
+
+function humanizeBlocker(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

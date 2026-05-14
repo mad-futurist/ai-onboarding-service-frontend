@@ -3,7 +3,8 @@ import type { BlockedReport, ID } from "@/types";
 
 export interface CreateBlockedInput {
   newcomer_id: ID;
-  category: string;
+  task_id?: ID;
+  blocker_type: string;
   details?: string;
 }
 

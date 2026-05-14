@@ -12,23 +12,40 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SignalRow } from "@/components/ai/SignalRow";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { detectSignals, ignoreSignal, listSignals, resolveSignal } from "@/services/signals";
+import { detectSignals, ignoreSignal, listSignalsForNewcomer, resolveSignal } from "@/services/signals";
+import { listNewcomers } from "@/services/newcomers";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
+import type { ID } from "@/types";
 
 export default function SignalsCenterPage() {
   const qc = useQueryClient();
-  const { newcomerId } = useDemo();
+  const { mentorId, newcomerId } = useDemo();
   const [filter, setFilter] = React.useState<"open" | "resolved" | "ignored" | "all">("open");
+  const [selectedNewcomerId, setSelectedNewcomerId] = React.useState<ID | null>(null);
+
+  const { data: newcomers } = useQuery({ queryKey: ["newcomers", mentorId], queryFn: () => listNewcomers(mentorId) });
+  const activeNewcomer =
+    newcomers?.find((n) => n.id === selectedNewcomerId) ??
+    newcomers?.find((n) => n.id === newcomerId) ??
+    newcomers?.[0];
+
+  React.useEffect(() => {
+    if (!selectedNewcomerId && activeNewcomer) {
+      queueMicrotask(() => setSelectedNewcomerId(activeNewcomer.id));
+    }
+  }, [activeNewcomer, selectedNewcomerId]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["signals", filter],
-    queryFn: () => listSignals(filter === "all" ? undefined : { status: filter }),
+    queryKey: ["signals", activeNewcomer?.id, filter],
+    queryFn: () => listSignalsForNewcomer(activeNewcomer!.id, filter === "all" ? undefined : filter),
+    enabled: !!activeNewcomer,
   });
 
   const detectMut = useMutation({
-    mutationFn: () => detectSignals(newcomerId!),
+    mutationFn: () => detectSignals(activeNewcomer!.id),
     onSuccess: (resp) => {
       toast.success(
         resp.created_count
@@ -72,7 +89,7 @@ export default function SignalsCenterPage() {
             </Button>
             <Button
               variant="ai"
-              disabled={!newcomerId || detectMut.isPending}
+              disabled={!activeNewcomer || detectMut.isPending}
               onClick={() => detectMut.mutate()}
             >
               <Sparkles className="h-4 w-4" />
@@ -81,6 +98,26 @@ export default function SignalsCenterPage() {
           </>
         }
       />
+
+      {newcomers?.length ? (
+        <div className="max-w-sm space-y-1.5">
+          <Select
+            value={String(activeNewcomer?.id ?? "")}
+            onValueChange={(value) => setSelectedNewcomerId(Number(value))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choose a newcomer" />
+            </SelectTrigger>
+            <SelectContent>
+              {newcomers.map((n) => (
+                <SelectItem key={n.id} value={String(n.id)}>
+                  {n.full_name ?? `Newcomer #${n.id}`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : null}
 
       <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
         <TabsList>
@@ -114,7 +151,7 @@ export default function SignalsCenterPage() {
                   : "Switch filter to see other signals."
               }
               action={
-                filter === "open" && newcomerId ? (
+                filter === "open" && activeNewcomer ? (
                   <Button variant="ai" onClick={() => detectMut.mutate()}>
                     <Sparkles className="h-4 w-4" /> Run detection
                   </Button>

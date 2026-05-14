@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Sparkles, User2, Briefcase, Brain, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, User2, Briefcase, Brain, Check, ClipboardCheck } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ const STEPS = [
   { id: 1, label: "Profile", icon: User2, fields: ["full_name", "email"] as const },
   { id: 2, label: "Role context", icon: Briefcase, fields: ["job_title", "seniority", "team", "start_date", "main_goal"] as const },
   { id: 3, label: "Skills & gaps", icon: Brain, fields: ["known_skills", "known_gaps"] as const },
+  { id: 4, label: "Review", icon: ClipboardCheck, fields: [] as const },
 ];
 
 export default function AddNewcomerPage() {
@@ -55,8 +56,8 @@ export default function AddNewcomerPage() {
       team: "Payments",
       start_date: "",
       main_goal: "Ship first backend PR within 2 weeks",
-      known_skills: "Python, PostgreSQL, REST APIs",
-      known_gaps: "Deployment, internal architecture",
+      known_skills: "",
+      known_gaps: "",
     },
   });
 
@@ -80,7 +81,7 @@ export default function AddNewcomerPage() {
   };
 
   const handleNext = async () => {
-    if (await validateCurrentStep()) setStep((s) => Math.min(3, s + 1));
+    if (await validateCurrentStep()) setStep((s) => Math.min(STEPS.length, s + 1));
   };
   const handleBack = () => setStep((s) => Math.max(1, s - 1));
 
@@ -116,7 +117,7 @@ export default function AddNewcomerPage() {
             className="space-y-5"
             onKeyDown={(e) => {
               // prevent Enter from submitting before final step
-              if (e.key === "Enter" && step < 3) {
+              if (e.key === "Enter" && step < STEPS.length) {
                 e.preventDefault();
                 void handleNext();
               }
@@ -190,13 +191,33 @@ export default function AddNewcomerPage() {
               </div>
             ) : null}
 
+            {step === 4 ? (
+              <div className="space-y-4">
+                <ReviewSection title="Profile" onEdit={() => setStep(1)}>
+                  <ReviewRow label="Name" value={form.watch("full_name") || "—"} />
+                  <ReviewRow label="Email" value={form.watch("email") || "—"} />
+                </ReviewSection>
+                <ReviewSection title="Role context" onEdit={() => setStep(2)}>
+                  <ReviewRow label="Role" value={form.watch("job_title") || "—"} />
+                  <ReviewRow label="Seniority" value={form.watch("seniority") || "—"} />
+                  <ReviewRow label="Team" value={form.watch("team") || "—"} />
+                  <ReviewRow label="Start date" value={form.watch("start_date") || "—"} />
+                  <ReviewRow label="Goal" value={form.watch("main_goal") || "—"} />
+                </ReviewSection>
+                <ReviewSection title="Skills & gaps" onEdit={() => setStep(3)}>
+                  <ReviewRow label="Known skills" value={form.watch("known_skills") || "Not specified"} />
+                  <ReviewRow label="Known gaps" value={form.watch("known_gaps") || "Not specified"} />
+                </ReviewSection>
+              </div>
+            ) : null}
+
             <div className="flex items-center justify-between border-t border-[color:var(--color-border)] pt-5">
               <Button type="button" variant="ghost" onClick={handleBack} disabled={step === 1}>
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
-              {step < 3 ? (
+              {step < STEPS.length ? (
                 <Button type="button" onClick={handleNext}>
-                  Continue <ArrowRight className="h-4 w-4" />
+                  {step === 3 ? "Review newcomer" : "Continue"} <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
                 <Button type="submit" disabled={createMut.isPending} variant="ai">
@@ -267,15 +288,46 @@ function Field({
   );
 }
 
-function Controlled<T extends keyof FormValues>({
+function ReviewSection({
+  title,
+  children,
+  onEdit,
+}: {
+  title: string;
+  children: React.ReactNode;
+  onEdit: () => void;
+}) {
+  return (
+    <section className="rounded-lg border border-[color:var(--color-border)] bg-white p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">{title}</h2>
+        <Button type="button" size="sm" variant="ghost" onClick={onEdit}>
+          Edit
+        </Button>
+      </div>
+      <dl className="space-y-2">{children}</dl>
+    </section>
+  );
+}
+
+function ReviewRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="grid gap-1 text-sm sm:grid-cols-[140px_1fr]">
+      <dt className="text-[color:var(--color-fg-subtle)]">{label}</dt>
+      <dd className="text-[color:var(--color-fg)]">{value}</dd>
+    </div>
+  );
+}
+
+function Controlled({
   form,
   name,
   render,
 }: {
   form: ReturnType<typeof useForm<FormValues>>;
-  name: T;
+  name: "seniority";
   render: (value: string, set: (v: string) => void) => React.ReactNode;
 }) {
   const value = form.watch(name) ?? "";
-  return <>{render(String(value), (v) => form.setValue(name, v as FormValues[T], { shouldValidate: true }))}</>;
+  return <>{render(String(value), (v) => form.setValue(name, v, { shouldValidate: true }))}</>;
 }

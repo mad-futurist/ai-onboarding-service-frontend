@@ -1,13 +1,31 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/providers/demo-provider";
+import { resetDemo } from "@/services/demo";
+import { toApiError } from "@/lib/api";
 import { RefreshCcw, Settings as SettingsIcon } from "lucide-react";
 
 export default function SettingsPage() {
   const { refresh, mentorName, newcomerName, mentorId, newcomerId } = useDemo();
+  const qc = useQueryClient();
+
+  const resetMut = useMutation({
+    mutationFn: resetDemo,
+    onSuccess: async () => {
+      toast.success("Demo data reset", {
+        description: "Recreated 1 mentor, 1 newcomer, 4 documents, a plan, tasks and blockers.",
+      });
+      qc.clear();
+      await refresh();
+    },
+    onError: (err) => toast.error("Reset failed", { description: toApiError(err).message }),
+  });
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 space-y-6">
@@ -33,6 +51,9 @@ export default function SettingsPage() {
           </dl>
           <Button variant="outline" onClick={() => void refresh()}>
             <RefreshCcw className="h-4 w-4" /> Refresh demo data
+          </Button>
+          <Button variant="ai" disabled={resetMut.isPending} onClick={() => resetMut.mutate()}>
+            <RefreshCcw className="h-4 w-4" /> {resetMut.isPending ? "Resetting…" : "Reset database"}
           </Button>
         </CardContent>
       </Card>

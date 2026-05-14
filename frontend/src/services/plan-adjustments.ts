@@ -1,12 +1,19 @@
 import { api } from "@/lib/api";
-import type { PlanAdjustment, ID } from "@/types";
+import type { ID } from "@/types";
 
-export async function listPlanAdjustments(planId: ID): Promise<PlanAdjustment[]> {
-  const { data } = await api.get<PlanAdjustment[]>("/plan-adjustments/", { params: { plan_id: planId } });
+export interface PlanAdjustmentStatusResponse {
+  id: ID;
+  status: string;
+  reviewed_at?: string | null;
+  applied_at?: string | null;
+}
+
+export async function approveAdjustment(id: ID): Promise<PlanAdjustmentStatusResponse> {
+  const { data } = await api.patch<PlanAdjustmentStatusResponse>(`/plan-adjustments/${id}/approve`);
   return data;
 }
 
-export async function approvePlanAdjustment(adjustmentId: ID) {
-  const { data } = await api.patch(`/plan-adjustments/${adjustmentId}/approve`);
+export async function applyAdjustment(id: ID): Promise<PlanAdjustmentStatusResponse> {
+  const { data } = await api.post<PlanAdjustmentStatusResponse>(`/plan-adjustments/${id}/apply`);
   return data;
 }

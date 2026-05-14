@@ -224,7 +224,7 @@ export interface TaskDetailResponse {
   why_it_matters?: string | null;
   related_documents?: DocumentItem[];
   related_ai_questions?: AIQuestion[];
-  people_to_ask?: { name: string; role?: string }[];
+  people_to_ask?: { name?: string; full_name?: string; role?: string; team?: string }[];
   suggested_prompt?: string | null;
   blocked_report_status?: string | null;
 }
@@ -243,11 +243,14 @@ export interface PlanAdjustment {
 export interface BlockedReport {
   id: ID;
   newcomer_id: ID;
-  category: string;
+  blocker_type: string;
+  task_id?: ID | null;
+  user_id?: ID | null;
   details?: string | null;
   ai_suggestion?: string | null;
   status: "open" | "resolved" | string;
   created_at: string;
+  resolved_at?: string | null;
 }
 
 export interface DemoSeedResponse {

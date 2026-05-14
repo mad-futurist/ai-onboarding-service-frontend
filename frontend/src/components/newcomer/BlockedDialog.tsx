@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AlertOctagon, Sparkles } from "lucide-react";
 
@@ -20,13 +20,14 @@ import { Label } from "@/components/ui/label";
 import { createBlockedReport } from "@/services/blocked";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
+import type { ID } from "@/types";
 
 const CATEGORIES = [
-  { value: "documentation", label: "I do not understand the documentation" },
-  { value: "access", label: "I cannot access a tool" },
-  { value: "who_to_ask", label: "I do not know who to ask" },
-  { value: "task_understanding", label: "I do not understand the task" },
-  { value: "afraid", label: "I am afraid to ask a basic question" },
+  { value: "documentation_unclear", label: "I do not understand the documentation" },
+  { value: "access_issue", label: "I cannot access a tool" },
+  { value: "dont_know_who_to_ask", label: "I do not know who to ask" },
+  { value: "task_unclear", label: "I do not understand the task" },
+  { value: "afraid_to_ask", label: "I am afraid to ask a basic question" },
   { value: "other", label: "Other" },
 ];
 
@@ -34,25 +35,29 @@ export function BlockedDialog({
   open,
   onOpenChange,
   triggerLabel,
+  taskId,
 }: {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   triggerLabel?: string;
+  taskId?: ID;
 }) {
   const { newcomerId } = useDemo();
+  const qc = useQueryClient();
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = open !== undefined;
   const dialogOpen = isControlled ? open : internalOpen;
   const setOpen = isControlled ? (onOpenChange ?? (() => {})) : setInternalOpen;
 
-  const [category, setCategory] = React.useState<string>("documentation");
+  const [category, setCategory] = React.useState<string>("documentation_unclear");
   const [details, setDetails] = React.useState("");
 
   const mut = useMutation({
     mutationFn: () =>
       createBlockedReport({
         newcomer_id: newcomerId!,
-        category,
+        task_id: taskId,
+        blocker_type: category,
         details: details || undefined,
       }),
     onSuccess: () => {
@@ -61,6 +66,11 @@ export function BlockedDialog({
       });
       setOpen(false);
       setDetails("");
+      qc.invalidateQueries({ queryKey: ["newcomer-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["newcomer-plan"] });
+      if (taskId) {
+        qc.invalidateQueries({ queryKey: ["task-detail", taskId] });
+      }
     },
     onError: (err) => toast.error("Couldn't send", { description: toApiError(err).message }),
   });
@@ -132,7 +142,7 @@ export function BlockedDialog({
   );
 }
 
-export function BlockedTrigger({ children }: { children?: React.ReactNode }) {
+export function BlockedTrigger({ children, taskId }: { children?: React.ReactNode; taskId?: ID }) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
@@ -143,7 +153,7 @@ export function BlockedTrigger({ children }: { children?: React.ReactNode }) {
           </>
         )}
       </Button>
-      <BlockedDialog open={open} onOpenChange={setOpen} />
+      <BlockedDialog open={open} onOpenChange={setOpen} taskId={taskId} />
     </>
   );
 }

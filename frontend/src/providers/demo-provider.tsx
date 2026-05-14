@@ -50,24 +50,36 @@ function setStored(key: string, value: string | null) {
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [role, setRoleState] = React.useState<Role>(() => {
-    const v = getStored<string>(ROLE_KEY);
-    return v === "newcomer" ? "newcomer" : "mentor";
-  });
-  const [mentorId, setMentorId] = React.useState<ID | null>(() => {
-    const v = getStored<string>(MENTOR_KEY);
-    return v ? Number(v) : null;
-  });
-  const [newcomerId, setNewcomerId] = React.useState<ID | null>(() => {
-    const v = getStored<string>(NEWCOMER_KEY);
-    return v ? Number(v) : null;
-  });
+  const [role, setRoleState] = React.useState<Role>("mentor");
+  const [mentorId, setMentorId] = React.useState<ID | null>(null);
+  const [newcomerId, setNewcomerId] = React.useState<ID | null>(null);
   const [mentorName, setMentorName] = React.useState<string>("Marko Ivanov");
   const [newcomerName, setNewcomerName] = React.useState<string>("Tanya Petrova");
 
   const seedMut = useMutation({
     mutationFn: seedDemo,
   });
+
+  React.useEffect(() => {
+    queueMicrotask(() => {
+      const storedRole = getStored<string>(ROLE_KEY);
+      if (storedRole === "mentor" || storedRole === "newcomer") {
+        setRoleState(storedRole);
+      }
+
+      const storedMentorId = getStored<string>(MENTOR_KEY);
+      const parsedMentorId = storedMentorId ? Number(storedMentorId) : null;
+      if (parsedMentorId && Number.isFinite(parsedMentorId)) {
+        setMentorId(parsedMentorId);
+      }
+
+      const storedNewcomerId = getStored<string>(NEWCOMER_KEY);
+      const parsedNewcomerId = storedNewcomerId ? Number(storedNewcomerId) : null;
+      if (parsedNewcomerId && Number.isFinite(parsedNewcomerId)) {
+        setNewcomerId(parsedNewcomerId);
+      }
+    });
+  }, []);
 
   const hydrateFromBackend = React.useCallback(async () => {
     // Pull user/newcomer info to confirm IDs exist and capture names

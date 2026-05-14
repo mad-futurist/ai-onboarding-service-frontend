@@ -1,8 +1,10 @@
 import { api } from "@/lib/api";
 import type { Newcomer, OnboardingPlanWithTasks, ID } from "@/types";
 
-export async function listNewcomers(): Promise<Newcomer[]> {
-  const { data } = await api.get<Newcomer[]>("/newcomers/");
+export async function listNewcomers(mentorId?: ID | null): Promise<Newcomer[]> {
+  const { data } = await api.get<Newcomer[]>("/newcomers/", {
+    params: mentorId ? { mentor_id: mentorId } : undefined,
+  });
   return data;
 }
 

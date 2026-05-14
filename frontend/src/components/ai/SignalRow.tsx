@@ -17,6 +17,8 @@ interface SignalRowProps {
 }
 
 export function SignalRow({ signal, onResolve, onIgnore, onSchedule, compact }: SignalRowProps) {
+  const occurrenceCount = signal.occurrence_count ?? 0;
+
   return (
     <article className="relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-white p-4">
       <div className="flex items-start gap-3">
@@ -44,9 +46,9 @@ export function SignalRow({ signal, onResolve, onIgnore, onSchedule, compact }: 
             <span className="rounded-full border border-[color:var(--color-border)] bg-white px-2 py-0.5 text-xs text-[color:var(--color-fg-muted)]">
               confidence {Math.round((signal.confidence ?? signal.score ?? 0) * 100)}%
             </span>
-            {signal.occurrence_count > 1 ? (
+            {occurrenceCount > 1 ? (
               <span className="rounded-full border border-[color:var(--color-border)] bg-white px-2 py-0.5 text-xs text-[color:var(--color-fg-muted)]">
-                seen {signal.occurrence_count}×
+                seen {occurrenceCount}x
               </span>
             ) : null}
           </div>

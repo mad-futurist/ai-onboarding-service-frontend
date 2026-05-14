@@ -23,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { PlanPhaseCard } from "@/components/mentor/PlanPhaseCard";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -37,18 +38,28 @@ import type { ID, OnboardingPlanWithTasks } from "@/types";
 
 export default function PlanGeneratorPage() {
   const qc = useQueryClient();
-  const { newcomerId } = useDemo();
+  const { mentorId, newcomerId } = useDemo();
+  const [selectedNewcomerId, setSelectedNewcomerId] = React.useState<ID | null>(null);
 
-  const { data: newcomers } = useQuery({ queryKey: ["newcomers"], queryFn: listNewcomers });
+  const { data: newcomers } = useQuery({ queryKey: ["newcomers", mentorId], queryFn: () => listNewcomers(mentorId) });
   const { data: kb } = useQuery({ queryKey: ["kb"], queryFn: getKnowledgeBase });
 
-  const activeNewcomer = newcomers?.find((n) => n.id === newcomerId) ?? newcomers?.[0];
+  const activeNewcomer =
+    newcomers?.find((n) => n.id === selectedNewcomerId) ??
+    newcomers?.find((n) => n.id === newcomerId) ??
+    newcomers?.[0];
 
   const [selectedDocs, setSelectedDocs] = React.useState<Set<ID>>(new Set());
   const [mentorNotes, setMentorNotes] = React.useState(
     "Backend-leaning. Strong on APIs + SQL, weaker on deployment + infra. First two weeks should target the first PR.",
   );
   const [plan, setPlan] = React.useState<OnboardingPlanWithTasks | null>(null);
+
+  React.useEffect(() => {
+    if (!selectedNewcomerId && activeNewcomer) {
+      queueMicrotask(() => setSelectedNewcomerId(activeNewcomer.id));
+    }
+  }, [activeNewcomer, selectedNewcomerId]);
 
   // Try to load existing plan if any
   const existingPlan = useQuery({
@@ -58,8 +69,8 @@ export default function PlanGeneratorPage() {
     retry: false,
   });
   React.useEffect(() => {
-    if (existingPlan.data && !plan) setPlan(existingPlan.data);
-  }, [existingPlan.data, plan]);
+    queueMicrotask(() => setPlan(existingPlan.data ?? null));
+  }, [activeNewcomer?.id, existingPlan.data]);
 
   React.useEffect(() => {
     if (kb && selectedDocs.size === 0) {
@@ -139,7 +150,27 @@ export default function PlanGeneratorPage() {
               </CardTitle>
               <CardDescription>The AI tailors the plan around this profile.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {newcomers?.length ? (
+                <div className="space-y-1.5">
+                  <Label>Generate for</Label>
+                  <Select
+                    value={String(activeNewcomer?.id ?? "")}
+                    onValueChange={(value) => setSelectedNewcomerId(Number(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a newcomer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {newcomers.map((n) => (
+                        <SelectItem key={n.id} value={String(n.id)}>
+                          {n.full_name ?? `Newcomer #${n.id}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
               {activeNewcomer ? (
                 <dl className="space-y-2 text-sm">
                   <Row label="Name" value={activeNewcomer.full_name ?? "—"} />
@@ -235,8 +266,8 @@ export default function PlanGeneratorPage() {
           {plan ? (
             <>
               <AIInsightCard
-                title={plan.title}
-                description={plan.description ?? "AI-generated 30/60/90 plan."}
+                title={`${activeNewcomer?.full_name ?? "Selected newcomer"} · ${plan.title}`}
+                description={compactPlanDescription(plan.description)}
                 confidence={plan.ai_confidence ?? 82}
                 tone="soft"
                 actions={
@@ -310,4 +341,9 @@ function PhaseMeta({ label, value, hint }: { label: string; value: number; hint:
       <div className="text-xs text-[color:var(--color-fg-muted)]">{hint}</div>
     </div>
   );
+}
+
+function compactPlanDescription(description?: string | null) {
+  if (!description) return "AI-generated 30/60/90 plan.";
+  return description.split("\n\n")[0] || description;
 }
