@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Sparkles, Filter } from "lucide-react";
+import { Sparkles, Filter, CalendarDays } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,13 @@ import { SignalRow } from "@/components/ai/SignalRow";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScheduleMeetingDialog } from "@/components/meetings/ScheduleMeetingDialog";
 
 import { detectSignals, ignoreSignal, listSignalsForNewcomer, resolveSignal } from "@/services/signals";
 import { listNewcomers } from "@/services/newcomers";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
-import type { ID } from "@/types";
+import type { AISignal, ID } from "@/types";
 
 export default function SignalsCenterPage() {
   const qc = useQueryClient();
@@ -71,6 +72,9 @@ export default function SignalsCenterPage() {
       qc.invalidateQueries({ queryKey: ["signals"] });
     },
   });
+
+  const [schedSignal, setSchedSignal] = React.useState<AISignal | null>(null);
+  const [schedOpen, setSchedOpen] = React.useState(false);
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6">
@@ -139,7 +143,10 @@ export default function SignalsCenterPage() {
                 signal={s}
                 onResolve={filter !== "resolved" && filter !== "ignored" ? (sig) => resolveMut.mutate(sig.id) : undefined}
                 onIgnore={filter !== "resolved" && filter !== "ignored" ? (sig) => ignoreMut.mutate(sig.id) : undefined}
-                onSchedule={() => toast.message("Schedule draft", { description: "Calendar integration is a next step." })}
+                onSchedule={(sig) => {
+                  setSchedSignal(sig);
+                  setSchedOpen(true);
+                }}
               />
             ))
           ) : (
@@ -171,12 +178,24 @@ export default function SignalsCenterPage() {
           repeated questions, deploy hesitation, access issues — and surfaces what crosses a
           confidence threshold. You see the evidence and choose what to do.
         </p>
-        <div className="mt-3">
+        <div className="mt-3 flex flex-wrap gap-2">
           <Button asChild size="sm" variant="ghost">
             <Link href="/mentor">Back to dashboard</Link>
           </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/mentor/meetings">
+              <CalendarDays className="h-3.5 w-3.5" /> Meetings
+            </Link>
+          </Button>
         </div>
       </div>
+
+      <ScheduleMeetingDialog
+        open={schedOpen}
+        onOpenChange={setSchedOpen}
+        signal={schedSignal}
+        newcomerId={activeNewcomer?.id}
+      />
     </div>
   );
 }

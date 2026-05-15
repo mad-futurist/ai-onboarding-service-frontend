@@ -37,6 +37,14 @@ interface ChatItem {
 }
 
 export default function AskAIPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <AskAIPageInner />
+    </React.Suspense>
+  );
+}
+
+function AskAIPageInner() {
   const search = useSearchParams();
   const { newcomerId, newcomerName } = useDemo();
   const [draft, setDraft] = React.useState(search?.get("q") ?? "");

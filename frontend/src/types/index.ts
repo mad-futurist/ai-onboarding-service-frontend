@@ -28,6 +28,16 @@ export interface Newcomer {
   created_at: string;
 }
 
+export interface TaskExample {
+  title: string;
+  content: string;
+}
+
+export interface TaskLink {
+  label: string;
+  url: string;
+}
+
 export interface OnboardingTask {
   id: ID;
   plan_id: ID;
@@ -35,12 +45,112 @@ export interface OnboardingTask {
   description: string | null;
   week_number: number | null;
   day_number: number | null;
+  week_id?: ID | null;
+  sprint_id?: ID | null;
   task_type: string;
   status: "todo" | "in_progress" | "done" | "blocked" | string;
   priority: "low" | "medium" | "high" | string;
   success_criteria: string | null;
+  acceptance_criteria?: string | null;
+  examples?: TaskExample[] | null;
+  links?: TaskLink[] | null;
+  manually_edited_fields?: string[] | null;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface Week {
+  id: ID;
+  plan_id: ID;
+  sprint_id: ID | null;
+  index: number;
+  title: string;
+  summary: string | null;
+  goals: string[] | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface Sprint {
+  id: ID;
+  plan_id: ID;
+  index: number;
+  title: string;
+  description: string | null;
+  start_day: number | null;
+  end_day: number | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export type RegenScope = "plan" | "week" | "task";
+
+export interface PlanRegenerateRequest {
+  scope: RegenScope;
+  target_id?: ID | null;
+  preserve_manual_edits?: boolean;
+  mentor_notes?: string | null;
+  document_ids?: ID[];
+}
+
+export interface PlanRegenerateResponse {
+  scope: RegenScope;
+  plan_id: ID;
+  target_id?: ID | null;
+  summary: string;
+  affected_task_ids: ID[];
+  affected_week_ids?: ID[];
+  used_fallback: boolean;
+}
+
+export type TaskAIField = "acceptance_criteria" | "description" | "examples" | "links";
+
+export interface TaskAISuggestResponse {
+  field: TaskAIField;
+  suggestion: unknown;
+}
+
+export interface Lesson {
+  id: ID;
+  course_id: ID;
+  index: number;
+  title: string;
+  body: string | null;
+  summary: string | null;
+  infographic_url?: string | null;
+  infographic_kind?: string | null;
+  infographic_source?: string | null;
+  source_document_ids?: ID[] | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export type CourseStatus =
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "published"
+  | "rejected"
+  | string;
+
+export interface Course {
+  id: ID;
+  plan_id: ID | null;
+  newcomer_id: ID | null;
+  mentor_id: ID | null;
+  title: string;
+  summary: string | null;
+  status: CourseStatus;
+  generated_by_ai: boolean;
+  source_document_ids?: ID[] | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  approved_at?: string | null;
+  published_at?: string | null;
+}
+
+export interface CourseWithLessons extends Course {
+  lessons: Lesson[];
 }
 
 export interface OnboardingPlan {
@@ -135,6 +245,26 @@ export interface DocumentItem {
   domain: string;
   role_target: string;
   scope: string;
+  source_type?: string | null;
+  external_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ScheduledMeeting {
+  id: ID;
+  title: string;
+  agenda: string | null;
+  starts_at: string;
+  ends_at: string;
+  status: string;
+  teams_join_url: string | null;
+  newcomer_id?: ID | null;
+  organizer_user_id?: ID | null;
+  plan_id?: ID | null;
+  task_id?: ID | null;
+  signal_id?: ID | null;
+  attendee_emails?: string[] | null;
   created_at?: string;
   updated_at?: string;
 }

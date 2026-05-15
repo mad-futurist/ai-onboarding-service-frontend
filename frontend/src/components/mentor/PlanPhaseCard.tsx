@@ -1,17 +1,20 @@
-import { Check, CircleDashed, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { Check, CircleDashed, AlertTriangle, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { PriorityBadge } from "@/components/shared/StatusBadge";
-import type { OnboardingTask } from "@/types";
+import type { ID, OnboardingTask } from "@/types";
 
 interface PlanPhaseCardProps {
   title: string;
   subtitle?: string;
   tasks: OnboardingTask[];
   className?: string;
+  /** When provided, each task title becomes a link to this href. */
+  linkTo?: (taskId: ID) => string;
 }
 
-export function PlanPhaseCard({ title, subtitle, tasks, className }: PlanPhaseCardProps) {
+export function PlanPhaseCard({ title, subtitle, tasks, className, linkTo }: PlanPhaseCardProps) {
   const grouped = groupByWeek(tasks);
   return (
     <section
@@ -39,7 +42,7 @@ export function PlanPhaseCard({ title, subtitle, tasks, className }: PlanPhaseCa
             </div>
             <ul className="space-y-1.5">
               {ts.map((t) => (
-                <TaskRow key={t.id} task={t} />
+                <TaskRow key={t.id} task={t} linkTo={linkTo} />
               ))}
             </ul>
           </div>
@@ -49,7 +52,7 @@ export function PlanPhaseCard({ title, subtitle, tasks, className }: PlanPhaseCa
   );
 }
 
-function TaskRow({ task }: { task: OnboardingTask }) {
+function TaskRow({ task, linkTo }: { task: OnboardingTask; linkTo?: (taskId: ID) => string }) {
   const Icon =
     task.status === "done"
       ? Check
@@ -62,12 +65,19 @@ function TaskRow({ task }: { task: OnboardingTask }) {
       : task.status === "blocked"
         ? "text-[color:var(--color-danger)]"
         : "text-[color:var(--color-fg-faint)]";
-  return (
-    <li className="flex items-start gap-3 rounded-lg border border-transparent px-2 py-1.5 hover:border-[color:var(--color-border)] hover:bg-[color:var(--color-surface-muted)]/50">
+
+  const inner = (
+    <>
       <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", iconColor)} />
       <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
         <div className="min-w-0">
-          <div className={cn("text-sm text-[color:var(--color-fg)] truncate", task.status === "done" && "line-through text-[color:var(--color-fg-muted)]")}>
+          <div
+            className={cn(
+              "text-sm text-[color:var(--color-fg)] truncate",
+              task.status === "done" && "line-through text-[color:var(--color-fg-muted)]",
+              linkTo && "group-hover:underline",
+            )}
+          >
             {task.title}
           </div>
           {task.description ? (
@@ -75,9 +85,26 @@ function TaskRow({ task }: { task: OnboardingTask }) {
           ) : null}
         </div>
         {task.priority ? <PriorityBadge priority={task.priority} size="sm" /> : null}
+        {linkTo ? (
+          <ChevronRight className="h-3.5 w-3.5 text-[color:var(--color-fg-faint)] group-hover:text-[color:var(--color-fg-muted)]" />
+        ) : null}
       </div>
-    </li>
+    </>
   );
+
+  const rowClass =
+    "flex items-start gap-3 rounded-lg border border-transparent px-2 py-1.5 hover:border-[color:var(--color-border)] hover:bg-[color:var(--color-surface-muted)]/50";
+
+  if (linkTo) {
+    return (
+      <li>
+        <Link href={linkTo(task.id)} className={cn("group", rowClass)}>
+          {inner}
+        </Link>
+      </li>
+    );
+  }
+  return <li className={rowClass}>{inner}</li>;
 }
 
 function groupByWeek(tasks: OnboardingTask[]): Record<string, OnboardingTask[]> {

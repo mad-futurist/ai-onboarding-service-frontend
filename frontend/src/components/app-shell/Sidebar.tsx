@@ -14,6 +14,7 @@ import {
   MessageSquare,
   LineChart,
   Compass,
+  GraduationCap,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ const MENTOR_NAV: NavItem[] = [
   { href: "/mentor/newcomers/new", label: "Add newcomer", icon: Users },
   { href: "/mentor/knowledge", label: "Knowledge base", icon: BookOpen },
   { href: "/mentor/plan-generator", label: "AI Plan Generator", icon: Sparkles, badge: "AI" },
+  { href: "/mentor/courses", label: "Courses", icon: GraduationCap, badge: "AI" },
   { href: "/mentor/signals", label: "Signals", icon: AlertTriangle },
   { href: "/mentor/settings", label: "Settings", icon: Settings },
 ];

@@ -6,26 +6,61 @@ export async function getKnowledgeBase(): Promise<KnowledgeBaseResponse> {
   return data;
 }
 
-export async function listDocuments(params?: {
+export interface ListDocumentsParams {
   domain?: string;
   role_target?: string;
   scope?: string;
-}): Promise<DocumentItem[]> {
+  document_type?: string;
+  source_type?: string;
+  q?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export async function listDocuments(params?: ListDocumentsParams): Promise<DocumentItem[]> {
   const { data } = await api.get<DocumentItem[]>("/documents/", { params });
+  return data;
+}
+
+export async function getDocument(id: ID): Promise<DocumentItem> {
+  const { data } = await api.get<DocumentItem>(`/documents/${id}`);
   return data;
 }
 
 export interface CreateDocumentInput {
   title: string;
-  content: string;
-  source: string;
-  document_type: string;
-  domain: string;
-  role_target: string;
-  scope: string;
+  content?: string;
+  source?: string;
+  document_type?: string;
+  domain?: string;
+  role_target?: string;
+  scope?: string;
+  source_type?: string;
+  external_url?: string;
 }
 
 export async function createDocument(input: CreateDocumentInput): Promise<DocumentItem> {
   const { data } = await api.post<DocumentItem>("/documents/", input);
   return data;
+}
+
+export interface UpdateDocumentInput {
+  title?: string;
+  content?: string;
+  source?: string;
+  document_type?: string;
+  domain?: string;
+  role_target?: string;
+  scope?: string;
+  source_type?: string;
+  external_url?: string;
+}
+
+export async function updateDocument(id: ID, input: UpdateDocumentInput): Promise<DocumentItem> {
+  const { data } = await api.patch<DocumentItem>(`/documents/${id}`, input);
+  return data;
+}
+
+export async function deleteDocument(id: ID): Promise<void> {
+  await api.delete(`/documents/${id}`);
 }
