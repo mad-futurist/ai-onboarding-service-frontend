@@ -163,7 +163,6 @@ export default function WeekDetailPage() {
         crumbs={[
           { label: "Plan generator", href: "/mentor/plan-generator" },
           { label: plan.title, href: `/mentor/plan-generator/${plan.id}` },
-          { label: "Workspace", href: `/mentor/plan-generator/${plan.id}/workspace` },
           { label: `Week ${week.index}` },
         ]}
         actions={

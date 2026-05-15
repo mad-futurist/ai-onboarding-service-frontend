@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { GraduationCap, ChevronRight, Sparkles, Check } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -18,12 +17,16 @@ export default function NewcomerCoursesPage() {
 
   const personal = useQuery({
     queryKey: ["courses-for-newcomer", newcomerId],
-    queryFn: () => listCourses({ newcomer_id: newcomerId ?? undefined }),
+    queryFn: () =>
+      listCourses({
+        newcomer_id: newcomerId ?? undefined,
+        include_role_matches: true,
+      }),
     enabled: !!newcomerId,
   });
   const published = useQuery({
     queryKey: ["courses-published"],
-    queryFn: () => listCourses({ status: "published" }),
+    queryFn: () => listCourses({ status: "published", public_only: true }),
   });
 
   const mine = (personal.data ?? []).filter((c) =>
@@ -76,7 +79,18 @@ export default function NewcomerCoursesPage() {
   );
 }
 
-function CourseCard({ course }: { course: { id: number; title: string; summary: string | null; status: string; generated_by_ai: boolean } }) {
+function CourseCard({
+  course,
+}: {
+  course: {
+    id: number;
+    title: string;
+    summary: string | null;
+    status: string;
+    generated_by_ai: boolean;
+    role_target?: string | null;
+  };
+}) {
   return (
     <Link
       href={`/newcomer/courses/${course.id}`}
@@ -101,6 +115,11 @@ function CourseCard({ course }: { course: { id: number; title: string; summary: 
           {course.generated_by_ai ? (
             <Badge tone="ai" size="sm">
               <Sparkles className="h-2.5 w-2.5" /> AI
+            </Badge>
+          ) : null}
+          {course.role_target ? (
+            <Badge tone="neutral" size="sm">
+              {course.role_target.replace(/_/g, " ")}
             </Badge>
           ) : null}
         </div>

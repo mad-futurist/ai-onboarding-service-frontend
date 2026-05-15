@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -13,6 +12,8 @@ import {
   FileText,
   Edit3,
   Users,
+  ListChecks,
+  CalendarDays,
 } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -31,19 +32,20 @@ import {
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SourcesPicker } from "@/components/mentor/plan-generator/SourcesPicker";
+import { RealtimePlanWorkspace } from "@/components/mentor/plan-generator/RealtimePlanWorkspace";
 
 import { getKnowledgeBase } from "@/services/documents";
 import { listNewcomers, getNewcomerPlan } from "@/services/newcomers";
-import { generatePlan } from "@/services/plans";
+import { generatePlan, getPlan } from "@/services/plans";
 import { toApiError } from "@/lib/api";
 import { useDemo } from "@/providers/demo-provider";
 import { fmtDate } from "@/lib/format";
-import type { ID } from "@/types";
+import type { ID, OnboardingPlanWithTasks } from "@/types";
 
 export default function PlanGeneratorEntryPage() {
-  const router = useRouter();
   const { mentorId, newcomerId } = useDemo();
   const [selectedNewcomerId, setSelectedNewcomerId] = React.useState<ID | null>(null);
+  const [generatedPlanId, setGeneratedPlanId] = React.useState<ID | null>(null);
 
   const { data: newcomers } = useQuery({
     queryKey: ["newcomers", mentorId],
@@ -70,33 +72,39 @@ export default function PlanGeneratorEntryPage() {
   }, [activeNewcomer, selectedNewcomerId]);
 
   const [selectedDocs, setSelectedDocs] = React.useState<Set<ID>>(new Set());
-  const [defaultsApplied, setDefaultsApplied] = React.useState(false);
+  const defaultsAppliedRef = React.useRef(false);
   const [mentorNotes, setMentorNotes] = React.useState(
     "Backend-leaning. Strong on APIs + SQL, weaker on deployment + infra. First two weeks should target the first PR.",
   );
-
-  if (kb && !defaultsApplied && selectedDocs.size === 0) {
+  React.useEffect(() => {
+    if (!kb || defaultsAppliedRef.current || selectedDocs.size > 0) return;
     const all = new Set<ID>();
     kb.groups.forEach((g) => g.documents.slice(0, 5).forEach((d) => all.add(d.id)));
-    setDefaultsApplied(true);
-    setSelectedDocs(all);
-  }
+    defaultsAppliedRef.current = true;
+    queueMicrotask(() => setSelectedDocs(all));
+  }, [kb, selectedDocs.size]);
 
   const generateMut = useMutation({
-    mutationFn: () =>
+    mutationFn: (input: { mentorNotes: string; mode: "classic" | "live" }) =>
       generatePlan({
         newcomer_id: activeNewcomer!.id,
-        mentor_notes: mentorNotes,
+        mentor_notes: input.mentorNotes,
         document_ids: Array.from(selectedDocs),
       }),
     onSuccess: (resp) => {
+      setGeneratedPlanId(resp.plan_id);
       toast.success("Plan generated", {
         description: `${resp.tasks_count} tasks · taking you to the workspace.`,
       });
-      router.push(`/mentor/plan-generator/${resp.plan_id}`);
     },
     onError: (err) =>
       toast.error("Plan generation failed", { description: toApiError(err).message }),
+  });
+
+  const generatedPlan = useQuery({
+    queryKey: ["plan", generatedPlanId],
+    queryFn: () => getPlan(generatedPlanId!),
+    enabled: generatedPlanId != null,
   });
 
   return (
@@ -180,19 +188,41 @@ export default function PlanGeneratorEntryPage() {
             </CardContent>
           </Card>
 
-          <Button
-            variant="ai"
-            size="lg"
-            className="w-full"
-            disabled={!activeNewcomer || generateMut.isPending}
-            onClick={() => generateMut.mutate()}
-          >
-            <Wand2 className="h-4 w-4" />
-            {generateMut.isPending ? "AI is drafting…" : "Generate plan"}
-          </Button>
+          <Card>
+            <CardContent className="space-y-3 p-4">
+              <div>
+                <div className="text-sm font-semibold text-[color:var(--color-fg)]">
+                  Classic generation
+                </div>
+                <p className="mt-1 text-xs text-[color:var(--color-fg-muted)]">
+                  Generate immediately with the notes and sources, without live review.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full"
+                disabled={!activeNewcomer || generateMut.isPending}
+                onClick={() => generateMut.mutate({ mentorNotes, mode: "classic" })}
+              >
+                <Wand2 className="h-4 w-4" />
+                {generateMut.isPending ? "Generating..." : "Generate plan now"}
+              </Button>
+            </CardContent>
+          </Card>
         </aside>
 
         <section className="space-y-5">
+          <RealtimePlanWorkspace
+            newcomer={activeNewcomer}
+            selectedDocumentCount={selectedDocs.size}
+            mentorNotes={mentorNotes}
+            generating={generateMut.isPending}
+            onGenerate={(liveMentorNotes) =>
+              generateMut.mutate({ mentorNotes: liveMentorNotes, mode: "live" })
+            }
+          />
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -218,6 +248,14 @@ export default function PlanGeneratorEntryPage() {
               />
             </CardContent>
           </Card>
+
+          {generatedPlan.data ? (
+            <PlanPreviewCard
+              plan={generatedPlan.data}
+              title="Generated draft"
+              description="The draft is ready. Inspect weeks and tasks here, then open the workspace to edit."
+            />
+          ) : null}
 
           {existingPlan.data ? (
             <Card>
@@ -249,7 +287,7 @@ export default function PlanGeneratorEntryPage() {
                 </Link>
               </CardContent>
             </Card>
-          ) : !activeNewcomer ? (
+          ) : generatedPlan.data ? null : !activeNewcomer ? (
             <EmptyState
               icon={Sparkles}
               title="Add a newcomer to generate a plan"
@@ -277,4 +315,99 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
       </dd>
     </div>
   );
+}
+
+function PlanPreviewCard({
+  plan,
+  title,
+  description,
+}: {
+  plan: OnboardingPlanWithTasks;
+  title: string;
+  description: string;
+}) {
+  const tasks = plan.tasks ?? [];
+  const weeks = groupTasksByWeek(tasks);
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[color:var(--color-primary)]" /> {title}
+            </CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          <Button asChild variant="ai" size="sm">
+            <Link href={`/mentor/plan-generator/${plan.id}`}>
+              Open workspace <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="rounded-lg border border-[color:var(--color-border)] p-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="truncate text-sm font-medium text-[color:var(--color-fg)]">{plan.title}</div>
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[color:var(--color-fg-muted)]">
+                <Badge tone={plan.mentor_approved ? "success" : "warning"} size="sm">
+                  {plan.status}
+                </Badge>
+                <span className="inline-flex items-center gap-1">
+                  <CalendarDays className="h-3 w-3" /> {weeks.length} week{weeks.length === 1 ? "" : "s"}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <ListChecks className="h-3 w-3" /> {tasks.length} task{tasks.length === 1 ? "" : "s"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {weeks.length ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {weeks.slice(0, 6).map((week) => (
+              <div key={week.weekNumber} className="rounded-lg border border-[color:var(--color-border)] bg-white p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-semibold text-[color:var(--color-fg)]">Week {week.weekNumber}</div>
+                  <Badge tone="neutral" size="sm">
+                    {week.tasks.length} task{week.tasks.length === 1 ? "" : "s"}
+                  </Badge>
+                </div>
+                <ul className="mt-2 space-y-1">
+                  {week.tasks.slice(0, 3).map((task) => (
+                    <li key={task.id} className="truncate text-xs text-[color:var(--color-fg-muted)]">
+                      {task.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed border-[color:var(--color-border)] px-4 py-6 text-center text-sm text-[color:var(--color-fg-muted)]">
+            No week numbers yet. Open the workspace to scaffold or edit weeks.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function groupTasksByWeek(tasks: OnboardingPlanWithTasks["tasks"]) {
+  const grouped = new Map<number, OnboardingPlanWithTasks["tasks"]>();
+  for (const task of tasks) {
+    const weekNumber = task.week_number ?? 0;
+    const list = grouped.get(weekNumber) ?? [];
+    list.push(task);
+    grouped.set(weekNumber, list);
+  }
+  return Array.from(grouped.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([weekNumber, weekTasks]) => ({
+      weekNumber,
+      tasks: weekTasks.sort((a, b) => (a.day_number ?? 0) - (b.day_number ?? 0)),
+    }));
 }

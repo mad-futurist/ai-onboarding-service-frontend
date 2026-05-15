@@ -64,3 +64,19 @@ export async function updateDocument(id: ID, input: UpdateDocumentInput): Promis
 export async function deleteDocument(id: ID): Promise<void> {
   await api.delete(`/documents/${id}`);
 }
+
+export interface ClassifyDocumentResponse {
+  title: string;
+  summary: string;
+  domain: string;
+  document_type: string;
+  source_type: string;
+}
+
+export async function classifyDocument(input: {
+  content: string;
+  title?: string;
+}): Promise<ClassifyDocumentResponse> {
+  const { data } = await api.post<ClassifyDocumentResponse>("/documents/ai-classify", input);
+  return data;
+}

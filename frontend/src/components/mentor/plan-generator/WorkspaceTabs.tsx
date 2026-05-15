@@ -2,16 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, ListChecks, FileText, Wand2, Plus } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CalendarDays, ListChecks, FileText, Wand2, Plus, Loader2 } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
-import { listSprints, listWeeks } from "@/services/plans";
+import { createWeek, listSprints, listWeeks } from "@/services/plans";
 import { listAdjustmentsForNewcomer } from "@/services/plan-adjustments";
 import { WeeksTree } from "./WeeksTree";
 import { AdjustmentsList } from "./AdjustmentsList";
@@ -31,6 +30,7 @@ export function WorkspaceTabs({
   onToggleDoc,
   onSelectAllDocs,
 }: WorkspaceTabsProps) {
+  const qc = useQueryClient();
   const { data: weeks, isLoading: weeksLoading } = useQuery({
     queryKey: ["plan-weeks", plan.id],
     queryFn: () => listWeeks(plan.id),
@@ -46,7 +46,54 @@ export function WorkspaceTabs({
     enabled: !!plan.newcomer_id,
   });
 
-  const tasks = plan.tasks ?? [];
+  const tasks = React.useMemo(() => plan.tasks ?? [], [plan.tasks]);
+
+  // Auto-scaffold Week records if the AI plan only produced week_numbers
+  // (the AI plan generator writes week_number but not Week rows yet).
+  const scaffoldMut = useMutation({
+    mutationFn: async (weekNumbers: number[]) => {
+      // Sequential to keep order deterministic.
+      for (const n of weekNumbers) {
+        await createWeek(plan.id, {
+          index: n,
+          title: `Week ${n}`,
+          summary: null,
+          goals: null,
+        });
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["plan-weeks", plan.id] });
+    },
+    // Don't toast errors — the virtual-week fallback in WeeksTree keeps the UI usable.
+    onError: () => {},
+  });
+
+  const taskWeeks = React.useMemo(
+    () =>
+      Array.from(
+        new Set(tasks.map((t) => t.week_number).filter((n): n is number => !!n && n > 0)),
+      ).sort((a, b) => a - b),
+    [tasks],
+  );
+
+  // Ref-based guard (not setState during render) so the effect actually fires
+  // when weeks=[] and we have week_numbers in the tasks.
+  const scaffoldStartedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (scaffoldStartedRef.current) return;
+    if (weeksLoading || !weeks) return;
+    if (weeks.length > 0) return;
+    if (taskWeeks.length === 0) return;
+    scaffoldStartedRef.current = true;
+    scaffoldMut.mutate(taskWeeks);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weeksLoading, weeks, taskWeeks]);
+
+  const manualScaffold = () => {
+    scaffoldStartedRef.current = true;
+    scaffoldMut.mutate(taskWeeks);
+  };
 
   return (
     <Tabs defaultValue="weeks">
@@ -85,13 +132,18 @@ export function WorkspaceTabs({
 
       <TabsContent value="weeks" className="mt-4 space-y-3">
         {weeksLoading ? (
-          <Skeleton className="h-40" />
+          <div className="rounded-lg border border-dashed border-[color:var(--color-border)] bg-white px-4 py-6 text-center text-sm text-[color:var(--color-fg-muted)]">
+            <Loader2 className="mx-auto mb-2 h-4 w-4 animate-spin" />
+            Loading weeks…
+          </div>
         ) : (
           <WeeksTree
             planId={plan.id}
             weeks={weeks ?? []}
             sprints={sprints}
             tasks={tasks}
+            onScaffoldFromTasks={manualScaffold}
+            scaffolding={scaffoldMut.isPending}
           />
         )}
       </TabsContent>

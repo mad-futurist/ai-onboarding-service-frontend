@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, Sparkles, X } from "lucide-react";
+import { AlertTriangle, CheckCircle2, GraduationCap, Sparkles, Wand2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SeverityBadge, StatusBadge } from "@/components/shared/StatusBadge";
@@ -13,10 +13,20 @@ interface SignalRowProps {
   onResolve?: (s: AISignal) => void;
   onIgnore?: (s: AISignal) => void;
   onSchedule?: (s: AISignal) => void;
+  onAdjustPlan?: (s: AISignal) => void;
+  onMakeCourse?: (s: AISignal) => void;
   compact?: boolean;
 }
 
-export function SignalRow({ signal, onResolve, onIgnore, onSchedule, compact }: SignalRowProps) {
+export function SignalRow({
+  signal,
+  onResolve,
+  onIgnore,
+  onSchedule,
+  onAdjustPlan,
+  onMakeCourse,
+  compact,
+}: SignalRowProps) {
   const occurrenceCount = signal.occurrence_count ?? 0;
 
   return (
@@ -71,8 +81,18 @@ export function SignalRow({ signal, onResolve, onIgnore, onSchedule, compact }: 
             </div>
           ) : null}
 
-          {(onResolve || onIgnore || onSchedule) && signal.status === "open" ? (
+          {(onResolve || onIgnore || onSchedule || onAdjustPlan || onMakeCourse) && signal.status === "open" ? (
             <div className="mt-3 flex flex-wrap gap-2">
+              {onMakeCourse ? (
+                <Button size="sm" variant="ai" onClick={() => onMakeCourse(signal)}>
+                  <GraduationCap className="h-3.5 w-3.5" /> Make course
+                </Button>
+              ) : null}
+              {onAdjustPlan ? (
+                <Button size="sm" variant="outline" onClick={() => onAdjustPlan(signal)}>
+                  <Wand2 className="h-3.5 w-3.5" /> Adjust plan
+                </Button>
+              ) : null}
               {onSchedule ? (
                 <Button size="sm" variant="default" onClick={() => onSchedule(signal)}>
                   Schedule walkthrough

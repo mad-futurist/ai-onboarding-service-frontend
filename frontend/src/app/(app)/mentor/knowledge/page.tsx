@@ -2,10 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Upload,
   FileText,
   Sparkles,
   BookOpen,
@@ -17,33 +15,21 @@ import {
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { KbFilters, type KbFilterState } from "@/components/mentor/knowledge/KbFilters";
-import { KbDropzone } from "@/components/mentor/knowledge/KbDropzone";
+import { AddSourceCard } from "@/components/mentor/knowledge/AddSourceCard";
 
-import { createDocument, getKnowledgeBase } from "@/services/documents";
-import { toApiError } from "@/lib/api";
+import { getKnowledgeBase } from "@/services/documents";
 import type { DocumentItem } from "@/types";
 
 const DEFAULT_FILTER: KbFilterState = { domain: "all", docType: "all", search: "" };
 
 export default function KnowledgeBasePage() {
-  const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["kb"],
     queryFn: getKnowledgeBase,
@@ -51,37 +37,6 @@ export default function KnowledgeBasePage() {
 
   const [tab, setTab] = React.useState<"browse" | "add">("browse");
   const [filter, setFilter] = React.useState<KbFilterState>(DEFAULT_FILTER);
-
-  const [title, setTitle] = React.useState("");
-  const [content, setContent] = React.useState("");
-  const [domain, setDomain] = React.useState("engineering");
-  const [docType, setDocType] = React.useState("guide");
-
-  const createMut = useMutation({
-    mutationFn: createDocument,
-    onSuccess: () => {
-      toast.success("Document added to knowledge base");
-      setTitle("");
-      setContent("");
-      qc.invalidateQueries({ queryKey: ["kb"] });
-    },
-    onError: (err) =>
-      toast.error("Couldn't add document", { description: toApiError(err).message }),
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
-    createMut.mutate({
-      title: title.trim(),
-      content: content.trim(),
-      source: "manual_upload",
-      document_type: docType,
-      domain,
-      role_target: "all",
-      scope: "onboarding",
-    });
-  };
 
   const filteredGroups = React.useMemo(() => {
     if (!data) return [];
@@ -234,96 +189,7 @@ export default function KnowledgeBasePage() {
         <TabsContent value="add" className="mt-5">
           <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
             <section className="space-y-5">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Upload className="h-4 w-4 text-[color:var(--color-primary)]" /> Drop files
-                  </CardTitle>
-                  <CardDescription>
-                    Drag in .txt or .md files — they&apos;re embedded and ready for the AI to ground its answers.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <KbDropzone defaultDomain={domain} defaultDocType={docType} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-[color:var(--color-primary)]" /> Paste a document
-                  </CardTitle>
-                  <CardDescription>
-                    For anything you can&apos;t drop — paste the content and the AI takes it from there.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                          id="title"
-                          placeholder="Deployment Guide"
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Domain</Label>
-                        <Select value={domain} onValueChange={setDomain}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="engineering">Engineering</SelectItem>
-                            <SelectItem value="hr">HR & People</SelectItem>
-                            <SelectItem value="product">Product</SelectItem>
-                            <SelectItem value="finance">Finance</SelectItem>
-                            <SelectItem value="security">Security</SelectItem>
-                            <SelectItem value="general">General</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Type</Label>
-                        <Select value={docType} onValueChange={setDocType}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="guide">Guide</SelectItem>
-                            <SelectItem value="handbook">Handbook</SelectItem>
-                            <SelectItem value="policy">Policy</SelectItem>
-                            <SelectItem value="runbook">Runbook</SelectItem>
-                            <SelectItem value="checklist">Checklist</SelectItem>
-                            <SelectItem value="reference">Reference</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="content">Content</Label>
-                      <Textarea
-                        id="content"
-                        rows={8}
-                        placeholder="Paste the document content here…"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-[color:var(--color-fg-subtle)]">
-                        The AI will create embeddings automatically once it&apos;s ingested.
-                      </p>
-                      <Button type="submit" disabled={createMut.isPending}>
-                        <Plus className="h-4 w-4" />{" "}
-                        {createMut.isPending ? "Adding…" : "Add to knowledge base"}
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
+              <AddSourceCard onAdded={() => setTab("browse")} />
             </section>
 
             <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
@@ -355,7 +221,7 @@ export default function KnowledgeBasePage() {
                     ))}
                   </ul>
                   <p className="mt-3 text-[11px] text-[color:var(--color-fg-subtle)]">
-                    Click a row to copy its title into the paste form, or drag the file directly into the dropzone.
+                    Click a row to copy its title into the form, or drop the file directly.
                   </p>
                 </CardContent>
               </Card>
@@ -380,8 +246,9 @@ function DocumentGroup({ domain, documents }: { domain: string; documents: Docum
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {documents.map((doc) => (
-          <article
+          <Link
             key={doc.id}
+            href={`/mentor/knowledge/${doc.id}`}
             className="surface-card p-4 hover:border-[color:var(--color-primary-ring)] transition-colors"
           >
             <div className="flex items-start gap-3">
@@ -405,7 +272,7 @@ function DocumentGroup({ domain, documents }: { domain: string; documents: Docum
                 </div>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </div>

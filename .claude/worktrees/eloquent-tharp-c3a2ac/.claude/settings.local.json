@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const r=JSON.parse\\(d\\);for\\(const f of r\\){const m=f.messages.filter\\(x=>x.severity===2\\);if\\(m.length\\)console.log\\(f.filePath.split\\('frontend'\\)[1]+':\\\\n'+m.map\\(x=>'  '+x.line+':'+x.column+' '+x.ruleId+' '+x.message.slice\\(0,140\\)\\).join\\('\\\\n'\\)\\)}}\\)\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const r=JSON.parse\\(d\\);for\\(const f of r\\){const m=f.messages.filter\\(x=>x.severity===2\\);if\\(m.length\\){console.log\\(f.filePath\\);for\\(const x of m\\)console.log\\('  '+x.line+':'+x.column+' '+x.ruleId\\)}}}\\)\")",
+      "Bash(echo \"TS: $?\")",
+      "Bash(npx eslint *)"
+    ]
+  }
+}

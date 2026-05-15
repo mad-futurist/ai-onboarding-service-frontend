@@ -105,7 +105,6 @@ export default function TaskDetailPage() {
   const crumbs = [
     { label: "Plan generator", href: "/mentor/plan-generator" },
     { label: plan.title, href: `/mentor/plan-generator/${plan.id}` },
-    { label: "Workspace", href: `/mentor/plan-generator/${plan.id}/workspace` },
     ...(week
       ? [{ label: `Week ${week.index}`, href: `/mentor/plan-generator/${plan.id}/week/${week.id}` }]
       : []),

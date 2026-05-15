@@ -138,6 +138,7 @@ export interface Course {
   plan_id: ID | null;
   newcomer_id: ID | null;
   mentor_id: ID | null;
+  role_target: string | null;
   title: string;
   summary: string | null;
   status: CourseStatus;

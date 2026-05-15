@@ -38,6 +38,11 @@ export function CourseList({ courses }: CourseListProps) {
                 <Sparkles className="h-2.5 w-2.5" /> AI
               </Badge>
             ) : null}
+            {c.role_target ? (
+              <Badge tone="neutral" size="sm">
+                {c.role_target.replace(/_/g, " ")}
+              </Badge>
+            ) : null}
           </div>
           <h3 className="mt-2 line-clamp-2 text-sm font-semibold tracking-tight text-[color:var(--color-fg)] group-hover:text-[color:var(--color-primary-active)]">
             {c.title}

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Sparkles, BookOpen, ArrowLeft, FileText, Users, Wand2 } from "lucide-react";
@@ -29,14 +29,28 @@ import { toApiError } from "@/lib/api";
 import type { ID } from "@/types";
 
 export default function NewCoursePage() {
+  return (
+    <React.Suspense fallback={<SkeletonCourseBuilder />}>
+      <NewCourseBuilder />
+    </React.Suspense>
+  );
+}
+
+function NewCourseBuilder() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { mentorId } = useDemo();
   const [title, setTitle] = React.useState("");
   const [promptHint, setPromptHint] = React.useState(
-    "Backend onboarding for a new engineer joining the payments team. Focus on architecture, day-1 setup, and first PR.",
+    searchParams.get("prompt") ??
+      "Backend onboarding for a new engineer joining the payments team. Focus on architecture, day-1 setup, and first PR.",
   );
   const [lessonCount, setLessonCount] = React.useState<number>(4);
-  const [newcomerId, setNewcomerId] = React.useState<string>("none");
+  const initialNewcomerId = searchParams.get("newcomerId");
+  const [newcomerId, setNewcomerId] = React.useState<string>(
+    initialNewcomerId && /^\d+$/.test(initialNewcomerId) ? initialNewcomerId : "none",
+  );
+  const [roleTarget, setRoleTarget] = React.useState(searchParams.get("roleTarget") ?? "all");
   const [selectedDocs, setSelectedDocs] = React.useState<Set<ID>>(new Set());
 
   const { data: newcomers } = useQuery({
@@ -51,6 +65,7 @@ export default function NewCoursePage() {
         prompt_hint: promptHint.trim(),
         mentor_id: mentorId ?? undefined,
         newcomer_id: newcomerId === "none" ? null : Number(newcomerId),
+        role_target: roleTarget.trim() || null,
         document_ids: Array.from(selectedDocs),
         lesson_count: lessonCount,
       }),
@@ -69,6 +84,7 @@ export default function NewCoursePage() {
         title: title.trim() || "Untitled course",
         mentor_id: mentorId ?? undefined,
         newcomer_id: newcomerId === "none" ? null : Number(newcomerId),
+        role_target: roleTarget.trim() || null,
         source_document_ids: Array.from(selectedDocs),
       }),
     onSuccess: (course) => {
@@ -155,7 +171,16 @@ export default function NewCoursePage() {
                       <Users className="h-3 w-3" /> For a specific newcomer
                     </span>
                   </Label>
-                  <Select value={newcomerId} onValueChange={setNewcomerId}>
+                  <Select
+                    value={newcomerId}
+                    onValueChange={(value) => {
+                      setNewcomerId(value);
+                      const selected = newcomers?.find((n) => n.id === Number(value));
+                      if (selected && (!roleTarget.trim() || roleTarget === "all")) {
+                        setRoleTarget(normalizeRoleTarget(selected.job_title));
+                      }
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Optional" />
                     </SelectTrigger>
@@ -168,6 +193,18 @@ export default function NewCoursePage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="role-target">Assign to role</Label>
+                  <Input
+                    id="role-target"
+                    placeholder="backend_developer"
+                    value={roleTarget}
+                    onChange={(e) => setRoleTarget(e.target.value)}
+                  />
+                  <p className="text-[11px] text-[color:var(--color-fg-subtle)]">
+                    Role-matched courses appear in the newcomer&apos;s recommended list.
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -238,6 +275,23 @@ export default function NewCoursePage() {
             </CardContent>
           </Card>
         </aside>
+      </div>
+    </div>
+  );
+}
+
+function normalizeRoleTarget(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+function SkeletonCourseBuilder() {
+  return (
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-6">
+      <div className="h-8 w-32 rounded-md bg-[color:var(--color-surface-muted)]" />
+      <div className="h-24 rounded-xl bg-[color:var(--color-surface-muted)]" />
+      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="h-96 rounded-xl bg-[color:var(--color-surface-muted)]" />
+        <div className="h-48 rounded-xl bg-[color:var(--color-surface-muted)]" />
       </div>
     </div>
   );

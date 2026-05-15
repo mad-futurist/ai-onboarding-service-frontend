@@ -5,7 +5,10 @@ export interface CourseListFilters {
   mentor_id?: ID;
   newcomer_id?: ID;
   plan_id?: ID;
+  role_target?: string;
   status?: string;
+  include_role_matches?: boolean;
+  public_only?: boolean;
 }
 
 export async function listCourses(filters?: CourseListFilters): Promise<Course[]> {
@@ -13,8 +16,11 @@ export async function listCourses(filters?: CourseListFilters): Promise<Course[]
   return data;
 }
 
-export async function getCourse(id: ID): Promise<CourseWithLessons> {
-  const { data } = await api.get<CourseWithLessons>(`/courses/${id}`);
+export async function getCourse(
+  id: ID,
+  params?: { newcomer_id?: ID },
+): Promise<CourseWithLessons> {
+  const { data } = await api.get<CourseWithLessons>(`/courses/${id}`, { params });
   return data;
 }
 
@@ -24,6 +30,7 @@ export interface CourseCreateInput {
   plan_id?: ID | null;
   newcomer_id?: ID | null;
   mentor_id?: ID | null;
+  role_target?: string | null;
   source_document_ids?: ID[] | null;
 }
 
@@ -38,6 +45,7 @@ export interface CourseAIGenerateInput {
   mentor_id?: ID | null;
   newcomer_id?: ID | null;
   plan_id?: ID | null;
+  role_target?: string | null;
   document_ids?: ID[];
   lesson_count?: number;
 }
@@ -53,6 +61,7 @@ export interface CourseUpdateInput {
   plan_id?: ID | null;
   newcomer_id?: ID | null;
   mentor_id?: ID | null;
+  role_target?: string | null;
   source_document_ids?: ID[] | null;
 }
 

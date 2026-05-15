@@ -17,6 +17,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LessonTree } from "@/components/mentor/courses/LessonTree";
@@ -31,6 +33,7 @@ import {
   publishCourse,
   rejectCourse,
   submitCourseForApproval,
+  updateCourse,
   updateLesson,
 } from "@/services/courses";
 import { toApiError } from "@/lib/api";
@@ -49,6 +52,13 @@ export default function CourseEditorPage() {
 
   const [selectedLessonId, setSelectedLessonId] = React.useState<ID | null>(null);
   const [defaultApplied, setDefaultApplied] = React.useState(false);
+  const [audienceDraft, setAudienceDraft] = React.useState<{
+    courseId: ID | null;
+    value: string;
+  }>({ courseId: null, value: "" });
+  const roleTargetDraft =
+    audienceDraft.courseId === course?.id ? audienceDraft.value : course?.role_target ?? "";
+
   if (!defaultApplied && selectedLessonId == null && course?.lessons?.length) {
     setDefaultApplied(true);
     setSelectedLessonId(course.lessons[0].id);
@@ -133,6 +143,20 @@ export default function CourseEditorPage() {
       qc.invalidateQueries({ queryKey: ["course", courseId] });
     },
     onError: (err) => toast.error("Reject failed", { description: toApiError(err).message }),
+  });
+
+  const audienceMut = useMutation({
+    mutationFn: () =>
+      updateCourse(courseId, {
+        role_target: roleTargetDraft.trim() || null,
+      }),
+    onSuccess: (updatedCourse) => {
+      setAudienceDraft({ courseId: updatedCourse.id, value: updatedCourse.role_target ?? "" });
+      toast.success("Course audience updated");
+      qc.invalidateQueries({ queryKey: ["course", courseId] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+    },
+    onError: (err) => toast.error("Audience update failed", { description: toApiError(err).message }),
   });
 
   if (isLoading || !course) {
@@ -220,21 +244,50 @@ export default function CourseEditorPage() {
       </div>
 
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
-        <Card className="lg:w-80 shrink-0">
-          <CardContent className="p-3">
-            <LessonTree
-              course={course}
-              selectedLessonId={selectedLessonId}
-              onSelect={setSelectedLessonId}
-              onReorder={(ids) => reorderMut.mutate(ids)}
-              onCreateManual={(title) => manualMut.mutate(title)}
-              onCreateAI={(title, summary) => aiMut.mutate({ title, summary })}
-              onDelete={(id) => deleteMut.mutate(id)}
-              creating={manualMut.isPending}
-              aiCreating={aiMut.isPending}
-            />
-          </CardContent>
-        </Card>
+        <div className="space-y-3 lg:w-80 shrink-0">
+          <Card>
+            <CardContent className="space-y-3 p-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="course-role-target">Assign to role</Label>
+                <Input
+                  id="course-role-target"
+                  placeholder="backend_developer"
+                  value={roleTargetDraft}
+                  onChange={(e) =>
+                    setAudienceDraft({ courseId: course.id, value: e.target.value })
+                  }
+                />
+                <p className="text-[11px] text-[color:var(--color-fg-subtle)]">
+                  Matching newcomers see this in Recommended for you.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => audienceMut.mutate()}
+                disabled={audienceMut.isPending || roleTargetDraft === (course.role_target ?? "")}
+              >
+                Save audience
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-3">
+              <LessonTree
+                course={course}
+                selectedLessonId={selectedLessonId}
+                onSelect={setSelectedLessonId}
+                onReorder={(ids) => reorderMut.mutate(ids)}
+                onCreateManual={(title) => manualMut.mutate(title)}
+                onCreateAI={(title, summary) => aiMut.mutate({ title, summary })}
+                onDelete={(id) => deleteMut.mutate(id)}
+                creating={manualMut.isPending}
+                aiCreating={aiMut.isPending}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="flex-1 min-w-0">
           {selected ? (

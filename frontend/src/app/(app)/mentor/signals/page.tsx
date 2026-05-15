@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Sparkles, Filter, CalendarDays } from "lucide-react";
@@ -16,12 +17,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScheduleMeetingDialog } from "@/components/meetings/ScheduleMeetingDialog";
 
 import { detectSignals, ignoreSignal, listSignalsForNewcomer, resolveSignal } from "@/services/signals";
-import { listNewcomers } from "@/services/newcomers";
+import { listNewcomers, getNewcomerPlan } from "@/services/newcomers";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
+import { AdjustPlanDialog } from "@/components/mentor/plan-generator/AdjustPlanDialog";
 import type { AISignal, ID } from "@/types";
 
 export default function SignalsCenterPage() {
+  const router = useRouter();
   const qc = useQueryClient();
   const { mentorId, newcomerId } = useDemo();
   const [filter, setFilter] = React.useState<"open" | "resolved" | "ignored" | "all">("open");
@@ -75,6 +78,17 @@ export default function SignalsCenterPage() {
 
   const [schedSignal, setSchedSignal] = React.useState<AISignal | null>(null);
   const [schedOpen, setSchedOpen] = React.useState(false);
+  const [adjustSignal, setAdjustSignal] = React.useState<AISignal | null>(null);
+  const [adjustOpen, setAdjustOpen] = React.useState(false);
+
+  // Look up the active plan for the active newcomer so the Adjust dialog knows
+  // which plan to regenerate. Soft-fails (404) when the newcomer has no plan yet.
+  const activePlan = useQuery({
+    queryKey: ["newcomer-plan", activeNewcomer?.id],
+    queryFn: () => getNewcomerPlan(activeNewcomer!.id),
+    enabled: !!activeNewcomer,
+    retry: false,
+  });
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6">
@@ -147,6 +161,19 @@ export default function SignalsCenterPage() {
                   setSchedSignal(sig);
                   setSchedOpen(true);
                 }}
+                onAdjustPlan={(sig) => {
+                  setAdjustSignal(sig);
+                  setAdjustOpen(true);
+                }}
+                onMakeCourse={(sig) => {
+                  if (!activeNewcomer) return;
+                  const params = new URLSearchParams({
+                    newcomerId: String(sig.newcomer_id ?? activeNewcomer.id),
+                    roleTarget: normalizeRoleTarget(activeNewcomer.job_title),
+                    prompt: buildSignalCoursePrompt(sig, activeNewcomer),
+                  });
+                  router.push(`/mentor/courses/new?${params.toString()}`);
+                }}
               />
             ))
           ) : (
@@ -196,6 +223,38 @@ export default function SignalsCenterPage() {
         signal={schedSignal}
         newcomerId={activeNewcomer?.id}
       />
+
+      <AdjustPlanDialog
+        open={adjustOpen}
+        onOpenChange={setAdjustOpen}
+        signal={adjustSignal}
+        planId={activePlan.data?.id ?? null}
+        newcomerName={activeNewcomer?.full_name ?? undefined}
+      />
     </div>
   );
+}
+
+function normalizeRoleTarget(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+function buildSignalCoursePrompt(
+  signal: AISignal,
+  newcomer: { full_name?: string; job_title: string; seniority: string; team: string },
+): string {
+  const evidence = signal.evidence ? ` Evidence: ${signal.evidence}` : "";
+  const suggestedAction = signal.suggested_action
+    ? ` Suggested action: ${signal.suggested_action}`
+    : "";
+
+  return [
+    `Create a short onboarding course for ${newcomer.full_name ?? "this newcomer"}.`,
+    `Role: ${newcomer.seniority} ${newcomer.job_title} on the ${newcomer.team} team.`,
+    `Course focus: ${signal.title}.`,
+    signal.description ? `Context: ${signal.description}` : "",
+    `${evidence}${suggestedAction}`.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n");
 }

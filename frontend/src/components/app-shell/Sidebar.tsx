@@ -15,6 +15,7 @@ import {
   LineChart,
   Compass,
   GraduationCap,
+  CalendarDays,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ const MENTOR_NAV: NavItem[] = [
   { href: "/mentor/knowledge", label: "Knowledge base", icon: BookOpen },
   { href: "/mentor/plan-generator", label: "AI Plan Generator", icon: Sparkles, badge: "AI" },
   { href: "/mentor/courses", label: "Courses", icon: GraduationCap, badge: "AI" },
+  { href: "/mentor/meetings", label: "Calendar", icon: CalendarDays },
   { href: "/mentor/signals", label: "Signals", icon: AlertTriangle },
   { href: "/mentor/settings", label: "Settings", icon: Settings },
 ];
@@ -41,6 +43,8 @@ const MENTOR_NAV: NavItem[] = [
 const NEWCOMER_NAV: NavItem[] = [
   { href: "/newcomer", label: "Home", icon: Home },
   { href: "/newcomer/plan", label: "My plan", icon: ListChecks },
+  { href: "/newcomer/courses", label: "Courses", icon: GraduationCap },
+  { href: "/newcomer/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/newcomer/ask", label: "Ask AI", icon: Sparkles, badge: "AI" },
   { href: "/newcomer/progress", label: "Progress", icon: LineChart },
 ];
