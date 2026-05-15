@@ -34,6 +34,14 @@ interface ScheduleMeetingDialogProps {
   taskId?: ID | null;
   planId?: ID | null;
   defaultTitle?: string;
+  defaultStartAt?: Date | null;
+}
+
+interface MeetingSeed {
+  key: string;
+  title: string;
+  agenda: string;
+  startAt: string;
 }
 
 const DURATIONS = [
@@ -44,7 +52,6 @@ const DURATIONS = [
 ];
 
 function toLocalInputValue(d: Date): string {
-  // yyyy-MM-ddTHH:mm in the user's local timezone
   const pad = (n: number) => String(n).padStart(2, "0");
   return (
     `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
@@ -67,33 +74,56 @@ export function ScheduleMeetingDialog({
   taskId,
   planId,
   defaultTitle,
+  defaultStartAt,
 }: ScheduleMeetingDialogProps) {
+  const seed = React.useMemo(
+    () => buildMeetingSeed(signal, defaultTitle, defaultStartAt),
+    [signal, defaultTitle, defaultStartAt],
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        {open ? (
+          <ScheduleMeetingForm
+            key={seed.key}
+            seed={seed}
+            signal={signal}
+            newcomerId={newcomerId}
+            taskId={taskId}
+            planId={planId}
+            onOpenChange={onOpenChange}
+          />
+        ) : null}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ScheduleMeetingForm({
+  seed,
+  signal,
+  newcomerId,
+  taskId,
+  planId,
+  onOpenChange,
+}: {
+  seed: MeetingSeed;
+  signal?: AISignal | null;
+  newcomerId?: ID | null;
+  taskId?: ID | null;
+  planId?: ID | null;
+  onOpenChange: (open: boolean) => void;
+}) {
   const qc = useQueryClient();
   const { mentorId } = useDemo();
 
-  const [title, setTitle] = React.useState("");
-  const [agenda, setAgenda] = React.useState("");
-  const [startAt, setStartAt] = React.useState(toLocalInputValue(defaultStart()));
+  const [title, setTitle] = React.useState(seed.title);
+  const [agenda, setAgenda] = React.useState(seed.agenda);
+  const [startAt, setStartAt] = React.useState(seed.startAt);
   const [duration, setDuration] = React.useState(30);
   const [teamsUrl, setTeamsUrl] = React.useState("");
   const [attendees, setAttendees] = React.useState("");
-
-  React.useEffect(() => {
-    if (open) {
-      const seedTitle = signal
-        ? `Mentor sync · ${signal.title}`
-        : defaultTitle ?? "Mentor sync";
-      const seedAgenda = signal
-        ? `Talk through the signal "${signal.title}".\n\nEvidence:\n${signal.evidence ?? "(no evidence)"}\n\nSuggested action:\n${signal.suggested_action ?? "(none)"}`
-        : "";
-      setTitle(seedTitle);
-      setAgenda(seedAgenda);
-      setStartAt(toLocalInputValue(defaultStart()));
-      setDuration(30);
-      setTeamsUrl("");
-      setAttendees("");
-    }
-  }, [open, signal, defaultTitle]);
 
   const createMut = useMutation({
     mutationFn: () => {
@@ -126,94 +156,108 @@ export function ScheduleMeetingDialog({
   });
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-[color:var(--color-primary)]" /> Schedule a meeting
-          </DialogTitle>
-          <DialogDescription>
-            Phase 1 ships a basic scheduler. Microsoft Graph / Teams OAuth will be wired in Phase 4 — for now you
-            can paste an existing Teams join URL.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <CalendarDays className="h-4 w-4 text-[color:var(--color-primary)]" /> Schedule a meeting
+        </DialogTitle>
+        <DialogDescription>Basic scheduler for mentor sessions, with optional Teams URL.</DialogDescription>
+      </DialogHeader>
 
-        {signal ? (
-          <div className="rounded-md border border-[color:var(--color-primary-ring)] bg-[color:var(--color-primary-soft)]/40 px-3 py-2 text-xs">
-            <div className="flex items-center gap-1.5 font-medium">
-              <Sparkles className="h-3 w-3" /> Pre-filled from signal
-            </div>
-            <div className="mt-0.5 text-[color:var(--color-fg-muted)]">{signal.title}</div>
+      {signal ? (
+        <div className="rounded-md border border-[color:var(--color-primary-ring)] bg-[color:var(--color-primary-soft)]/40 px-3 py-2 text-xs">
+          <div className="flex items-center gap-1.5 font-medium">
+            <Sparkles className="h-3 w-3" /> Pre-filled from signal
           </div>
-        ) : null}
+          <div className="mt-0.5 text-[color:var(--color-fg-muted)]">{signal.title}</div>
+        </div>
+      ) : null}
 
-        <div className="space-y-3">
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="meet-title">Title</Label>
+          <Input id="meet-title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="meet-agenda">Agenda</Label>
+          <Textarea id="meet-agenda" rows={4} value={agenda} onChange={(e) => setAgenda(e.target.value)} />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="meet-title">Title</Label>
-            <Input id="meet-title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="meet-agenda">Agenda</Label>
-            <Textarea id="meet-agenda" rows={4} value={agenda} onChange={(e) => setAgenda(e.target.value)} />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="meet-start">Start (local)</Label>
-              <Input
-                id="meet-start"
-                type="datetime-local"
-                value={startAt}
-                onChange={(e) => setStartAt(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Duration</Label>
-              <div className="flex flex-wrap gap-1.5">
-                {DURATIONS.map((d) => (
-                  <button
-                    key={d.minutes}
-                    type="button"
-                    onClick={() => setDuration(d.minutes)}
-                    className="text-xs"
-                  >
-                    <Badge tone={duration === d.minutes ? "brand" : "neutral"} size="sm">
-                      {d.label}
-                    </Badge>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="meet-teams">Teams join URL (optional)</Label>
+            <Label htmlFor="meet-start">Start (local)</Label>
             <Input
-              id="meet-teams"
-              placeholder="https://teams.microsoft.com/l/meetup-join/…"
-              value={teamsUrl}
-              onChange={(e) => setTeamsUrl(e.target.value)}
+              id="meet-start"
+              type="datetime-local"
+              value={startAt}
+              onChange={(e) => setStartAt(e.target.value)}
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="meet-attendees">Attendee emails (optional, comma or newline separated)</Label>
-            <Textarea
-              id="meet-attendees"
-              rows={2}
-              placeholder="alice@example.com, bob@example.com"
-              value={attendees}
-              onChange={(e) => setAttendees(e.target.value)}
-            />
+            <Label>Duration</Label>
+            <div className="flex flex-wrap gap-1.5">
+              {DURATIONS.map((d) => (
+                <button
+                  key={d.minutes}
+                  type="button"
+                  onClick={() => setDuration(d.minutes)}
+                  className="text-xs"
+                >
+                  <Badge tone={duration === d.minutes ? "brand" : "neutral"} size="sm">
+                    {d.label}
+                  </Badge>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="meet-teams">Teams join URL (optional)</Label>
+          <Input
+            id="meet-teams"
+            placeholder="https://teams.microsoft.com/l/meetup-join/..."
+            value={teamsUrl}
+            onChange={(e) => setTeamsUrl(e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="meet-attendees">Attendee emails (optional, comma or newline separated)</Label>
+          <Textarea
+            id="meet-attendees"
+            rows={2}
+            placeholder="alice@example.com, bob@example.com"
+            value={attendees}
+            onChange={(e) => setAttendees(e.target.value)}
+          />
+        </div>
+      </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4" /> Cancel
-          </Button>
-          <Button onClick={() => createMut.mutate()} disabled={!title.trim() || createMut.isPending}>
-            <Save className="h-4 w-4" /> {createMut.isPending ? "Scheduling…" : "Schedule"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <DialogFooter>
+        <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <X className="h-4 w-4" /> Cancel
+        </Button>
+        <Button onClick={() => createMut.mutate()} disabled={!title.trim() || createMut.isPending}>
+          <Save className="h-4 w-4" /> {createMut.isPending ? "Scheduling..." : "Schedule"}
+        </Button>
+      </DialogFooter>
+    </>
   );
+}
+
+function buildMeetingSeed(
+  signal: AISignal | null | undefined,
+  defaultTitle: string | undefined,
+  defaultStartAt: Date | null | undefined,
+): MeetingSeed {
+  const start = defaultStartAt ?? defaultStart();
+  const title = signal ? `Mentor sync - ${signal.title}` : defaultTitle ?? "Mentor sync";
+  const agenda = signal
+    ? `Talk through the signal "${signal.title}".\n\nEvidence:\n${signal.evidence ?? "(no evidence)"}\n\nSuggested action:\n${signal.suggested_action ?? "(none)"}`
+    : "";
+
+  return {
+    key: `${signal?.id ?? "no-signal"}-${defaultTitle ?? "no-title"}-${start.toISOString()}`,
+    title,
+    agenda,
+    startAt: toLocalInputValue(start),
+  };
 }

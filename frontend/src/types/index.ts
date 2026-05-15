@@ -83,7 +83,7 @@ export interface Sprint {
   updated_at?: string | null;
 }
 
-export type RegenScope = "plan" | "week" | "task";
+export type RegenScope = "plan" | "week" | "task" | "add_tasks";
 
 export interface PlanRegenerateRequest {
   scope: RegenScope;
@@ -91,6 +91,11 @@ export interface PlanRegenerateRequest {
   preserve_manual_edits?: boolean;
   mentor_notes?: string | null;
   document_ids?: ID[];
+  /** Used when scope === "add_tasks": how many tasks to add and where. */
+  add_tasks_count?: number;
+  add_tasks_week_id?: ID | null;
+  /** When true, snapshot the current state into a new version before regenerating. */
+  create_new_version?: boolean;
 }
 
 export interface PlanRegenerateResponse {
@@ -160,6 +165,10 @@ export interface OnboardingPlan {
   mentor_id?: ID | null;
   title: string;
   description: string | null;
+  period_label?: string | null;
+  period_start?: string | null;
+  period_end?: string | null;
+  goal?: string | null;
   status: string;
   generated_by_ai: boolean;
   mentor_approved: boolean;
@@ -172,6 +181,171 @@ export interface OnboardingPlan {
 export interface OnboardingPlanWithTasks extends OnboardingPlan {
   tasks: OnboardingTask[];
 }
+
+/* ----------------------------------------------------------------------- */
+/* Journey / Period / Version — modèle "pipeline" (cf. plan refonte mentor) */
+/* ----------------------------------------------------------------------- */
+
+export type PeriodStatus = "not_generated" | "draft" | "approved" | "archived";
+
+/**
+ * A `JourneyPeriod` is a UI-side projection of an `OnboardingPlan`,
+ * augmented with positional info (start_day/end_day) so the journey
+ * timeline can render all periods side-by-side. Today it is derived
+ * client-side from `listPlans`; tomorrow it can be replaced by a real
+ * /journeys/{newcomerId} endpoint with zero UI change.
+ */
+export interface JourneyPeriod {
+  id: ID;
+  plan_id: ID | null;
+  index: number;
+  label: string;
+  start_day: number;
+  end_day: number;
+  start_date: string | null;
+  end_date: string | null;
+  goal: string | null;
+  status: PeriodStatus;
+  tasks_total: number;
+  tasks_done: number;
+  weeks_count: number;
+  ai_confidence?: number | null;
+  missing_context?: string[] | null;
+  current_version: number;
+  version_count: number;
+  updated_at?: string | null;
+}
+
+export interface NewcomerJourney {
+  newcomer_id: ID;
+  newcomer_name: string;
+  start_date: string | null;
+  horizon_days: number;
+  periods: JourneyPeriod[];
+}
+
+/** Snapshot of a period at a given version (used by the diff viewer). */
+export interface PeriodVersion {
+  id: ID;
+  period_id: ID;
+  version_number: number;
+  created_at: string;
+  generation_notes?: string | null;
+  snapshot: {
+    weeks: Array<{
+      id: ID | string;
+      index: number;
+      title: string;
+      goals?: string[] | null;
+      tasks: Array<{
+        id: ID | string;
+        title: string;
+        description?: string | null;
+        success_criteria?: string | null;
+        priority: string;
+        status: string;
+      }>;
+    }>;
+  };
+}
+
+/* ----------------------------------------------------------------------- */
+/* Live mode — streaming events (SSE-shaped). Client architected for real  */
+/* SSE; today the events come from a client-side simulator.                 */
+/* ----------------------------------------------------------------------- */
+
+export type LiveStreamEventType =
+  | "phase"
+  | "thinking"
+  | "source"
+  | "warning"
+  | "question"
+  | "comment_ack"
+  | "task"
+  | "week"
+  | "done"
+  | "error";
+
+export interface LiveStreamPhase {
+  type: "phase";
+  phase: "profile" | "sources" | "reasoning" | "drafting" | "done";
+  label: string;
+}
+
+export interface LiveStreamThinking {
+  type: "thinking";
+  id: string;
+  delta: string;          // token-by-token chunks
+  done?: boolean;         // last chunk for this thought
+}
+
+export interface LiveStreamSource {
+  type: "source";
+  id: string;
+  title: string;
+  score: number;
+}
+
+export interface LiveStreamWarning {
+  type: "warning";
+  id: string;
+  message: string;
+}
+
+export interface LiveStreamQuestion {
+  type: "question";
+  id: string;
+  question: string;
+  reason: string;
+  options?: string[];
+}
+
+export interface LiveStreamCommentAck {
+  type: "comment_ack";
+  id: string;
+  body: string;
+}
+
+export interface LiveStreamTask {
+  type: "task";
+  id: string;
+  week_index: number;
+  title: string;
+  description_delta?: string;
+  priority?: "low" | "medium" | "high";
+  done?: boolean;
+}
+
+export interface LiveStreamWeek {
+  type: "week";
+  index: number;
+  title: string;
+  goal?: string | null;
+  status: "writing" | "ready";
+}
+
+export interface LiveStreamDone {
+  type: "done";
+  plan_id: ID;
+  tasks_count: number;
+}
+
+export interface LiveStreamError {
+  type: "error";
+  message: string;
+}
+
+export type LiveStreamEvent =
+  | LiveStreamPhase
+  | LiveStreamThinking
+  | LiveStreamSource
+  | LiveStreamWarning
+  | LiveStreamQuestion
+  | LiveStreamCommentAck
+  | LiveStreamTask
+  | LiveStreamWeek
+  | LiveStreamDone
+  | LiveStreamError;
 
 export interface AIPlanGenerationResponse {
   plan_id: ID;

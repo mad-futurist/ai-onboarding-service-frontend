@@ -79,6 +79,7 @@ export function RealtimePlanWorkspace({
   const [questions, setQuestions] = React.useState<LiveQuestion[]>([]);
   const [comments, setComments] = React.useState<LiveComment[]>([]);
   const [commentDraft, setCommentDraft] = React.useState("");
+  const [liveTab, setLiveTab] = React.useState("reasoning");
 
   const script = React.useMemo(
     () => buildLivePlanScript(newcomer, selectedDocumentCount, mentorNotes),
@@ -113,10 +114,13 @@ export function RealtimePlanWorkspace({
   }, [script, status, stepIndex]);
 
   const progress = script.length ? Math.round((stepIndex / script.length) * 100) : 0;
-  const answered = questions.filter((question) => question.answer?.trim()).length;
+  const textQuestions = questions.filter((question) => question.tests.length === 0);
+  const answered = textQuestions.filter((question) => question.answer?.trim()).length;
   const checkedTests = questions.flatMap((question) => question.tests).filter((test) => test.checked).length;
   const totalTests = questions.flatMap((question) => question.tests).length;
   const isActive = status === "running" || status === "paused" || status === "ready";
+  const completedEventIds = new Set(events.map((event) => event.id));
+  const activeTab = status === "ready" ? "plan" : liveTab;
 
   const start = () => {
     setEvents([]);
@@ -124,6 +128,7 @@ export function RealtimePlanWorkspace({
     setComments([]);
     setCommentDraft("");
     setStepIndex(0);
+    setLiveTab("reasoning");
     setStatus("running");
   };
 
@@ -193,10 +198,10 @@ export function RealtimePlanWorkspace({
                 <Play className="h-4 w-4" /> Resume
               </Button>
             ) : null}
-            {isActive ? (
+            {status === "ready" ? (
               <Button
-                variant={status === "ready" ? "ai" : "outline"}
-                disabled={!newcomer || generating || status === "running"}
+                variant="ai"
+                disabled={!newcomer || generating}
                 onClick={() => onGenerate(buildLiveMentorNotes(mentorNotes, questions, comments))}
               >
                 <Wand2 className="h-4 w-4" />
@@ -216,25 +221,37 @@ export function RealtimePlanWorkspace({
       </CardHeader>
 
       <CardContent>
-        <Tabs defaultValue="plan" className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => {
+            if (status !== "ready") setLiveTab(value);
+          }}
+          className="space-y-4"
+        >
           <TabsList className="flex h-auto flex-wrap justify-start bg-white border border-[color:var(--color-border)]">
-            <TabsTrigger value="plan" className="gap-2">
-              <Route className="h-3.5 w-3.5" /> Generation plan
-            </TabsTrigger>
-            <TabsTrigger value="reasoning" className="gap-2">
-              <Clock className="h-3.5 w-3.5" /> Reasoning
-              {events.length ? <Badge tone="neutral" size="sm">{events.length}</Badge> : null}
-            </TabsTrigger>
-            <TabsTrigger value="questions" className="gap-2">
-              <HelpCircle className="h-3.5 w-3.5" /> Questions
-              {questions.length ? <Badge tone="warning" size="sm">{questions.length}</Badge> : null}
-            </TabsTrigger>
-            <TabsTrigger value="comments" className="gap-2">
-              <MessageSquare className="h-3.5 w-3.5" /> Comments
-              {comments.length ? <Badge tone="ai" size="sm">{comments.length}</Badge> : null}
-            </TabsTrigger>
+            {status === "ready" ? (
+              <TabsTrigger value="plan" className="gap-2">
+                <Route className="h-3.5 w-3.5" /> Generation plan
+              </TabsTrigger>
+            ) : (
+              <>
+                <TabsTrigger value="reasoning" className="gap-2">
+                  <Clock className="h-3.5 w-3.5" /> Reasoning
+                  {events.length ? <Badge tone="neutral" size="sm">{events.length}</Badge> : null}
+                </TabsTrigger>
+                <TabsTrigger value="questions" className="gap-2">
+                  <HelpCircle className="h-3.5 w-3.5" /> Questions
+                  {questions.length ? <Badge tone="warning" size="sm">{questions.length}</Badge> : null}
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" /> Comments
+                  {comments.length ? <Badge tone="ai" size="sm">{comments.length}</Badge> : null}
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
+          {status === "ready" ? (
           <TabsContent value="plan">
             <div className="grid gap-3 md:grid-cols-2">
               {script.map((step, index) => (
@@ -243,8 +260,13 @@ export function RealtimePlanWorkspace({
                   className="rounded-lg border border-[color:var(--color-border)] bg-white p-4"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="grid h-7 w-7 place-items-center rounded-md bg-[color:var(--color-surface-muted)] text-xs font-semibold text-[color:var(--color-fg-muted)]">
-                      {index + 1}
+                    <span className={[
+                      "grid h-7 w-7 place-items-center rounded-md text-xs font-semibold",
+                      completedEventIds.has(step.event.id)
+                        ? "bg-[color:var(--color-success-soft)] text-[color:var(--color-success-fg)]"
+                        : "bg-[color:var(--color-surface-muted)] text-[color:var(--color-fg-muted)]",
+                    ].join(" ")}>
+                      {completedEventIds.has(step.event.id) ? <CheckCircle2 className="h-3.5 w-3.5" /> : index + 1}
                     </span>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-[color:var(--color-fg)]">{step.event.title}</div>
@@ -260,17 +282,25 @@ export function RealtimePlanWorkspace({
               ))}
             </div>
           </TabsContent>
+          ) : null}
 
           <TabsContent value="reasoning">
             {events.length ? (
-              <ol className="space-y-2">
-                {events.map((event) => (
-                  <li key={event.id} className="rounded-lg border border-[color:var(--color-border)] bg-white px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm font-medium text-[color:var(--color-fg)]">
+              <ol className="relative space-y-3 before:absolute before:left-[15px] before:top-3 before:h-[calc(100%-24px)] before:w-px before:bg-[color:var(--color-border)]">
+                {events.map((event, index) => (
+                  <li key={event.id} className="relative flex gap-3">
+                    <div className="z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[color:var(--color-border)] bg-white">
                       <EventIcon tone={event.tone} />
-                      {event.title}
                     </div>
-                    <p className="mt-1 text-sm leading-relaxed text-[color:var(--color-fg-muted)]">{event.body}</p>
+                    <div className="flex-1 rounded-lg border border-[color:var(--color-border)] bg-white px-4 py-3 shadow-sm">
+                      <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-[color:var(--color-fg)]">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                          Step {index + 1}
+                        </span>
+                        {event.title}
+                      </div>
+                      <p className="mt-1 text-sm leading-relaxed text-[color:var(--color-fg-muted)]">{event.body}</p>
+                    </div>
                   </li>
                 ))}
               </ol>
@@ -283,9 +313,11 @@ export function RealtimePlanWorkspace({
             {questions.length ? (
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-[color:var(--color-fg-muted)]">
-                  <Badge tone={answered === questions.length ? "success" : "warning"} size="sm">
-                    {answered}/{questions.length} text answers
-                  </Badge>
+                  {textQuestions.length ? (
+                    <Badge tone={answered === textQuestions.length ? "success" : "warning"} size="sm">
+                      {answered}/{textQuestions.length} text answer
+                    </Badge>
+                  ) : null}
                   {totalTests ? (
                     <Badge tone={checkedTests === totalTests ? "success" : "neutral"} size="sm">
                       {checkedTests}/{totalTests} tests checked
@@ -299,7 +331,8 @@ export function RealtimePlanWorkspace({
                       <div className="min-w-0 flex-1">
                         <h3 className="text-sm font-semibold text-[color:var(--color-fg)]">{question.question}</h3>
                         <p className="mt-1 text-xs text-[color:var(--color-fg-muted)]">{question.reason}</p>
-                        <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_320px]">
+                        <div className={question.tests.length ? "mt-3" : "mt-3 grid gap-3"}>
+                          {question.tests.length === 0 ? (
                           <div className="space-y-1.5">
                             <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
                               Text answer
@@ -311,6 +344,8 @@ export function RealtimePlanWorkspace({
                               onChange={(event) => updateQuestionAnswer(question.id, event.target.value)}
                             />
                           </div>
+                          ) : null}
+                          {question.tests.length ? (
                           <div className="space-y-1.5">
                             <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
                               Validation tests
@@ -329,6 +364,7 @@ export function RealtimePlanWorkspace({
                               ))}
                             </div>
                           </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -441,23 +477,12 @@ function buildLivePlanScript(
     {
       event: {
         id: "sources",
-        title: selectedDocumentCount ? "Source grounding" : "Missing source grounding",
+        title: "Source grounding",
         body: selectedDocumentCount
           ? `${selectedDocumentCount} source document${selectedDocumentCount === 1 ? "" : "s"} will anchor the draft.`
-          : "No source document is selected, so the draft may need mentor validation.",
-        tone: selectedDocumentCount ? "thinking" : "question",
+          : "No source document is selected, so the draft will need stronger mentor validation.",
+        tone: "thinking",
       },
-      question: selectedDocumentCount
-        ? undefined
-        : {
-            id: "source-gap",
-            question: "Should the AI generate from general onboarding patterns, or should a source be added first?",
-            reason: "The plan can be drafted without sources, but team-specific steps may be weaker.",
-            tests: [
-              { id: "source-owner", label: "The mentor knows who owns the source of truth.", checked: false },
-              { id: "source-risk", label: "The first draft can be reviewed without blocking generation.", checked: false },
-            ],
-          },
     },
     {
       event: {
@@ -471,47 +496,55 @@ function buildLivePlanScript(
     },
   ];
 
-  if (!newcomer?.main_goal) {
-    steps.push({
-      event: {
-        id: "goal-question",
-        title: "Goal is unclear",
-        body: "The newcomer profile does not include a main goal, so the AI needs a target outcome.",
-        tone: "question",
-      },
-      question: {
-        id: "main-goal",
-        question: "What should this person be able to do confidently by the end of the first 30 days?",
-        reason: "This answer helps the AI rank tasks and avoid a generic first month.",
-        tests: [
-          { id: "goal-measurable", label: "The goal is measurable by a mentor checkpoint.", checked: false },
-          { id: "goal-role-fit", label: "The goal matches the role and seniority.", checked: false },
-        ],
-      },
-    });
-  }
-
-  if (!newcomer?.start_date) {
-    steps.push({
-      event: {
-        id: "start-date-question",
-        title: "Timeline check",
-        body: "No start date is set, so week/day sequencing may need a human anchor.",
-        tone: "question",
-      },
-      question: {
-        id: "start-date",
-        question: "Is there a real start date or deadline that should shape the first week?",
-        reason: "The draft can still be created, but calendar-sensitive tasks may shift.",
-        tests: [
-          { id: "deadline-known", label: "Any deadline or onboarding ceremony is known.", checked: false },
-          { id: "first-week-load", label: "The first week has enough room for setup and meetings.", checked: false },
-        ],
-      },
-    });
-  }
-
   steps.push(
+    {
+      event: {
+        id: "outcome-question",
+        title: "Outcome question",
+        body: "Ask for the strongest outcome before shaping the draft priorities.",
+        tone: "question",
+      },
+      question: {
+        id: "target-outcome",
+        question: "What should this person be able to do confidently by the end of this period?",
+        reason: "This text answer gives the AI one clear north star for the draft.",
+        tests: [],
+      },
+    },
+    {
+      event: {
+        id: "source-test-question",
+        title: "Source confidence tests",
+        body: "Check whether the available source material is enough for a useful draft.",
+        tone: "question",
+      },
+      question: {
+        id: "source-confidence",
+        question: "Are the selected sources strong enough for a first draft?",
+        reason: "These tests prevent a polished-looking plan from hiding weak source grounding.",
+        tests: [
+          { id: "source-role-fit", label: "Sources match the role and team context.", checked: false },
+          { id: "source-reviewable", label: "Missing source gaps can be reviewed after draft generation.", checked: false },
+        ],
+      },
+    },
+    {
+      event: {
+        id: "timeline-test-question",
+        title: "Timeline tests",
+        body: "Validate that the draft will fit the real onboarding cadence.",
+        tone: "question",
+      },
+      question: {
+        id: "timeline-confidence",
+        question: "Does the period have enough room for the planned work?",
+        reason: "These checks keep the first version realistic before the draft is created.",
+        tests: [
+          { id: "timeline-start", label: "Start/end dates or period boundaries are clear enough.", checked: false },
+          { id: "timeline-load", label: "The first week leaves space for setup, meetings, and review.", checked: false },
+        ],
+      },
+    },
     {
       event: {
         id: "structure",

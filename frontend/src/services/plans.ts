@@ -14,6 +14,10 @@ export interface GeneratePlanInput {
   newcomer_id: ID;
   mentor_notes?: string;
   document_ids?: ID[];
+  period_label?: string;
+  period_start?: string;
+  period_end?: string;
+  goal?: string;
 }
 
 export async function generatePlan(input: GeneratePlanInput): Promise<AIPlanGenerationResponse> {
@@ -23,6 +27,17 @@ export async function generatePlan(input: GeneratePlanInput): Promise<AIPlanGene
 
 export async function getPlan(id: ID): Promise<OnboardingPlanWithTasks> {
   const { data } = await api.get<OnboardingPlanWithTasks>(`/onboarding-plans/${id}`);
+  return data;
+}
+
+export interface ListPlansParams {
+  newcomer_id?: ID;
+  mentor_id?: ID;
+  status?: string;
+}
+
+export async function listPlans(params?: ListPlansParams): Promise<OnboardingPlanWithTasks[]> {
+  const { data } = await api.get<OnboardingPlanWithTasks[]>("/onboarding-plans", { params });
   return data;
 }
 
