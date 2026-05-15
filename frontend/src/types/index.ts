@@ -385,11 +385,17 @@ export interface AIPlanGenerationResponse {
   used_fallback: boolean;
 }
 
+export type SignalTone = "positive" | "attention" | "critical";
+export type SignalScope = "plan" | "week" | "task";
+export type SignalCommentVisibility = "private" | "mentor_only" | "shared";
+export type SignalAudience = "mentor" | "newcomer";
+
 export interface AISignal {
   id: ID;
   newcomer_id?: ID;
   signal_type: string;
   severity: "low" | "medium" | "high" | string;
+  tone?: SignalTone | string;
   confidence?: number;
   score: number;
   title: string;
@@ -398,9 +404,24 @@ export interface AISignal {
   suggested_action?: string;
   status: "open" | "resolved" | "ignored" | string;
   occurrence_count?: number;
+  target_scope?: SignalScope | null;
+  target_week_id?: ID | null;
+  target_task_id?: ID | null;
   created_at: string;
   last_seen_at?: string | null;
   resolved_at?: string | null;
+  acknowledged_at?: string | null;
+}
+
+export interface SignalComment {
+  id: ID;
+  signal_id: ID;
+  user_id?: ID | null;
+  feedback_type: string;
+  comment?: string | null;
+  visibility: SignalCommentVisibility | string;
+  author_role?: SignalAudience | string | null;
+  created_at: string;
 }
 
 export interface AISignalDetectionResponse {

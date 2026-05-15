@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx tsc *)",
       "PowerShell(npx tsc --noEmit 2>&1)",
-      "PowerShell($result = & npx tsc --noEmit 2>&1; $result | Out-String | Write-Output; \"EXIT: $LASTEXITCODE\")"
+      "PowerShell($result = & npx tsc --noEmit 2>&1; $result | Out-String | Write-Output; \"EXIT: $LASTEXITCODE\")",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; head -20 {} | grep -E \"revision|down_revision|Create Date\" | head -3')",
+      "Bash(npx eslint *)"
     ]
   }
 }

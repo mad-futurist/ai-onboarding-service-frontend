@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { Confetti } from "@/components/shared/Confetti";
 import { LessonTree } from "@/components/mentor/courses/LessonTree";
 import { LessonEditor } from "@/components/mentor/courses/LessonEditor";
 
@@ -52,6 +53,7 @@ export default function CourseEditorPage() {
 
   const [selectedLessonId, setSelectedLessonId] = React.useState<ID | null>(null);
   const [defaultApplied, setDefaultApplied] = React.useState(false);
+  const [approveBurst, setApproveBurst] = React.useState(0);
   const [audienceDraft, setAudienceDraft] = React.useState<{
     courseId: ID | null;
     value: string;
@@ -124,6 +126,7 @@ export default function CourseEditorPage() {
     mutationFn: () => approveCourse(courseId),
     onSuccess: () => {
       toast.success("Course approved");
+      setApproveBurst((k) => k + 1);
       qc.invalidateQueries({ queryKey: ["course", courseId] });
     },
     onError: (err) => toast.error("Approve failed", { description: toApiError(err).message }),
@@ -173,7 +176,13 @@ export default function CourseEditorPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-4">
       <div className="sticky top-0 z-20 -mx-4 sm:-mx-6 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/85 px-4 sm:px-6 py-2.5 backdrop-blur">
-        <div className="flex items-center justify-between gap-3">
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px ai-gradient opacity-60" />
+        {approveBurst > 0 ? (
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <Confetti trigger={approveBurst} count={36} />
+          </div>
+        ) : null}
+        <div className="relative flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs">
             <Link
               href="/mentor/courses"
@@ -219,6 +228,7 @@ export default function CourseEditorPage() {
                   variant="default"
                   onClick={() => approveMut.mutate()}
                   disabled={approveMut.isPending}
+                  className="glow-ring"
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" /> Approve
                 </Button>

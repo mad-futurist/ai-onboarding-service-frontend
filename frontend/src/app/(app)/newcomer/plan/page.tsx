@@ -3,15 +3,27 @@
 import * as React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { Check, CircleDashed, ChevronDown, ChevronRight, AlertTriangle, Sparkles } from "lucide-react";
+import {
+  Check,
+  CircleDashed,
+  ChevronDown,
+  ChevronRight,
+  AlertTriangle,
+  Sparkles,
+  Map,
+  LayoutList,
+} from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProgressBar } from "@/components/charts/ProgressBar";
+import { ProgressRing } from "@/components/shared/ProgressRing";
+import { CountUp } from "@/components/shared/CountUp";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { PlanJourneyTimeline } from "@/components/newcomer/plan/PlanJourneyTimeline";
 
 import { useDemo } from "@/providers/demo-provider";
 import { getNewcomerPlan } from "@/services/newcomers";
@@ -24,6 +36,9 @@ const PHASES = [
   { id: 3, label: "Phase 3 — Days 61-90", min: 60, max: 9999, goal: "Work independently on team tasks" },
 ];
 
+const VIEW_KEY = "newcomer.plan.view";
+type ViewKey = "journey" | "phases";
+
 export default function MyPlanPage() {
   const { newcomerId } = useDemo();
   const { data, isLoading } = useQuery({
@@ -32,6 +47,32 @@ export default function MyPlanPage() {
     enabled: newcomerId !== null,
     retry: false,
   });
+
+  const [view, setView] = React.useState<ViewKey>("journey");
+  const [viewLoaded, setViewLoaded] = React.useState(false);
+
+  if (!viewLoaded) {
+    setViewLoaded(true);
+    try {
+      const stored =
+        typeof window !== "undefined" ? window.localStorage.getItem(VIEW_KEY) : null;
+      if (stored === "journey" || stored === "phases") {
+        setView(stored);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const onTabChange = (next: string) => {
+    const v = (next === "phases" ? "phases" : "journey") as ViewKey;
+    setView(v);
+    try {
+      if (typeof window !== "undefined") window.localStorage.setItem(VIEW_KEY, v);
+    } catch {
+      // ignore
+    }
+  };
 
   if (isLoading) {
     return (
@@ -73,24 +114,60 @@ export default function MyPlanPage() {
       />
 
       <Card>
-        <CardContent className="p-5">
-          <ProgressBar
-            value={pct}
-            label={`Overall progress · ${completed} of ${tasks.length} tasks`}
-            tone="ai"
-          />
+        <CardContent className="flex flex-wrap items-center justify-between gap-5 p-5">
+          <div className="min-w-[220px] flex-1">
+            <ProgressBar
+              value={pct}
+              label={`Overall progress · ${completed} of ${tasks.length} tasks`}
+              tone="ai"
+              showValue={false}
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <ProgressRing value={pct} size={64} stroke={6} tone="ai" />
+            <div className="text-right">
+              <div className="text-3xl font-semibold tracking-tight tabular-nums text-[color:var(--color-fg)]">
+                <CountUp value={pct} suffix="%" />
+              </div>
+              <div className="text-[11px] uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                Complete
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        {PHASES.map((phase) => {
-          const phaseTasks = tasks.filter((t) => {
-            const day = t.day_number ?? (t.week_number ?? 1) * 7;
-            return day > phase.min && day <= phase.max;
-          });
-          return <PhaseSection key={phase.id} phase={phase} tasks={phaseTasks} initialOpen={phase.id === 1} />;
-        })}
-      </div>
+      <Tabs value={view} onValueChange={onTabChange}>
+        <TabsList>
+          <TabsTrigger value="journey" className="gap-1.5">
+            <Map className="h-3.5 w-3.5" /> Journey
+          </TabsTrigger>
+          <TabsTrigger value="phases" className="gap-1.5">
+            <LayoutList className="h-3.5 w-3.5" /> Phases
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="journey">
+          <PlanJourneyTimeline tasks={tasks} />
+        </TabsContent>
+        <TabsContent value="phases">
+          <div className="space-y-4">
+            {PHASES.map((phase) => {
+              const phaseTasks = tasks.filter((t) => {
+                const day = t.day_number ?? (t.week_number ?? 1) * 7;
+                return day > phase.min && day <= phase.max;
+              });
+              return (
+                <PhaseSection
+                  key={phase.id}
+                  phase={phase}
+                  tasks={phaseTasks}
+                  initialOpen={phase.id === 1}
+                />
+              );
+            })}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

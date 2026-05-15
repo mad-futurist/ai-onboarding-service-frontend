@@ -70,7 +70,41 @@ export const SIGNAL_TYPE_LABEL: Record<string, string> = {
   hr_question: "HR question",
   repeated_question: "Repeated question",
   documentation_gap: "Documentation gap",
+  fast_completion: "Fast completion",
+  deployment_heavy_plan: "Deployment-heavy plan",
+  hr_friction: "HR friction",
+  access_friction: "Access friction",
+  knowledge_friction: "Knowledge friction",
 };
+
+export type SignalToneTone = "positive" | "attention" | "critical";
+
+export const SIGNAL_TONE_LABEL: Record<string, string> = {
+  positive: "Good signal",
+  attention: "Needs attention",
+  critical: "Critical",
+};
+
+export const SIGNAL_TONE_DOT: Record<string, string> = {
+  positive: "bg-emerald-500",
+  attention: "bg-amber-500",
+  critical: "bg-rose-500",
+};
+
+export function inferSignalTone(signal: {
+  tone?: string | null;
+  severity?: string;
+  signal_type?: string;
+}): "positive" | "attention" | "critical" {
+  const explicit = (signal.tone ?? "").toLowerCase();
+  if (explicit === "positive" || explicit === "attention" || explicit === "critical") {
+    return explicit;
+  }
+  if (signal.signal_type === "fast_completion") return "positive";
+  const sev = (signal.severity ?? "").toLowerCase();
+  if (sev === "high" || sev === "critical") return "critical";
+  return "attention";
+}
 
 export function humanizeSignalType(type: string): string {
   return (

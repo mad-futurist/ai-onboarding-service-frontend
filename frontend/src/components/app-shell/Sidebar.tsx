@@ -47,6 +47,7 @@ const NEWCOMER_NAV: NavItem[] = [
   { href: "/newcomer/knowledge", label: "Knowledge", icon: BookOpen, badge: "AI" },
   { href: "/newcomer/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/newcomer/ask", label: "Ask AI", icon: Sparkles, badge: "AI" },
+  { href: "/newcomer/signals", label: "Signals", icon: AlertTriangle, badge: "AI" },
   { href: "/newcomer/progress", label: "Progress", icon: LineChart },
 ];
 

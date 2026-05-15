@@ -256,18 +256,33 @@ function SortableLesson({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  const hasContent = !!(
+    (lesson.body && lesson.body.trim()) ||
+    (lesson.video_url && lesson.video_url.trim()) ||
+    (lesson.infographic_source && lesson.infographic_source.trim()) ||
+    (lesson.summary && lesson.summary.trim())
+  );
   return (
     <li
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        scale: isDragging ? "1.02" : undefined,
+      }}
       className={cn(
-        "group flex items-center gap-1 rounded-lg border px-1.5 py-1.5 transition-colors",
+        "group relative flex items-center gap-1 rounded-lg border px-1.5 py-1.5 transition-colors",
         active
           ? "border-[color:var(--color-primary-ring)] bg-[color:var(--color-primary-soft)]"
           : "border-transparent hover:bg-[color:var(--color-surface-muted)]",
-        isDragging && "shadow-[var(--shadow-elevated)]",
+        isDragging && "shadow-[var(--shadow-ai)] border-[color:var(--color-primary-ring)] z-10",
       )}
     >
+      {isDragging ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -bottom-px h-px ai-gradient"
+        />
+      ) : null}
       <button
         type="button"
         className="grid h-6 w-5 cursor-grab place-items-center rounded text-[color:var(--color-fg-faint)] opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
@@ -294,7 +309,7 @@ function SortableLesson({
         </span>
         <span
           className={cn(
-            "min-w-0 truncate text-sm",
+            "min-w-0 truncate text-sm flex-1",
             active
               ? "font-medium text-[color:var(--color-primary-active)]"
               : "text-[color:var(--color-fg)]",
@@ -302,6 +317,16 @@ function SortableLesson({
         >
           {lesson.title}
         </span>
+        <span
+          aria-label={hasContent ? "Has content" : "Empty draft"}
+          title={hasContent ? "Has content" : "Empty draft"}
+          className={cn(
+            "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full",
+            hasContent
+              ? "bg-[color:var(--color-success)]"
+              : "bg-[color:var(--color-fg-faint)]",
+          )}
+        />
       </button>
       <button
         type="button"
