@@ -3,19 +3,33 @@
 import * as React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, CircleDashed, Sparkles, BookOpen, AlertTriangle } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleDashed,
+  AlertTriangle,
+  Sparkles,
+  BookOpen,
+} from "lucide-react";
 
-import { PageHeader } from "@/components/shared/PageHeader";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProgressBar } from "@/components/charts/ProgressBar";
-import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { Textarea } from "@/components/ui/textarea";
+import { AIInsightCard } from "@/components/ai/AIInsightCard";
+
+import { ProgressHero } from "@/components/newcomer/progress/ProgressHero";
+import { WeeklyVelocity } from "@/components/newcomer/progress/WeeklyVelocity";
+import { MilestoneTrack } from "@/components/newcomer/progress/MilestoneTrack";
+import { TaskRow } from "@/components/newcomer/progress/TaskRow";
 
 import { useDemo } from "@/providers/demo-provider";
 import { getNewcomerPlan } from "@/services/newcomers";
 import type { OnboardingTask } from "@/types";
+
+const FALLBACK_INSIGHTS = [
+  "Who reviews backend PRs",
+  "How Jira tickets move",
+  "Where API documentation lives",
+];
 
 export default function NewcomerProgressPage() {
   const { newcomerId } = useDemo();
@@ -28,77 +42,71 @@ export default function NewcomerProgressPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-4">
-        <Skeleton className="h-12 w-1/2" />
-        <Skeleton className="h-40" />
-        <Skeleton className="h-40" />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-4">
+        <Skeleton className="h-56 rounded-[24px]" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Skeleton className="h-44 rounded-[18px]" />
+          <Skeleton className="h-44 rounded-[18px]" />
+        </div>
+        <Skeleton className="h-60 rounded-[18px]" />
       </div>
     );
   }
 
-  const tasks = data?.tasks ?? [];
+  const tasks: OnboardingTask[] = data?.tasks ?? [];
   const completed = tasks.filter((t) => t.status === "done");
-  const inProgress = tasks.filter((t) => t.status === "in_progress" || t.status === "todo");
+  const inProgress = tasks.filter((t) => t.status === "in_progress");
+  const todo = tasks.filter((t) => t.status === "todo");
   const blocked = tasks.filter((t) => t.status === "blocked");
-  const pct = tasks.length ? Math.round((completed.length / tasks.length) * 100) : 0;
 
-  const phase =
-    pct >= 66 ? "Phase 3 — independent work" : pct >= 33 ? "Phase 2 — own a feature" : "Phase 1 — first PR";
+  const focusTasks = [...inProgress, ...todo].slice(0, 4);
+  const recentlyDone = [...completed]
+    .sort((a, b) => (b.id as number) - (a.id as number))
+    .slice(0, 4);
+
+  const thisWeekHint = computeWeekHint(tasks);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-6">
-      <PageHeader
-        eyebrow="Your progress"
-        title="Where you are right now"
-        description="Progress without the LMS vibe. Just what you've done, what's next, and what's still unclear."
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      <ProgressHero
+        completedCount={completed.length}
+        inProgressCount={inProgress.length}
+        blockedCount={blocked.length}
+        todoCount={todo.length}
+        hint={thisWeekHint}
       />
 
-      <Card>
-        <CardContent className="p-5">
-          <ProgressBar value={pct} label={`${completed.length} of ${tasks.length} tasks complete`} tone="ai" />
-          <div className="mt-2 text-xs text-[color:var(--color-fg-muted)]">Current phase: {phase}</div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <WeeklyVelocity tasks={tasks} />
+        <MilestoneTrack tasks={tasks} />
+      </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <TaskGroup
-          title="Completed"
-          icon={CheckCircle2}
-          tasks={completed}
-          tone="success"
-          emptyMsg="No completed tasks yet — that's normal early on."
-        />
-        <TaskGroup
-          title="In progress"
+      <div className="grid gap-4 lg:grid-cols-2">
+        <TaskListCard
+          title="Focus right now"
+          eyebrow="Active"
           icon={CircleDashed}
-          tasks={inProgress}
-          tone="warning"
-          emptyMsg="No active tasks."
+          tasks={focusTasks}
+          empty="Nothing in your queue — pick a todo from your plan."
         />
-        {blocked.length ? (
-          <TaskGroup
+        <TaskListCard
+          title="Recently completed"
+          eyebrow="Wins"
+          icon={CheckCircle2}
+          tasks={recentlyDone}
+          empty="No completed tasks yet — that's normal early on."
+        />
+        {blocked.length > 0 ? (
+          <TaskListCard
             title="Blocked"
+            eyebrow="Needs attention"
             icon={AlertTriangle}
             tasks={blocked}
             tone="danger"
-            emptyMsg=""
+            empty=""
           />
         ) : null}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-[color:var(--color-primary)]" /> Things I now understand
-            </CardTitle>
-            <CardDescription>What AI sees you've internalized.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-1 text-sm">
-              {["Who reviews backend PRs", "How Jira tickets move", "Where API documentation lives"].map((t) => (
-                <li key={t}>· {t}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <UnderstoodCard items={FALLBACK_INSIGHTS} />
       </div>
 
       <AIInsightCard
@@ -123,48 +131,100 @@ export default function NewcomerProgressPage() {
   );
 }
 
-function TaskGroup({
+function TaskListCard({
   title,
-  tasks,
+  eyebrow,
   icon: Icon,
-  tone,
-  emptyMsg,
+  tasks,
+  empty,
+  tone = "default",
 }: {
   title: string;
-  tasks: OnboardingTask[];
+  eyebrow: string;
   icon: React.ComponentType<{ className?: string }>;
-  tone: "success" | "warning" | "danger";
-  emptyMsg: string;
+  tasks: OnboardingTask[];
+  empty: string;
+  tone?: "default" | "danger";
 }) {
-  const toneClass: Record<string, string> = {
-    success: "text-[color:var(--color-success-fg)]",
-    warning: "text-[color:var(--color-warning-fg)]",
-    danger: "text-[color:var(--color-danger-fg)]",
-  };
+  const eyebrowClass =
+    tone === "danger"
+      ? "text-[color:var(--color-danger-fg)]"
+      : "text-[color:var(--color-primary-active)]";
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={`flex items-center gap-2 ${toneClass[tone]}`}>
-          <Icon className="h-4 w-4" />
-          {title}
-          <span className="text-xs text-[color:var(--color-fg-muted)]">· {tasks.length}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-1.5">
-        {tasks.length ? (
-          tasks.slice(0, 6).map((t) => (
-            <Link
-              key={t.id}
-              href={`/newcomer/tasks/${t.id}`}
-              className="block rounded-md px-2 py-1.5 text-sm text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface-muted)] truncate"
-            >
-              · {t.title}
-            </Link>
-          ))
+    <section className="rounded-[18px] border border-[color:var(--color-border)] bg-white p-5 shadow-[var(--shadow-card)]">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div
+            className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${eyebrowClass}`}
+          >
+            <Icon className="h-3 w-3" /> {eyebrow}
+          </div>
+          <div className="mt-0.5 text-sm font-semibold tracking-tight">{title}</div>
+        </div>
+        <span className="text-xs text-[color:var(--color-fg-muted)] tabular-nums">
+          {tasks.length}
+        </span>
+      </div>
+      <ul className="mt-3 space-y-2">
+        {tasks.length === 0 ? (
+          <li className="rounded-lg border border-dashed border-[color:var(--color-border)] px-3 py-4 text-center text-xs text-[color:var(--color-fg-muted)]">
+            {empty}
+          </li>
         ) : (
-          <p className="text-xs text-[color:var(--color-fg-muted)]">{emptyMsg}</p>
+          tasks.map((t) => (
+            <li key={t.id}>
+              <TaskRow task={t} href={`/newcomer/tasks/${t.id}`} />
+            </li>
+          ))
         )}
-      </CardContent>
-    </Card>
+      </ul>
+    </section>
   );
+}
+
+function UnderstoodCard({ items }: { items: string[] }) {
+  return (
+    <section className="ai-border relative overflow-hidden rounded-[18px] bg-white p-5">
+      <div className="absolute inset-0 ai-gradient-soft opacity-30" aria-hidden />
+      <div className="relative">
+        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-active)]">
+          <BookOpen className="h-3 w-3" /> Insight
+        </div>
+        <div className="mt-0.5 text-sm font-semibold tracking-tight">
+          Things you now understand
+        </div>
+        <ul className="mt-3 space-y-2">
+          {items.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-2 rounded-lg bg-white/70 px-3 py-2 text-sm text-[color:var(--color-fg)]"
+            >
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--color-primary)]" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function computeWeekHint(tasks: OnboardingTask[]): string | undefined {
+  if (!tasks.length) return undefined;
+  // Best-effort "current week" = highest week_number that has at least one done task,
+  // or fall back to the highest started week.
+  const doneByWeek = new Map<number, number>();
+  let highestStartedWeek = 0;
+  for (const t of tasks) {
+    const w =
+      t.week_number ??
+      (t.day_number ? Math.ceil(t.day_number / 7) : null);
+    if (w == null) continue;
+    if (t.status !== "todo") highestStartedWeek = Math.max(highestStartedWeek, w);
+    if (t.status === "done") doneByWeek.set(w, (doneByWeek.get(w) ?? 0) + 1);
+  }
+  if (!highestStartedWeek) return undefined;
+  const doneThisWeek = doneByWeek.get(highestStartedWeek) ?? 0;
+  if (doneThisWeek === 0) return undefined;
+  return `${doneThisWeek} task${doneThisWeek > 1 ? "s" : ""} shipped this week`;
 }

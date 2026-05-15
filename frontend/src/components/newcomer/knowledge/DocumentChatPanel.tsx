@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { SourceCitation } from "@/components/ai/SourceCitation";
+import { Markdown } from "@/components/shared/Markdown";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
@@ -196,9 +197,7 @@ function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
             <AIInsightCard title="Something went wrong" description={item.errored} tone="soft" />
           ) : item.response ? (
             <AIInsightCard title="Answer" tone="soft">
-              <div className="whitespace-pre-wrap text-sm leading-relaxed text-[color:var(--color-fg)]">
-                {item.response.answer}
-              </div>
+              <Markdown>{item.response.answer}</Markdown>
               {item.response.sources?.length ? (
                 <div className="mt-3 space-y-1.5">
                   {item.response.sources.slice(0, 3).map((s, i) => (

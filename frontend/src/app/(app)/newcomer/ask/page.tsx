@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { SourceCitation } from "@/components/ai/SourceCitation";
+import { Markdown } from "@/components/shared/Markdown";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { askAI, submitAnswerFeedback } from "@/services/ai";
@@ -74,7 +75,8 @@ function AskAIPageInner() {
   React.useEffect(() => {
     const q = search?.get("q");
     if (q && chat.length === 0) {
-      void submit(q);
+      const timer = window.setTimeout(() => void submit(q), 0);
+      return () => window.clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -246,13 +248,7 @@ function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
                 </>
               }
             >
-              <div
-                className={cn(
-                  "whitespace-pre-wrap text-sm leading-relaxed text-[color:var(--color-fg)]",
-                )}
-              >
-                {item.response.answer}
-              </div>
+              <Markdown>{item.response.answer}</Markdown>
               {item.response.sources?.length ? (
                 <div className="mt-3 space-y-1.5">
                   {item.response.sources.slice(0, 3).map((s, i) => (

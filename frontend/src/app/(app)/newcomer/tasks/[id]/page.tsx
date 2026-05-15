@@ -14,7 +14,7 @@ import {
   ExternalLink,
   FileText,
   Link as LinkIcon,
-  Sparkles,
+  MessageCircle,
   Target,
   Users,
 } from "lucide-react";
@@ -69,7 +69,6 @@ export default function TaskDetailPage() {
   const task = data.task;
   const done = task.status === "done";
   const acceptanceItems = splitCriteria(task.acceptance_criteria);
-  const successItems = splitCriteria(task.success_criteria);
   const examples = task.examples ?? [];
   const links = task.links ?? [];
 
@@ -93,8 +92,8 @@ export default function TaskDetailPage() {
           <>
             <BlockedTrigger taskId={task.id} />
             <Button asChild variant="outline">
-              <Link href={`/newcomer/ask?q=${encodeURIComponent(task.title)}`}>
-                <Sparkles className="h-4 w-4" /> Ask AI
+              <Link href={`/newcomer/tasks/${task.id}/ask`}>
+                <MessageCircle className="h-4 w-4" /> Chat
               </Link>
             </Button>
             <Button
@@ -154,20 +153,13 @@ export default function TaskDetailPage() {
         <AIInsightCard title="Why this matters" tone="soft" description={data.why_it_matters} />
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4">
         <CriteriaCard
           icon={ClipboardCheck}
           title="Acceptance criteria"
           description="The concrete conditions that make this task accepted."
           items={acceptanceItems}
           empty="No acceptance criteria yet."
-        />
-        <CriteriaCard
-          icon={Target}
-          title="Success criteria"
-          description="The outcome your mentor will look for."
-          items={successItems}
-          empty="No success criteria yet."
         />
       </div>
 

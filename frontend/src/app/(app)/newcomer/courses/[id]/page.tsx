@@ -15,6 +15,9 @@ import {
   Menu,
   X,
   Trophy,
+  Bookmark,
+  Keyboard,
+  Clock,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -22,6 +25,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Markdown } from "@/components/shared/Markdown";
 import { YouTubeEmbed, extractYouTubeId } from "@/components/shared/YouTubeEmbed";
@@ -29,8 +39,16 @@ import { AuroraBackground } from "@/components/shared/AuroraBackground";
 import { ProgressRing } from "@/components/shared/ProgressRing";
 import { Confetti } from "@/components/shared/Confetti";
 import { ChapterScrubber } from "@/components/newcomer/lesson/ChapterScrubber";
+import { ReadingProgressBar } from "@/components/newcomer/lesson/ReadingProgressBar";
+import {
+  LessonTakeaways,
+  deriveFallbackTakeaways,
+} from "@/components/newcomer/lesson/LessonTakeaways";
+import { LessonNotesPanel } from "@/components/newcomer/lesson/LessonNotesPanel";
 
 import { getCourse } from "@/services/courses";
+import { getLessonNote } from "@/services/lessonNotes";
+import { writeLastViewedCourseId } from "@/lib/course-progress";
 import { useDemo } from "@/providers/demo-provider";
 import type { Lesson, ID } from "@/types";
 
@@ -53,7 +71,33 @@ export default function NewcomerCourseDetailPage() {
   const [progressLoaded, setProgressLoaded] = React.useState(false);
   const [navOpen, setNavOpen] = React.useState(false);
   const [celebrate, setCelebrate] = React.useState(0);
+  const [notesOpen, setNotesOpen] = React.useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
+  const [hintHydrated, setHintHydrated] = React.useState(false);
+  const [hintDismissed, setHintDismissed] = React.useState(true);
   const prevAllDone = React.useRef(false);
+
+  if (!hintHydrated) {
+    setHintHydrated(true);
+    try {
+      const seen =
+        typeof window !== "undefined"
+          ? window.sessionStorage.getItem("newcomer.course.shortcut-hint-seen")
+          : "1";
+      if (seen !== "1") setHintDismissed(false);
+    } catch {
+      // keep hint dismissed
+    }
+  }
+
+  const dismissHint = React.useCallback(() => {
+    setHintDismissed(true);
+    try {
+      window.sessionStorage.setItem("newcomer.course.shortcut-hint-seen", "1");
+    } catch {
+      // ignore
+    }
+  }, []);
 
   if (!progressLoaded && Number.isFinite(id)) {
     setProgressLoaded(true);
@@ -106,6 +150,95 @@ export default function NewcomerCourseDetailPage() {
     }
     prevAllDone.current = allDone;
   }, [allDone]);
+
+  React.useEffect(() => {
+    if (Number.isFinite(id)) writeLastViewedCourseId(id);
+  }, [id]);
+
+  const selectedForKeys =
+    lessons.find((l) => l.id === selectedLessonId) ?? lessons[0] ?? null;
+  const selectedIdx = selectedForKeys
+    ? lessons.findIndex((l) => l.id === selectedForKeys.id)
+    : -1;
+
+  React.useEffect(() => {
+    if (!lessons.length) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const tag = target.tagName;
+        if (
+          tag === "INPUT" ||
+          tag === "TEXTAREA" ||
+          tag === "SELECT" ||
+          target.isContentEditable
+        ) {
+          return;
+        }
+      }
+
+      switch (e.key) {
+        case "j":
+        case "J": {
+          if (selectedIdx >= 0 && selectedIdx < lessons.length - 1) {
+            e.preventDefault();
+            setSelectedLessonId(lessons[selectedIdx + 1].id);
+            dismissHint();
+          }
+          break;
+        }
+        case "k":
+        case "K": {
+          if (selectedIdx > 0) {
+            e.preventDefault();
+            setSelectedLessonId(lessons[selectedIdx - 1].id);
+            dismissHint();
+          }
+          break;
+        }
+        case "m":
+        case "M": {
+          if (selectedForKeys) {
+            e.preventDefault();
+            toggleComplete(selectedForKeys.id);
+          }
+          break;
+        }
+        case "b":
+        case "B": {
+          if (selectedForKeys) {
+            e.preventDefault();
+            setNotesOpen((v) => !v);
+          }
+          break;
+        }
+        case "?": {
+          e.preventDefault();
+          setShortcutsOpen(true);
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessons, selectedIdx, selectedForKeys?.id]);
+
+  const noteQuery = useQuery({
+    queryKey: ["lesson-note", newcomerId, selectedForKeys?.id],
+    queryFn: () =>
+      selectedForKeys && newcomerId
+        ? getLessonNote(newcomerId, selectedForKeys.id)
+        : Promise.resolve(null),
+    enabled: !!newcomerId && !!selectedForKeys,
+    staleTime: 30_000,
+  });
+  const hasNote = !!noteQuery.data?.body && noteQuery.data.body.trim().length > 0;
 
   if (course.isLoading || !course.data) {
     return (
@@ -246,6 +379,21 @@ export default function NewcomerCourseDetailPage() {
                 lesson={selected}
                 isCompleted={completed.has(selected.id)}
                 onToggleComplete={() => toggleComplete(selected.id)}
+                onOpenNotes={() => setNotesOpen(true)}
+                hasNote={hasNote}
+                nextLesson={next}
+              />
+              <NextUpCard
+                next={next}
+                isLast={!next}
+                onGoNext={() => {
+                  if (!next) return;
+                  if (!completed.has(selected.id)) toggleComplete(selected.id);
+                  setSelectedLessonId(next.id);
+                }}
+                onFinish={() => {
+                  if (!completed.has(selected.id)) toggleComplete(selected.id);
+                }}
               />
               <nav className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--color-border)] bg-white p-3">
                 {prev ? (
@@ -296,6 +444,57 @@ export default function NewcomerCourseDetailPage() {
           )}
         </main>
       </div>
+
+      <AnimatePresence>
+        {!hintDismissed && selected ? (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2"
+          >
+            <div className="flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-white/95 px-3 py-1.5 text-xs shadow-[var(--shadow-card)] backdrop-blur">
+              <Keyboard className="h-3 w-3 text-[color:var(--color-primary)]" />
+              <span className="text-[color:var(--color-fg-muted)]">
+                Tip: press{" "}
+                <kbd className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] px-1 font-mono text-[10px]">
+                  J
+                </kbd>{" "}
+                /{" "}
+                <kbd className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] px-1 font-mono text-[10px]">
+                  K
+                </kbd>{" "}
+                to navigate lessons,{" "}
+                <kbd className="rounded border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] px-1 font-mono text-[10px]">
+                  ?
+                </kbd>{" "}
+                for more.
+              </span>
+              <button
+                type="button"
+                onClick={dismissHint}
+                className="ml-1 grid h-5 w-5 place-items-center rounded-full text-[color:var(--color-fg-subtle)] hover:bg-[color:var(--color-surface-muted)]"
+                aria-label="Dismiss tip"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      {newcomerId && selected ? (
+        <LessonNotesPanel
+          open={notesOpen}
+          onOpenChange={setNotesOpen}
+          newcomerId={newcomerId}
+          lessonId={selected.id}
+          lessonTitle={displayLessonTitle(selected)}
+        />
+      ) : null}
+
+      <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
 
       <AnimatePresence>
         {celebrate > 0 ? (
@@ -472,26 +671,69 @@ function LessonView({
   lesson,
   isCompleted,
   onToggleComplete,
+  onOpenNotes,
+  hasNote,
+  nextLesson,
 }: {
   lesson: Lesson;
   isCompleted: boolean;
   onToggleComplete: () => void;
+  onOpenNotes: () => void;
+  hasNote: boolean;
+  nextLesson: Lesson | null;
 }) {
   const summary = displayLessonSummary(lesson);
   const body = displayLessonBody(lesson);
+  const articleRef = React.useRef<HTMLElement | null>(null);
+
+  const readMinutes = estimateReadMinutes(body, summary);
+  const seedTakeaways = lesson.takeaways?.filter((t) => t && t.trim().length > 0) ?? [];
+  const takeaways =
+    seedTakeaways.length > 0 ? seedTakeaways : deriveFallbackTakeaways(body);
+  const takeawaysAreAiDerived = seedTakeaways.length === 0 && takeaways.length > 0;
+
+  const handleReadComplete = React.useCallback(() => {
+    if (!isCompleted) onToggleComplete();
+  }, [isCompleted, onToggleComplete]);
 
   return (
-    <article className="rounded-2xl border border-[color:var(--color-border)] bg-white p-6 space-y-4">
+    <article
+      ref={articleRef}
+      className="relative rounded-2xl border border-[color:var(--color-border)] bg-white p-6 space-y-4"
+    >
+      <ReadingProgressBar
+        targetRef={articleRef}
+        onReadComplete={handleReadComplete}
+        resetKey={lesson.id}
+      />
       <header className="space-y-1.5 border-b border-[color:var(--color-border)] pb-3">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="neutral" size="sm">
             Lesson #{lesson.index}
           </Badge>
+          {readMinutes ? (
+            <Badge tone="neutral" size="sm">
+              <Clock className="h-2.5 w-2.5" /> ~{readMinutes} min read
+            </Badge>
+          ) : null}
           {isCompleted ? (
             <Badge tone="success" size="sm">
               <CheckCircle2 className="h-2.5 w-2.5" /> Done
             </Badge>
           ) : null}
+          <button
+            type="button"
+            onClick={onOpenNotes}
+            className="relative ml-auto inline-flex items-center gap-1.5 rounded-md border border-[color:var(--color-border)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--color-fg-muted)] transition-colors hover:border-[color:var(--color-primary-ring)] hover:text-[color:var(--color-primary-active)]"
+            aria-label="Open lesson notes"
+            title="Open lesson notes (press B)"
+          >
+            <Bookmark className="h-3 w-3" />
+            Notes
+            {hasNote ? (
+              <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full ai-gradient" />
+            ) : null}
+          </button>
         </div>
         <h2 className="text-xl font-semibold tracking-tight">{displayLessonTitle(lesson)}</h2>
         {summary ? (
@@ -519,7 +761,16 @@ function LessonView({
         </p>
       )}
 
-      <div className="flex justify-end border-t border-[color:var(--color-border)] pt-3">
+      {takeaways.length > 0 ? (
+        <LessonTakeaways takeaways={takeaways} aiDerived={takeawaysAreAiDerived} />
+      ) : null}
+
+      <div className="flex items-center justify-between gap-2 border-t border-[color:var(--color-border)] pt-3">
+        <span className="text-[11px] text-[color:var(--color-fg-subtle)]">
+          {nextLesson
+            ? "Scroll to the end to auto-mark this lesson as done."
+            : "Last lesson of the course — finish to celebrate."}
+        </span>
         <Button variant={isCompleted ? "outline" : "default"} size="sm" onClick={onToggleComplete}>
           <CheckCircle2 className="h-3.5 w-3.5" />
           {isCompleted ? "Mark as not done" : "Mark as done"}
@@ -527,6 +778,132 @@ function LessonView({
       </div>
     </article>
   );
+}
+
+function NextUpCard({
+  next,
+  isLast,
+  onGoNext,
+  onFinish,
+}: {
+  next: Lesson | null;
+  isLast: boolean;
+  onGoNext: () => void;
+  onFinish: () => void;
+}) {
+  if (isLast) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="ai-border relative overflow-hidden rounded-2xl bg-white p-5"
+      >
+        <div className="absolute inset-0 ai-gradient-soft opacity-40" aria-hidden />
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-active)]">
+              Finish course
+            </div>
+            <div className="text-sm font-medium text-[color:var(--color-fg)]">
+              You&apos;ve reached the last lesson. Mark it as done to celebrate.
+            </div>
+          </div>
+          <Button size="sm" onClick={onFinish}>
+            <Trophy className="h-3.5 w-3.5" /> Finish course
+          </Button>
+        </div>
+      </motion.div>
+    );
+  }
+  if (!next) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-white p-4 transition-colors hover:border-[color:var(--color-primary-ring)]"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+            Next up · Lesson #{next.index}
+          </div>
+          <div className="truncate text-sm font-medium text-[color:var(--color-fg)]">
+            {displayLessonTitle(next)}
+          </div>
+        </div>
+        <Button variant="outline" size="sm" onClick={onGoNext} className="shrink-0">
+          Continue <ArrowRight className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
+function ShortcutsDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const rows: { keys: string[]; label: string }[] = [
+    { keys: ["J"], label: "Next lesson" },
+    { keys: ["K"], label: "Previous lesson" },
+    { keys: ["M"], label: "Toggle mark as done" },
+    { keys: ["B"], label: "Open / close notes" },
+    { keys: ["?"], label: "Show this cheat-sheet" },
+  ];
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Keyboard className="h-4 w-4 text-[color:var(--color-primary)]" />
+            Keyboard shortcuts
+          </DialogTitle>
+          <DialogDescription>
+            Move through this course without leaving the keyboard.
+          </DialogDescription>
+        </DialogHeader>
+        <ul className="space-y-2">
+          {rows.map((row) => (
+            <li
+              key={row.label}
+              className="flex items-center justify-between gap-3 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/40 px-3 py-1.5"
+            >
+              <span className="text-sm text-[color:var(--color-fg)]">{row.label}</span>
+              <span className="flex items-center gap-1">
+                {row.keys.map((k) => (
+                  <kbd
+                    key={k}
+                    className="rounded-md border border-[color:var(--color-border)] bg-white px-2 py-0.5 font-mono text-[11px] text-[color:var(--color-fg)]"
+                  >
+                    {k}
+                  </kbd>
+                ))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const WORDS_PER_MINUTE = 200;
+
+function estimateReadMinutes(
+  body: string | null,
+  summary: string | null,
+): number | null {
+  const text = [body, summary].filter(Boolean).join(" ").trim();
+  if (!text) return null;
+  // Char-based heuristic: ~5 characters per English word.
+  const approxWords = text.length / 5;
+  const minutes = Math.max(1, Math.round(approxWords / WORDS_PER_MINUTE));
+  return minutes;
 }
 
 function isPlaceholderLessonText(value?: string | null) {

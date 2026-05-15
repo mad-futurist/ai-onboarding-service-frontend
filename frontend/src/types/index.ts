@@ -127,8 +127,18 @@ export interface Lesson {
   infographic_source?: string | null;
   video_url?: string | null;
   source_document_ids?: ID[] | null;
+  takeaways?: string[] | null;
   created_at?: string | null;
   updated_at?: string | null;
+}
+
+export interface LessonNote {
+  id: ID;
+  newcomer_id: ID;
+  lesson_id: ID;
+  body: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MindMapNode {
@@ -177,6 +187,7 @@ export interface Course {
   status: CourseStatus;
   generated_by_ai: boolean;
   source_document_ids?: ID[] | null;
+  lessons_count?: number | null;
   created_at?: string | null;
   updated_at?: string | null;
   approved_at?: string | null;

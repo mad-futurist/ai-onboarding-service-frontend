@@ -161,7 +161,12 @@ const components: Components = {
 
 export function Markdown({ children, className }: MarkdownProps) {
   return (
-    <div className={cn("text-sm text-[color:var(--color-fg)]", className)}>
+    <div
+      className={cn(
+        "text-sm text-[color:var(--color-fg)] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_li>p]:my-0 [&_li>p+p]:mt-1.5",
+        className,
+      )}
+    >
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {children}
       </ReactMarkdown>
