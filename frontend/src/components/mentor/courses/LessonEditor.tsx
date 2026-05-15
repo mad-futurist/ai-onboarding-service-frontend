@@ -11,6 +11,7 @@ import {
   Loader2,
   FileText,
   ImageIcon,
+  Video,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Markdown } from "@/components/shared/Markdown";
+import { YouTubeEmbed, extractYouTubeId } from "@/components/shared/YouTubeEmbed";
 
 import { aiGenerateLesson, updateLesson } from "@/services/courses";
 import { toApiError } from "@/lib/api";
@@ -38,7 +40,11 @@ export function LessonEditor({ courseId, lesson }: LessonEditorProps) {
   const [summary, setSummary] = React.useState(lesson.summary ?? "");
   const [body, setBody] = React.useState(lesson.body ?? "");
   const [infographic, setInfographic] = React.useState(lesson.infographic_source ?? "");
+  const [videoUrl, setVideoUrl] = React.useState(lesson.video_url ?? "");
   const [view, setView] = React.useState<"edit" | "preview">("edit");
+
+  const trimmedVideo = videoUrl.trim();
+  const videoIsValid = !trimmedVideo || !!extractYouTubeId(trimmedVideo);
 
   const saveMut = useMutation({
     mutationFn: () =>
@@ -48,6 +54,7 @@ export function LessonEditor({ courseId, lesson }: LessonEditorProps) {
         body,
         infographic_source: infographic.trim() || null,
         infographic_kind: infographic.trim() ? "mermaid" : null,
+        video_url: trimmedVideo || null,
       }),
     onSuccess: () => {
       toast.success("Lesson saved");
@@ -73,7 +80,8 @@ export function LessonEditor({ courseId, lesson }: LessonEditorProps) {
     title !== (lesson.title ?? "") ||
     summary !== (lesson.summary ?? "") ||
     body !== (lesson.body ?? "") ||
-    infographic !== (lesson.infographic_source ?? "");
+    infographic !== (lesson.infographic_source ?? "") ||
+    videoUrl !== (lesson.video_url ?? "");
 
   return (
     <div className="flex-1 space-y-4">
@@ -113,7 +121,7 @@ export function LessonEditor({ courseId, lesson }: LessonEditorProps) {
               <Button
                 size="sm"
                 onClick={() => saveMut.mutate()}
-                disabled={!dirty || saveMut.isPending}
+                disabled={!dirty || saveMut.isPending || !videoIsValid}
               >
                 {saveMut.isPending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -177,6 +185,35 @@ export function LessonEditor({ courseId, lesson }: LessonEditorProps) {
               )}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Video className="h-4 w-4 text-[color:var(--color-primary)]" /> YouTube video (optional)
+          </CardTitle>
+          <CardDescription>
+            Paste a YouTube link (youtu.be/… or youtube.com/watch?v=…). It will appear embedded in the lesson on the newcomer side.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            placeholder="https://www.youtube.com/watch?v=…"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            aria-invalid={!videoIsValid}
+          />
+          {!videoIsValid ? (
+            <p className="text-xs text-[color:var(--color-danger-fg)]">
+              That doesn&apos;t look like a valid YouTube URL.
+            </p>
+          ) : null}
+          {trimmedVideo && videoIsValid ? (
+            <div className="pt-1">
+              <YouTubeEmbed url={trimmedVideo} title={title} />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 

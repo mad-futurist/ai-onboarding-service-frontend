@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Markdown } from "@/components/shared/Markdown";
+import { YouTubeEmbed, extractYouTubeId } from "@/components/shared/YouTubeEmbed";
 
 import { getCourse } from "@/services/courses";
 import { useDemo } from "@/providers/demo-provider";
@@ -386,6 +387,10 @@ function LessonView({
           <p className="text-sm text-[color:var(--color-fg-muted)]">{summary}</p>
         ) : null}
       </header>
+
+      {lesson.video_url && extractYouTubeId(lesson.video_url) ? (
+        <YouTubeEmbed url={lesson.video_url} title={displayLessonTitle(lesson)} />
+      ) : null}
 
       {lesson.infographic_source ? (
         <InfographicBlock source={lesson.infographic_source} kind={lesson.infographic_kind ?? "mermaid"} />

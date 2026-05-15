@@ -44,6 +44,7 @@ const NEWCOMER_NAV: NavItem[] = [
   { href: "/newcomer", label: "Home", icon: Home },
   { href: "/newcomer/plan", label: "My plan", icon: ListChecks },
   { href: "/newcomer/courses", label: "Courses", icon: GraduationCap },
+  { href: "/newcomer/knowledge", label: "Knowledge", icon: BookOpen, badge: "AI" },
   { href: "/newcomer/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/newcomer/ask", label: "Ask AI", icon: Sparkles, badge: "AI" },
   { href: "/newcomer/progress", label: "Progress", icon: LineChart },

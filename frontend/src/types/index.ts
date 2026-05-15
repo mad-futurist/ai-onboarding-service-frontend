@@ -125,9 +125,37 @@ export interface Lesson {
   infographic_url?: string | null;
   infographic_kind?: string | null;
   infographic_source?: string | null;
+  video_url?: string | null;
   source_document_ids?: ID[] | null;
   created_at?: string | null;
   updated_at?: string | null;
+}
+
+export interface MindMapNode {
+  id: string;
+  label: string;
+  kind?: "root" | "branch" | "leaf" | string;
+}
+
+export interface MindMapEdge {
+  source: string;
+  target: string;
+}
+
+export interface MindMapResponse {
+  root: string;
+  nodes: MindMapNode[];
+  edges: MindMapEdge[];
+}
+
+export interface NewcomerDocument {
+  id: ID;
+  title: string;
+  content: string;
+  domain: string | null;
+  scope: string | null;
+  role_target: string | null;
+  chunks_count: number;
 }
 
 export type CourseStatus =

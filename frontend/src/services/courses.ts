@@ -102,6 +102,7 @@ export interface LessonCreateInput {
   infographic_url?: string | null;
   infographic_kind?: string | null;
   infographic_source?: string | null;
+  video_url?: string | null;
   source_document_ids?: ID[] | null;
 }
 
@@ -118,6 +119,7 @@ export interface LessonUpdateInput {
   infographic_url?: string | null;
   infographic_kind?: string | null;
   infographic_source?: string | null;
+  video_url?: string | null;
   source_document_ids?: ID[] | null;
 }
 
