@@ -665,12 +665,27 @@ export interface DemoSeedResponse {
   mentor_id?: ID;
   newcomer_id?: ID;
   newcomer_user_id?: ID;
+  newcomer_ids?: ID[];
+  personas?: DemoPersona[];
   plan_id?: ID;
   signal_id?: ID;
   documents_created?: number;
   tasks_created?: number;
   questions_created?: number;
+  meetings_created?: number;
+  signals_created?: number;
+  blocked_reports_created?: number;
   [k: string]: unknown;
+}
+
+export interface DemoPersona {
+  role: "mentor" | "newcomer" | string;
+  user_id: ID;
+  newcomer_id?: ID | null;
+  name: string;
+  email: string;
+  job_title?: string | null;
+  team?: string | null;
 }
 
 export interface PersonContact {

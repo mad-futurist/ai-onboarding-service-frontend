@@ -33,7 +33,7 @@ import { AlertTriangle, Check, CheckCircle2, OctagonAlert, Palette, RefreshCcw, 
 import { LanguageSwitcher } from "@/components/settings/LanguageSwitcher";
 
 export default function SettingsPage() {
-  const { refresh, mentorName, newcomerName, mentorId, newcomerId } = useDemo();
+  const { refresh, refreshPersonas, mentorName, newcomerName, mentorId, newcomerId, personas } = useDemo();
   const { theme, font, customColors, setTheme, setFont, setCustomColor, resetCustomColors } = useTheme();
   const qc = useQueryClient();
   const [resolvedColors, setResolvedColors] = React.useState<CustomColorOverrides>({});
@@ -68,15 +68,23 @@ export default function SettingsPage() {
 
   const resetMut = useMutation({
     mutationFn: resetDemo,
-    onSuccess: async () => {
-      toast.success("Demo data reset", {
-        description: "Recreated 1 mentor, 1 newcomer, 4 documents, a plan, tasks and blockers.",
+    onSuccess: async (seed) => {
+      toast.success("Demo database regenerated", {
+        description: `Recreated ${seed.personas?.length ?? 3} personas, ${seed.documents_created ?? 0} documents, ${seed.tasks_created ?? 0} tasks and ${seed.meetings_created ?? 0} meetings.`,
       });
       qc.clear();
-      await refresh();
+      sessionStorage.removeItem("onbord.seeded.v1");
+      await refreshPersonas();
     },
     onError: (err) => toast.error("Reset failed", { description: toApiError(err).message }),
   });
+
+  const handleRegenerate = () => {
+    const ok = window.confirm(
+      "Regenerate database will delete all onboarding demo data in this workspace and recreate Oleg, Marina and Tanya. Continue?",
+    );
+    if (ok) resetMut.mutate();
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-6">
@@ -242,7 +250,7 @@ export default function SettingsPage() {
             <SettingsIcon className="h-4 w-4 text-[color:var(--color-primary)]" /> Demo data
           </CardTitle>
           <CardDescription>
-            The demo workspace is seeded once per session. Refresh to wipe local state and pull fresh IDs.
+            Regenerate wipes the demo workspace and recreates the production demo personas, plans, documents, signals and calendar.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -250,11 +258,31 @@ export default function SettingsPage() {
             <Row label="Mentor" value={`${mentorName} (id #${mentorId ?? "—"})`} />
             <Row label="Newcomer" value={`${newcomerName} (id #${newcomerId ?? "—"})`} />
           </dl>
+          <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] p-3">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+              Viewing as personas
+            </div>
+            <div className="space-y-1">
+              {personas.map((persona) => (
+                <div
+                  key={`${persona.role}-${persona.user_id}-${persona.newcomer_id ?? "mentor"}`}
+                  className="flex items-center justify-between gap-3 text-sm"
+                >
+                  <span className="font-medium text-[color:var(--color-fg)]">{persona.name}</span>
+                  <span className="truncate text-xs text-[color:var(--color-fg-muted)]">
+                    {persona.role === "mentor"
+                      ? "Mentor"
+                      : `${persona.job_title ?? "Newcomer"} · ${persona.team ?? "Team"}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
           <Button variant="outline" onClick={() => void refresh()}>
             <RefreshCcw className="h-4 w-4" /> Refresh demo data
           </Button>
-          <Button variant="ai" disabled={resetMut.isPending} onClick={() => resetMut.mutate()}>
-            <RefreshCcw className="h-4 w-4" /> {resetMut.isPending ? "Resetting…" : "Reset database"}
+          <Button variant="ai" disabled={resetMut.isPending} onClick={handleRegenerate}>
+            <RefreshCcw className="h-4 w-4" /> {resetMut.isPending ? "Regenerating..." : "Regenerate database"}
           </Button>
         </CardContent>
       </Card>

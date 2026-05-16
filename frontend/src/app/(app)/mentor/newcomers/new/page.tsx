@@ -78,7 +78,7 @@ const STEPS = [
 
 export default function AddNewcomerPage() {
   const router = useRouter();
-  const { mentorId } = useDemo();
+  const { mentorId, refreshPersonas, selectPersona } = useDemo();
   const [step, setStep] = React.useState(1);
   const [assessment, setAssessment] = React.useState<Assessment | null>(null);
   const [genMode, setGenMode] = React.useState<"fast" | "live" | null>(null);
@@ -138,6 +138,19 @@ export default function AddNewcomerPage() {
           ? "Skill check is now live in their dashboard."
           : "Now let's set up their knowledge base.",
       });
+      selectPersona(
+        {
+          role: "newcomer",
+          user_id: newcomer.user_id,
+          newcomer_id: newcomer.id,
+          name: newcomer.full_name ?? `Newcomer #${newcomer.id}`,
+          email: newcomer.email ?? "",
+          job_title: newcomer.job_title,
+          team: newcomer.team,
+        },
+        { preserveRole: true },
+      );
+      await refreshPersonas();
       router.push(`/mentor/knowledge?newcomer=${newcomer.id}`);
     },
     onError: (err) => {

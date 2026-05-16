@@ -7,7 +7,7 @@ import { seedDemo } from "@/services/demo";
 import { listUsers } from "@/services/users";
 import { listNewcomers } from "@/services/newcomers";
 import type { Role } from "@/lib/constants";
-import type { ID } from "@/types";
+import type { DemoPersona, ID, Newcomer, User } from "@/types";
 
 const SEED_KEY = "onbord.seeded.v1";
 const ROLE_KEY = "onbord.role.v1";
@@ -23,8 +23,15 @@ interface DemoContextValue {
   newcomerId: ID | null;
   mentorName: string;
   newcomerName: string;
+  personas: DemoPersona[];
+  activePersona: DemoPersona | null;
   setRole: (role: Role) => void;
+  selectPersona: (
+    persona: DemoPersona,
+    options?: { preserveRole?: boolean },
+  ) => void;
   refresh: () => Promise<void>;
+  refreshPersonas: () => Promise<void>;
 }
 
 const DemoContext = React.createContext<DemoContextValue | null>(null);
@@ -47,14 +54,53 @@ function setStored(key: string, value: string | null) {
   else window.localStorage.setItem(key, value);
 }
 
+function parseStoredId(key: string): ID | null {
+  const raw = getStored<string>(key);
+  const parsed = raw ? Number(raw) : null;
+  return parsed && Number.isFinite(parsed) ? parsed : null;
+}
+
+function buildPersonas(users: User[], newcomers: Newcomer[]): DemoPersona[] {
+  const mentorPersonas = users
+    .filter((user) => user.role?.toLowerCase().includes("mentor"))
+    .sort((a, b) => a.id - b.id)
+    .map<DemoPersona>((user) => ({
+      role: "mentor",
+      user_id: user.id,
+      newcomer_id: null,
+      name: user.full_name,
+      email: user.email,
+      job_title: user.role,
+      team: "Mentor",
+    }));
+
+  const newcomerPersonas = [...newcomers]
+    .sort((a, b) => a.id - b.id)
+    .map<DemoPersona>((newcomer) => {
+      const user = users.find((item) => item.id === newcomer.user_id);
+      return {
+        role: "newcomer",
+        user_id: newcomer.user_id,
+        newcomer_id: newcomer.id,
+        name: newcomer.full_name ?? user?.full_name ?? `Newcomer #${newcomer.id}`,
+        email: newcomer.email ?? user?.email ?? "",
+        job_title: newcomer.job_title,
+        team: newcomer.team,
+      };
+    });
+
+  return [...mentorPersonas, ...newcomerPersonas];
+}
+
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [role, setRoleState] = React.useState<Role>("mentor");
   const [mentorId, setMentorId] = React.useState<ID | null>(null);
   const [newcomerId, setNewcomerId] = React.useState<ID | null>(null);
-  const [mentorName, setMentorName] = React.useState<string>("Marko Ivanov");
-  const [newcomerName, setNewcomerName] = React.useState<string>("Tanya Petrova");
+  const [mentorName, setMentorName] = React.useState<string>("Oleg Bondarenko");
+  const [newcomerName, setNewcomerName] = React.useState<string>("Marina Kovalenko");
+  const [personas, setPersonas] = React.useState<DemoPersona[]>([]);
 
   const seedMut = useMutation({
     mutationFn: seedDemo,
@@ -67,50 +113,74 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         setRoleState(storedRole);
       }
 
-      const storedMentorId = getStored<string>(MENTOR_KEY);
-      const parsedMentorId = storedMentorId ? Number(storedMentorId) : null;
-      if (parsedMentorId && Number.isFinite(parsedMentorId)) {
-        setMentorId(parsedMentorId);
-      }
+      const storedMentorId = parseStoredId(MENTOR_KEY);
+      if (storedMentorId) setMentorId(storedMentorId);
 
-      const storedNewcomerId = getStored<string>(NEWCOMER_KEY);
-      const parsedNewcomerId = storedNewcomerId ? Number(storedNewcomerId) : null;
-      if (parsedNewcomerId && Number.isFinite(parsedNewcomerId)) {
-        setNewcomerId(parsedNewcomerId);
-      }
+      const storedNewcomerId = parseStoredId(NEWCOMER_KEY);
+      if (storedNewcomerId) setNewcomerId(storedNewcomerId);
     });
   }, []);
 
+  const selectPersona = React.useCallback(
+    (persona: DemoPersona, options?: { preserveRole?: boolean }) => {
+      if (persona.role === "mentor") {
+        setMentorId(persona.user_id);
+        setMentorName(persona.name);
+        setStored(MENTOR_KEY, String(persona.user_id));
+        if (!options?.preserveRole) {
+          setRoleState("mentor");
+          setStored(ROLE_KEY, "mentor");
+        }
+      } else if (persona.newcomer_id) {
+        setNewcomerId(persona.newcomer_id);
+        setNewcomerName(persona.name);
+        setStored(NEWCOMER_KEY, String(persona.newcomer_id));
+        if (!options?.preserveRole) {
+          setRoleState("newcomer");
+          setStored(ROLE_KEY, "newcomer");
+        }
+      }
+    },
+    [],
+  );
+
   const hydrateFromBackend = React.useCallback(async () => {
-    // Pull user/newcomer info to confirm IDs exist and capture names
     try {
       const [users, newcomers] = await Promise.all([listUsers(), listNewcomers()]);
-      const mentor = users.find((u) => u.role?.toLowerCase().includes("mentor"));
-      const newcomer = newcomers[0];
-      if (mentor) {
-        setMentorId(mentor.id);
-        setMentorName(mentor.full_name);
-        setStored(MENTOR_KEY, String(mentor.id));
+      const nextPersonas = buildPersonas(users, newcomers);
+      setPersonas(nextPersonas);
+
+      const mentorPersonas = nextPersonas.filter((item) => item.role === "mentor");
+      const newcomerPersonas = nextPersonas.filter(
+        (item) => item.role === "newcomer" && item.newcomer_id,
+      );
+
+      const storedMentorId = parseStoredId(MENTOR_KEY);
+      const nextMentor =
+        mentorPersonas.find((item) => item.user_id === storedMentorId) ??
+        mentorPersonas[0];
+      if (nextMentor) {
+        setMentorId(nextMentor.user_id);
+        setMentorName(nextMentor.name);
+        setStored(MENTOR_KEY, String(nextMentor.user_id));
       } else {
         setMentorId(null);
         setStored(MENTOR_KEY, null);
       }
-      if (newcomer) {
-        setNewcomerId(newcomer.id);
-        if (newcomer.full_name) {
-          setNewcomerName(newcomer.full_name);
-        } else {
-          // newcomer.user_id → look up
-          const u = users.find((x) => x.id === newcomer.user_id);
-          if (u?.full_name) setNewcomerName(u.full_name);
-        }
-        setStored(NEWCOMER_KEY, String(newcomer.id));
+
+      const storedNewcomerId = parseStoredId(NEWCOMER_KEY);
+      const nextNewcomer =
+        newcomerPersonas.find((item) => item.newcomer_id === storedNewcomerId) ??
+        newcomerPersonas[0];
+      if (nextNewcomer?.newcomer_id) {
+        setNewcomerId(nextNewcomer.newcomer_id);
+        setNewcomerName(nextNewcomer.name);
+        setStored(NEWCOMER_KEY, String(nextNewcomer.newcomer_id));
       } else {
         setNewcomerId(null);
         setStored(NEWCOMER_KEY, null);
       }
     } catch (e) {
-      // If listing fails, we still try the seed result
       console.warn("[demo] hydrate failed", e);
     }
   }, []);
@@ -143,19 +213,33 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     void bootstrap();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bootstrap]);
 
   const setRole = React.useCallback((r: Role) => {
     setRoleState(r);
     setStored(ROLE_KEY, r);
   }, []);
 
+  const refreshPersonas = React.useCallback(async () => {
+    await hydrateFromBackend();
+  }, [hydrateFromBackend]);
+
   const refresh = React.useCallback(async () => {
     sessionStorage.removeItem(SEED_KEY);
     setReady(false);
     await bootstrap();
   }, [bootstrap]);
+
+  const activePersona = React.useMemo(() => {
+    if (role === "mentor") {
+      return personas.find((item) => item.role === "mentor" && item.user_id === mentorId) ?? null;
+    }
+    return (
+      personas.find(
+        (item) => item.role === "newcomer" && item.newcomer_id === newcomerId,
+      ) ?? null
+    );
+  }, [mentorId, newcomerId, personas, role]);
 
   const value = React.useMemo<DemoContextValue>(
     () => ({
@@ -167,10 +251,29 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       newcomerId,
       mentorName,
       newcomerName,
+      personas,
+      activePersona,
       setRole,
+      selectPersona,
       refresh,
+      refreshPersonas,
     }),
-    [ready, seedMut.isPending, error, role, mentorId, newcomerId, mentorName, newcomerName, setRole, refresh],
+    [
+      ready,
+      seedMut.isPending,
+      error,
+      role,
+      mentorId,
+      newcomerId,
+      mentorName,
+      newcomerName,
+      personas,
+      activePersona,
+      setRole,
+      selectPersona,
+      refresh,
+      refreshPersonas,
+    ],
   );
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
