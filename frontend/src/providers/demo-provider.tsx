@@ -85,12 +85,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     // Pull user/newcomer info to confirm IDs exist and capture names
     try {
       const [users, newcomers] = await Promise.all([listUsers(), listNewcomers()]);
-      const mentor = users.find((u) => u.role?.toLowerCase().includes("mentor")) ?? users[0];
+      const mentor = users.find((u) => u.role?.toLowerCase().includes("mentor"));
       const newcomer = newcomers[0];
       if (mentor) {
         setMentorId(mentor.id);
         setMentorName(mentor.full_name);
         setStored(MENTOR_KEY, String(mentor.id));
+      } else {
+        setMentorId(null);
+        setStored(MENTOR_KEY, null);
       }
       if (newcomer) {
         setNewcomerId(newcomer.id);
@@ -102,6 +105,9 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
           if (u?.full_name) setNewcomerName(u.full_name);
         }
         setStored(NEWCOMER_KEY, String(newcomer.id));
+      } else {
+        setNewcomerId(null);
+        setStored(NEWCOMER_KEY, null);
       }
     } catch (e) {
       // If listing fails, we still try the seed result
