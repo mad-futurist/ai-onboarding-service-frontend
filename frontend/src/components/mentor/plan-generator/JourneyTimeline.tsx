@@ -22,6 +22,7 @@ interface JourneyTimelineProps {
   journey: NewcomerJourney;
   activePeriodId?: number | null;
   onAddPeriod?: () => void;
+  onAdjustPeriod?: (period: JourneyPeriod) => void;
   className?: string;
 }
 
@@ -69,6 +70,7 @@ export function JourneyTimeline({
   journey,
   activePeriodId,
   onAddPeriod,
+  onAdjustPeriod,
   className,
 }: JourneyTimelineProps) {
   const reduce = useReducedMotion();
@@ -203,6 +205,7 @@ export function JourneyTimeline({
                 idx={idx}
                 isActive={activePeriodId === p.id}
                 reduce={!!reduce}
+                onAdjustPeriod={onAdjustPeriod}
               />
             ))}
             <AddPeriodCard onClick={onAddPeriod} reduce={!!reduce} index={journey.periods.length} />
@@ -226,11 +229,13 @@ function PeriodCard({
   idx,
   isActive,
   reduce,
+  onAdjustPeriod,
 }: {
   period: JourneyPeriod;
   idx: number;
   isActive: boolean;
   reduce: boolean;
+  onAdjustPeriod?: (period: JourneyPeriod) => void;
 }) {
   const meta = STATUS_META[period.status];
   const progress = period.tasks_total
@@ -249,6 +254,19 @@ function PeriodCard({
         meta.glow,
         isActive && "ring-2 ring-[color:var(--color-primary-ring)] shadow-[var(--shadow-elevated)]",
       )}
+      role={onAdjustPeriod ? "button" : undefined}
+      tabIndex={onAdjustPeriod ? 0 : undefined}
+      onClick={onAdjustPeriod ? () => onAdjustPeriod(period) : undefined}
+      onKeyDown={
+        onAdjustPeriod
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onAdjustPeriod(period);
+              }
+            }
+          : undefined
+      }
     >
       {/* Status dot */}
       <div className="absolute -top-2 left-4 flex items-center gap-1.5 rounded-full border border-[color:var(--color-border)] bg-white px-2 py-0.5">
@@ -320,25 +338,20 @@ function PeriodCard({
             </>
           )}
         </span>
-        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[color:var(--color-primary)] opacity-80 transition group-hover:opacity-100">
-          Open <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-        </span>
+        {period.plan_id == null ? null : (
+          <Link
+            href={`/mentor/plan-generator/${period.plan_id}`}
+            onClick={(event) => event.stopPropagation()}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[color:var(--color-primary)] opacity-80 transition hover:opacity-100"
+          >
+            Open <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        )}
       </div>
     </motion.div>
   );
 
-  if (period.plan_id == null) {
-    return <div className="relative">{content}</div>;
-  }
-
-  return (
-    <Link
-      href={`/mentor/plan-generator/${period.plan_id}`}
-      className="relative block focus-visible:outline-none"
-    >
-      {content}
-    </Link>
-  );
+  return <div className="relative block focus-visible:outline-none">{content}</div>;
 }
 
 function AddPeriodCard({

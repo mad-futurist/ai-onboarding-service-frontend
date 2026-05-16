@@ -614,13 +614,37 @@ export interface TaskDetailResponse {
 
 export interface PlanAdjustment {
   id: ID;
+  newcomer_id?: ID;
   plan_id: ID;
-  title?: string;
+  signal_id?: ID | null;
+  title: string;
+  reason?: string;
+  suggested_changes?: PlanAdjustmentSuggestedChange[];
   strengths?: string[];
   gaps?: string[];
   changes?: { type: "add" | "remove" | "shift"; description: string }[];
-  status: "draft" | "approved" | "declined" | "pending" | string;
+  status: "draft" | "approved" | "declined" | "pending" | "applied" | string;
   created_at: string;
+  reviewed_at?: string | null;
+  applied_at?: string | null;
+}
+
+export interface PlanAdjustmentSuggestedChange {
+  action: string;
+  task_id?: ID | null;
+  task_ids?: ID[];
+  title?: string;
+  description?: string | null;
+  reason?: string | null;
+  field?: string;
+  value?: unknown;
+  week_number?: number | null;
+  day_number?: number | null;
+  task_type?: string;
+  priority?: string;
+  success_criteria?: string | null;
+  period_label?: string | null;
+  goal?: string | null;
 }
 
 export interface BlockedReport {

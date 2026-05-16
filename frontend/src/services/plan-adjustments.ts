@@ -19,6 +19,13 @@ export async function listAdjustmentsForNewcomer(
   return data;
 }
 
+export async function generateAdjustmentForPeriod(planId: ID): Promise<PlanAdjustment> {
+  const { data } = await api.post<PlanAdjustment>(
+    `/plan-adjustments/generate/for-period/${planId}`,
+  );
+  return data;
+}
+
 export async function approveAdjustment(id: ID): Promise<PlanAdjustmentStatusResponse> {
   const { data } = await api.patch<PlanAdjustmentStatusResponse>(`/plan-adjustments/${id}/approve`);
   return data;

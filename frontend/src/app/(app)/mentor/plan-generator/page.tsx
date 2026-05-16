@@ -36,6 +36,7 @@ import {
   type PeriodFlowSubmit,
 } from "@/components/mentor/plan-generator/PeriodFlowSheet";
 import { LiveModeWorkspace } from "@/components/mentor/plan-generator/LiveModeWorkspace";
+import { PeriodAdjustmentSheet } from "@/components/mentor/plan-generator/PeriodAdjustmentSheet";
 
 import { getKnowledgeBase } from "@/services/documents";
 import { listNewcomers } from "@/services/newcomers";
@@ -44,7 +45,7 @@ import { getNewcomerJourney } from "@/services/journey";
 import { toApiError } from "@/lib/api";
 import { useDemo } from "@/providers/demo-provider";
 import { fmtDate } from "@/lib/format";
-import type { ID, Newcomer, NewcomerJourney } from "@/types";
+import type { ID, JourneyPeriod, Newcomer, NewcomerJourney } from "@/types";
 
 export default function PlanGeneratorEntryPage() {
   const { mentorId, newcomerId } = useDemo();
@@ -53,6 +54,7 @@ export default function PlanGeneratorEntryPage() {
   const [selectedNewcomerId, setSelectedNewcomerId] = React.useState<ID | null>(null);
   const [defaultSources, setDefaultSources] = React.useState<Set<ID>>(new Set());
   const [flowOpen, setFlowOpen] = React.useState(false);
+  const [adjustPeriod, setAdjustPeriod] = React.useState<JourneyPeriod | null>(null);
   const [liveSession, setLiveSession] = React.useState<{
     notes: string;
     label: string;
@@ -193,6 +195,7 @@ export default function PlanGeneratorEntryPage() {
           <JourneyTimeline
             journey={journey}
             onAddPeriod={() => setFlowOpen(true)}
+            onAdjustPeriod={setAdjustPeriod}
           />
         ) : (
           <EmptyState
@@ -239,6 +242,14 @@ export default function PlanGeneratorEntryPage() {
         initialNotes={mentorNotes}
         initialSources={defaultSources}
         onSubmit={handleFlowSubmit}
+      />
+
+      <PeriodAdjustmentSheet
+        open={!!adjustPeriod}
+        onClose={() => setAdjustPeriod(null)}
+        newcomerId={activeNewcomer?.id ?? null}
+        newcomerName={activeNewcomer?.full_name}
+        period={adjustPeriod}
       />
     </div>
   );
