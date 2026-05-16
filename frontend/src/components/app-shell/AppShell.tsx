@@ -48,7 +48,7 @@ function BootstrapState() {
 function BackendError({ message }: { message: string }) {
   return (
     <div className="flex flex-1 items-center justify-center min-h-[60vh] px-6">
-      <div className="max-w-md rounded-2xl border border-[color:var(--color-danger-soft)] bg-white p-6">
+      <div className="max-w-md rounded-2xl border border-[color:var(--color-danger-soft)] bg-[color:var(--color-surface)] p-6">
         <div className="text-sm font-semibold text-[color:var(--color-danger-fg)]">
           Cannot reach the backend
         </div>

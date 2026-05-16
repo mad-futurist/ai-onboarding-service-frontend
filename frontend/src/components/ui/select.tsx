@@ -17,7 +17,7 @@ export const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-[color:var(--color-border-strong)] bg-white px-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-[color:var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary-ring)] disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface)] px-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-[color:var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary-ring)] disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,
     )}
     {...props}
@@ -39,7 +39,7 @@ export const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-elevated)] data-[state=open]:animate-in",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] shadow-[var(--shadow-elevated)] data-[state=open]:animate-in",
         position === "popper" && "data-[side=bottom]:translate-y-1",
         className,
       )}

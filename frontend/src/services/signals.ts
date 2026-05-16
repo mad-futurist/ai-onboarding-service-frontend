@@ -4,6 +4,7 @@ import type {
   AISignalDetectionResponse,
   ID,
   SignalAudience,
+  SignalCatalogGroup,
   SignalComment,
   SignalCommentVisibility,
 } from "@/types";
@@ -32,6 +33,11 @@ export async function listSignalsForMe(
 
 export async function detectSignals(newcomerId: ID): Promise<AISignalDetectionResponse> {
   const { data } = await api.post<AISignalDetectionResponse>(`/ai-signals/detect/newcomers/${newcomerId}`);
+  return data;
+}
+
+export async function listSignalCatalog(): Promise<SignalCatalogGroup[]> {
+  const { data } = await api.get<SignalCatalogGroup[]>("/ai-signals/catalog");
   return data;
 }
 

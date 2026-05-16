@@ -60,7 +60,7 @@
   --shadow-ai: 0 0 0 1px rgb(249 115 22 / 0.20), 0 8px 28px -10px rgb(249 115 22 / 0.30);
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-theme-sans, var(--font-geist-sans));
   --font-mono: var(--font-geist-mono);
 }
 
@@ -88,6 +88,251 @@
   --radius: 0.75rem;
 }
 
+[data-theme="current"] {
+  --font-theme-sans: var(--font-geist-sans);
+
+  --color-bg: #FAFAF9;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F5F5F4;
+  --color-surface-elevated: #FFFFFF;
+  --color-border: #E7E5E4;
+  --color-border-strong: #D6D3D1;
+
+  --color-fg: #0C0A09;
+  --color-fg-muted: #57534E;
+  --color-fg-subtle: #78716C;
+  --color-fg-faint: #A8A29E;
+
+  --color-primary: #F97316;
+  --color-primary-hover: #EA580C;
+  --color-primary-active: #C2410C;
+  --color-primary-soft: #FFF7ED;
+  --color-primary-softer: #FFEDD5;
+  --color-primary-ring: #FED7AA;
+  --color-primary-fg: #FFFFFF;
+
+  --color-ai-from: #F97316;
+  --color-ai-via: #EC4899;
+  --color-ai-to: #8B5CF6;
+  --color-ai-soft-from: #FFF7ED;
+  --color-ai-soft-via: #FDF2F8;
+  --color-ai-soft-to: #F5F3FF;
+}
+
+[data-theme="sunset-orange"] {
+  --font-theme-sans: var(--font-dm-sans);
+
+  --color-bg: #FFF7F0;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #FFF0E0;
+  --color-surface-elevated: #FFFFFF;
+  --color-border: #FFD199;
+  --color-border-strong: #FFAA55;
+
+  --color-fg: #1A0E00;
+  --color-fg-muted: #5C3920;
+  --color-fg-subtle: #946140;
+  --color-fg-faint: #C9956A;
+
+  --color-primary: #E85D04;
+  --color-primary-hover: #FF8500;
+  --color-primary-active: #9D2C00;
+  --color-primary-soft: #FFE6CC;
+  --color-primary-softer: #FFF0E0;
+  --color-primary-ring: #FFB87A;
+  --color-primary-fg: #FFFFFF;
+
+  --color-ai-from: #E85D04;
+  --color-ai-via: #FF8500;
+  --color-ai-to: #FFB87A;
+  --color-ai-soft-from: #FFF7F0;
+  --color-ai-soft-via: #FFE6CC;
+  --color-ai-soft-to: #FFD199;
+}
+
+[data-theme="solar-amber"] {
+  --font-theme-sans: var(--font-ibm-plex-sans);
+
+  --color-bg: #0F0700;
+  --color-surface: #1A0E00;
+  --color-surface-muted: #241400;
+  --color-surface-elevated: #2A1700;
+  --color-border: #3D2000;
+  --color-border-strong: #5C3000;
+
+  --color-fg: #FFF7F0;
+  --color-fg-muted: #D6A268;
+  --color-fg-subtle: #A67B4A;
+  --color-fg-faint: #7A5030;
+
+  --color-primary: #FFB347;
+  --color-primary-hover: #FF8C00;
+  --color-primary-active: #FFD199;
+  --color-primary-soft: #3D2000;
+  --color-primary-softer: #2A1700;
+  --color-primary-ring: #FF8C00;
+  --color-primary-fg: #1A0E00;
+
+  --color-ai-from: #FF6B00;
+  --color-ai-via: #FFB347;
+  --color-ai-to: #FFD199;
+  --color-ai-soft-from: #241400;
+  --color-ai-soft-via: #3D2000;
+  --color-ai-soft-to: #5C3000;
+
+  --color-success: #34D399;
+  --color-success-soft: #063C2A;
+  --color-success-fg: #A7F3D0;
+  --color-warning: #FBBF24;
+  --color-warning-soft: #4A3100;
+  --color-warning-fg: #FDE68A;
+  --color-danger: #FB7185;
+  --color-danger-soft: #4C101C;
+  --color-danger-fg: #FFE4E6;
+  --color-info: #60A5FA;
+  --color-info-soft: #102B4E;
+  --color-info-fg: #DBEAFE;
+}
+
+[data-theme="cyber-tech"] {
+  --font-theme-sans: var(--font-ibm-plex-sans);
+
+  --color-bg: #0A0E14;
+  --color-surface: #111824;
+  --color-surface-muted: #1A2333;
+  --color-surface-elevated: #1F2D44;
+  --color-border: #1F2D44;
+  --color-border-strong: #2D4163;
+
+  --color-fg: #E8F4FF;
+  --color-fg-muted: #7B98BC;
+  --color-fg-subtle: #5A7896;
+  --color-fg-faint: #3D5A78;
+
+  --color-primary: #00D4FF;
+  --color-primary-hover: #3BE7FF;
+  --color-primary-active: #00A8CC;
+  --color-primary-soft: #0A2A3D;
+  --color-primary-softer: #0F1F2E;
+  --color-primary-ring: #00D4FF;
+  --color-primary-fg: #0A0E14;
+
+  --color-ai-from: #00D4FF;
+  --color-ai-via: #5B7FFF;
+  --color-ai-to: #A855F7;
+  --color-ai-soft-from: #0F1F2E;
+  --color-ai-soft-via: #1A2333;
+  --color-ai-soft-to: #2D4163;
+
+  --color-success: #34D399;
+  --color-success-soft: #052E20;
+  --color-success-fg: #A7F3D0;
+  --color-warning: #FBBF24;
+  --color-warning-soft: #3A2A05;
+  --color-warning-fg: #FDE68A;
+  --color-danger: #FB7185;
+  --color-danger-soft: #3A0E18;
+  --color-danger-fg: #FFE4E6;
+  --color-info: #60A5FA;
+  --color-info-soft: #0F1E40;
+  --color-info-fg: #DBEAFE;
+}
+
+[data-theme="velvet-premium"] {
+  --font-theme-sans: var(--font-space-grotesk);
+
+  --color-bg: #0E0816;
+  --color-surface: #1A1428;
+  --color-surface-muted: #241C36;
+  --color-surface-elevated: #2D2444;
+  --color-border: #3D2E5C;
+  --color-border-strong: #574378;
+
+  --color-fg: #F5EFFF;
+  --color-fg-muted: #B9A5D9;
+  --color-fg-subtle: #8B7AB0;
+  --color-fg-faint: #6A5A85;
+
+  --color-primary: #D4AF37;
+  --color-primary-hover: #FFD75C;
+  --color-primary-active: #9A7E1F;
+  --color-primary-soft: #2D2444;
+  --color-primary-softer: #1A1428;
+  --color-primary-ring: #D4AF37;
+  --color-primary-fg: #0E0816;
+
+  --color-ai-from: #D4AF37;
+  --color-ai-via: #B47AC2;
+  --color-ai-to: #7B3FB8;
+  --color-ai-soft-from: #1A1428;
+  --color-ai-soft-via: #241C36;
+  --color-ai-soft-to: #3D2E5C;
+
+  --color-success: #4ADE80;
+  --color-success-soft: #082713;
+  --color-success-fg: #BBF7D0;
+  --color-warning: #FBBF24;
+  --color-warning-soft: #3A2A05;
+  --color-warning-fg: #FDE68A;
+  --color-danger: #FB7185;
+  --color-danger-soft: #35101B;
+  --color-danger-fg: #FFE4E6;
+  --color-info: #A78BFA;
+  --color-info-soft: #1D1235;
+  --color-info-fg: #EDE9FE;
+}
+
+[data-theme="coral-marketing"] {
+  --font-theme-sans: var(--font-outfit);
+
+  --color-bg: #FFFBF7;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #FEF0EC;
+  --color-surface-elevated: #FFFFFF;
+  --color-border: #FDD4C8;
+  --color-border-strong: #FBAE96;
+
+  --color-fg: #1A0A14;
+  --color-fg-muted: #7A4D5C;
+  --color-fg-subtle: #A6717E;
+  --color-fg-faint: #D49EAA;
+
+  --color-primary: #FF5A36;
+  --color-primary-hover: #FF7A5C;
+  --color-primary-active: #CC3F1F;
+  --color-primary-soft: #FEE6DD;
+  --color-primary-softer: #FEF0EC;
+  --color-primary-ring: #FF7A5C;
+  --color-primary-fg: #FFFFFF;
+
+  --color-ai-from: #FF5A36;
+  --color-ai-via: #FFB347;
+  --color-ai-to: #2EC4B6;
+  --color-ai-soft-from: #FFFBF7;
+  --color-ai-soft-via: #FEE6DD;
+  --color-ai-soft-to: #C8F0EB;
+}
+
+[data-font="geist"] {
+  --font-theme-sans: var(--font-geist-sans);
+}
+
+[data-font="dm-sans"] {
+  --font-theme-sans: var(--font-dm-sans);
+}
+
+[data-font="ibm-plex-sans"] {
+  --font-theme-sans: var(--font-ibm-plex-sans);
+}
+
+[data-font="space-grotesk"] {
+  --font-theme-sans: var(--font-space-grotesk);
+}
+
+[data-font="outfit"] {
+  --font-theme-sans: var(--font-outfit);
+}
+
 /* ---------- Base ---------- */
 html,
 body {
@@ -105,6 +350,38 @@ body {
 ::selection {
   background: var(--color-primary-softer);
   color: var(--color-primary-active);
+}
+
+[data-theme] .bg-white {
+  background-color: var(--color-surface);
+}
+
+[data-theme] .bg-white\/95 {
+  background-color: color-mix(in srgb, var(--color-surface) 95%, transparent);
+}
+
+[data-theme] .bg-white\/90 {
+  background-color: color-mix(in srgb, var(--color-surface) 90%, transparent);
+}
+
+[data-theme] .bg-white\/85 {
+  background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
+}
+
+[data-theme] .bg-white\/80 {
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+}
+
+[data-theme] .bg-white\/70 {
+  background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+}
+
+[data-theme] .bg-white\/60 {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+[data-theme] .bg-white\/50 {
+  background-color: color-mix(in srgb, var(--color-surface) 50%, transparent);
 }
 
 /* Scrollbar polish */

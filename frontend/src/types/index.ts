@@ -442,6 +442,24 @@ export interface AISignalDetectionResponse {
   signals: AISignal[];
 }
 
+export interface SignalCatalogItem {
+  signal_type: string;
+  title: string;
+  tone: SignalTone | string;
+  severity: "low" | "medium" | "high" | string;
+  when: string;
+  evidence: string;
+  suggested_action: string;
+  mvp_trigger: string;
+}
+
+export interface SignalCatalogGroup {
+  tone: SignalTone | string;
+  label: string;
+  description: string;
+  items: SignalCatalogItem[];
+}
+
 export interface AIQuestionSource {
   id?: ID;
   document_id?: ID;
@@ -638,3 +656,102 @@ export interface PersonContact {
   team?: string;
   expertise?: string[];
 }
+
+// ---------- Assessments ----------
+
+export type AssessmentQuestionType = "mcq" | "short_answer" | "scenario";
+export type AssessmentDifficulty = "easy" | "medium" | "hard";
+export type AssessmentStatus = "draft" | "published" | "submitted" | "evaluated";
+
+export interface AssessmentOption {
+  id: string;
+  label: string;
+  is_correct: boolean;
+}
+
+export interface AssessmentQuestion {
+  id: ID;
+  assessment_id: ID;
+  order_index: number;
+  question_type: AssessmentQuestionType;
+  prompt: string;
+  context?: string | null;
+  options?: AssessmentOption[] | null;
+  expected_answer?: string | null;
+  skill_tag?: string | null;
+  difficulty?: AssessmentDifficulty | null;
+}
+
+export interface Assessment {
+  id: ID;
+  newcomer_id: ID | null;
+  mentor_id: ID | null;
+  title: string;
+  status: AssessmentStatus;
+  mentor_notes?: string | null;
+  role_context?: string | null;
+  source_document_ids?: ID[] | null;
+  generated_by_ai: boolean;
+  used_fallback: boolean;
+  created_at: string;
+  published_at?: string | null;
+  questions: AssessmentQuestion[];
+}
+
+export interface AssessmentAnswer {
+  id: ID;
+  question_id: ID;
+  answer_text?: string | null;
+  selected_option_ids?: string[] | null;
+  ai_score?: number | null;
+  ai_feedback?: string | null;
+  mentor_score?: number | null;
+  mentor_feedback?: string | null;
+}
+
+export interface AssessmentSubmission {
+  id: ID;
+  assessment_id: ID;
+  newcomer_id: ID;
+  started_at?: string | null;
+  submitted_at?: string | null;
+  duration_seconds?: number | null;
+  overall_score?: number | null;
+  summary?: string | null;
+  answers: AssessmentAnswer[];
+}
+
+export interface AssessmentGenerateInput {
+  newcomer_id?: ID | null;
+  mentor_id?: ID | null;
+  mentor_notes?: string | null;
+  role_context?: string | null;
+  document_ids?: ID[];
+  question_count?: number;
+  question_types?: AssessmentQuestionType[];
+  job_title?: string | null;
+  seniority?: string | null;
+  team?: string | null;
+  known_skills?: string | null;
+  known_gaps?: string | null;
+}
+
+export interface AssessmentRegenerateInput {
+  scope: "all" | "question";
+  target_id?: ID | null;
+  mentor_notes?: string | null;
+  document_ids?: ID[];
+}
+
+export interface AssessmentSubmissionAnswerInput {
+  question_id: ID;
+  answer_text?: string | null;
+  selected_option_ids?: string[] | null;
+}
+
+export interface AssessmentSubmissionInput {
+  newcomer_id: ID;
+  duration_seconds?: number | null;
+  answers: AssessmentSubmissionAnswerInput[];
+}
+

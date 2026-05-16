@@ -11,7 +11,6 @@ import {
   Settings,
   Home,
   ListChecks,
-  MessageSquare,
   LineChart,
   Compass,
   GraduationCap,
@@ -20,6 +19,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
+import { ReadySetLogo } from "@/components/branding/ReadySetLogo";
 import { useDemo } from "@/providers/demo-provider";
 
 type NavItem = {
@@ -93,11 +93,9 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="hidden lg:flex w-[260px] shrink-0 flex-col border-r border-[color:var(--color-border)] bg-white">
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-[color:var(--color-border)]">
-        <div className="relative grid place-items-center h-8 w-8 rounded-lg ai-gradient text-white shadow-sm">
-          <Sparkles className="h-4 w-4" />
-        </div>
+    <aside className="hidden lg:flex w-[260px] shrink-0 flex-col border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
+      <div className="flex h-16 items-center gap-2.5 px-5 border-b border-[color:var(--color-border)]">
+        <ReadySetLogo size={32} variant="light" title="ReadySet.AI" className="shrink-0" />
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold tracking-tight">{APP_NAME}</span>
           <span className="text-[10px] uppercase tracking-wider text-[color:var(--color-fg-subtle)]">

@@ -13,6 +13,7 @@ import { ProgressBar } from "@/components/charts/ProgressBar";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { BlockedTrigger } from "@/components/newcomer/BlockedDialog";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { TakeAssessmentBanner } from "@/components/newcomer/assessment/TakeAssessmentBanner";
 
 import { useDemo } from "@/providers/demo-provider";
 import { useNewcomerDashboard } from "@/hooks/use-newcomer-dashboard";
@@ -69,6 +70,8 @@ export default function NewcomerHomePage() {
           </>
         }
       />
+
+      <TakeAssessmentBanner newcomerId={newcomerId} />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="sm:col-span-2 overflow-hidden">

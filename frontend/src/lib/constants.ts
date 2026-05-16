@@ -1,5 +1,5 @@
-export const APP_NAME = "Onbord";
-export const APP_TAGLINE = "AI onboarding for teams that hire well";
+export const APP_NAME = "ReadySet.AI";
+export const APP_TAGLINE = "AI onboarding for sales teams that ramp fast";
 
 export type Role = "mentor" | "newcomer";
 
@@ -71,9 +71,17 @@ export const SIGNAL_TYPE_LABEL: Record<string, string> = {
   repeated_question: "Repeated question",
   documentation_gap: "Documentation gap",
   fast_completion: "Fast completion",
+  steady_progress: "Steady progress",
+  plan_stall: "Plan stall risk",
+  empty_plan_blocker: "Missing onboarding plan",
   deployment_heavy_plan: "Deployment-heavy plan",
   hr_friction: "HR friction",
   access_friction: "Access friction",
+  deployment_friction: "Deployment friction",
+  code_review_friction: "Code review friction",
+  testing_friction: "Testing friction",
+  architecture_friction: "Architecture friction",
+  jira_workflow_friction: "Jira workflow friction",
   knowledge_friction: "Knowledge friction",
 };
 

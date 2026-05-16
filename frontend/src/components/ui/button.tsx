@@ -12,10 +12,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[color:var(--color-primary)] text-white shadow-sm hover:bg-[color:var(--color-primary-hover)] active:bg-[color:var(--color-primary-active)]",
+          "bg-[color:var(--color-primary)] text-[color:var(--color-primary-fg)] shadow-sm hover:bg-[color:var(--color-primary-hover)] active:bg-[color:var(--color-primary-active)]",
         ai: "ai-gradient text-white shadow-sm hover:brightness-105 active:brightness-95",
         outline:
-          "border border-[color:var(--color-border-strong)] bg-white text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface-muted)]",
+          "border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface)] text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface-muted)]",
         ghost:
           "text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface-muted)]",
         soft:

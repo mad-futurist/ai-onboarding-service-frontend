@@ -13,7 +13,7 @@ export function TopBar() {
   const greeting = role === "mentor" ? "Mentor cockpit" : "Your onboarding";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[color:var(--color-border)] bg-white/85 backdrop-blur px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[color:var(--color-border)] bg-[color:color-mix(in_srgb,var(--color-surface)_85%,transparent)] backdrop-blur px-4 sm:px-6">
       <div className="flex flex-col">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
           {greeting}
@@ -35,7 +35,7 @@ export function TopBar() {
           AI live
         </div>
         <RoleSwitcher />
-        <button className="grid h-9 w-9 place-items-center rounded-lg border border-[color:var(--color-border)] bg-white text-[color:var(--color-fg-muted)] hover:bg-[color:var(--color-surface-muted)] transition-colors">
+        <button className="grid h-9 w-9 place-items-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-[color:var(--color-fg-muted)] hover:bg-[color:var(--color-surface-muted)] transition-colors">
           <BellRing className="h-4 w-4" />
         </button>
         <Avatar>
