@@ -114,6 +114,7 @@ export default function MentorKanbanPage() {
         toast.success("Task moved");
       }
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) =>
       toast.error("Could not update task", {

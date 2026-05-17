@@ -128,6 +128,7 @@ export default function NewcomerKanbanPage() {
       qc.invalidateQueries({ queryKey: ["newcomer-dashboard"] });
       qc.invalidateQueries({ queryKey: ["task-detail", vars.task.id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) => {
       toast.error("Could not move task", {

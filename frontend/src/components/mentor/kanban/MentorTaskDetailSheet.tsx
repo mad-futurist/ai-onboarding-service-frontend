@@ -99,6 +99,7 @@ export function MentorTaskDetailSheet({
       setReply("");
       qc.invalidateQueries({ queryKey: ["task-comments", taskId] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) =>
       toast.error("Could not send comment", {
@@ -121,6 +122,7 @@ export function MentorTaskDetailSheet({
       qc.invalidateQueries({ queryKey: ["task-detail", taskId] });
       qc.invalidateQueries({ queryKey: ["task-comments", taskId] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) =>
       toast.error("Could not update task", {

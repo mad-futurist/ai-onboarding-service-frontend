@@ -113,6 +113,7 @@ export default function TaskDetailPage() {
       qc.invalidateQueries({ queryKey: ["newcomer-dashboard"] });
       qc.invalidateQueries({ queryKey: ["task-comments", id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) =>
       toast.error("Couldn't update", { description: toApiError(err).message }),
@@ -129,6 +130,7 @@ export default function TaskDetailPage() {
       setChatDraft("");
       qc.invalidateQueries({ queryKey: ["task-comments", id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (err) =>
       toast.error("Couldn't send message", {
