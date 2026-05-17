@@ -38,6 +38,7 @@ import { useDemo } from "@/providers/demo-provider";
 import { getNewcomerPlan } from "@/services/newcomers";
 import { updateTaskStatus } from "@/services/tasks";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 import { cn } from "@/lib/utils";
 import type { OnboardingTask } from "@/types";
 
@@ -129,6 +130,7 @@ export default function NewcomerKanbanPage() {
       qc.invalidateQueries({ queryKey: ["task-detail", vars.task.id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) => {
       toast.error("Could not move task", {

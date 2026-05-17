@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { createMeeting } from "@/services/meetings";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 import { useDemo } from "@/providers/demo-provider";
 import type { AISignal, DemoPersona, ID } from "@/types";
 
@@ -207,6 +208,7 @@ function ScheduleMeetingForm({
       toast.success("Meeting scheduled");
       qc.invalidateQueries({ queryKey: ["meetings"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
       onOpenChange(false);
     },
     onError: (err) => toast.error("Schedule failed", { description: toApiError(err).message }),

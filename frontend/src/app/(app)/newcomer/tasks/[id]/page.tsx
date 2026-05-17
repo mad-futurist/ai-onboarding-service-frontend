@@ -49,6 +49,7 @@ import {
   listTaskComments,
 } from "@/services/task-comments";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 import { fmtRelative } from "@/lib/format";
 import { cn, getInitials } from "@/lib/utils";
 import { useDemo } from "@/providers/demo-provider";
@@ -114,6 +115,7 @@ export default function TaskDetailPage() {
       qc.invalidateQueries({ queryKey: ["task-comments", id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) =>
       toast.error("Couldn't update", { description: toApiError(err).message }),
@@ -131,6 +133,7 @@ export default function TaskDetailPage() {
       qc.invalidateQueries({ queryKey: ["task-comments", id] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) =>
       toast.error("Couldn't send message", {

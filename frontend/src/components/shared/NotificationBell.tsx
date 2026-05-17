@@ -17,6 +17,7 @@ import {
   markNotificationRead,
   type NotificationItem,
 } from "@/services/notifications";
+import { subscribeNotifications } from "@/lib/notification-bus";
 import { useDemo } from "@/providers/demo-provider";
 
 function formatTimeAgo(iso: string): string {
@@ -60,6 +61,14 @@ export function NotificationBell() {
   React.useEffect(() => {
     if (open && userId) void refetch();
   }, [open, refetch, userId]);
+
+  React.useEffect(() => {
+    if (!userId) return;
+    return subscribeNotifications(() => {
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
+      void refetch();
+    });
+  }, [qc, refetch, userId]);
 
   const notifications = data ?? [];
   const unreadCount = notifications.length;

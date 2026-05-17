@@ -40,6 +40,7 @@ import {
 import { updateTaskStatus } from "@/services/tasks";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 import { cn } from "@/lib/utils";
 
 const ALL = "__all__";
@@ -115,6 +116,7 @@ export default function MentorKanbanPage() {
       }
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) =>
       toast.error("Could not update task", {

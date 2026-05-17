@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fmtRelative } from "@/lib/format";
 import { cn, getInitials } from "@/lib/utils";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 
 import {
   listSignalComments,
@@ -99,6 +100,7 @@ export function SignalNotes({
       setDraft("");
       qc.invalidateQueries({ queryKey: ["signal-comments", signalId] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
       toast.success("Message sent");
     },
     onError: (e) =>
@@ -260,6 +262,7 @@ function ChatBubble({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["signal-comments", signalId] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (e) =>
       toast.error("Could not save reaction", {

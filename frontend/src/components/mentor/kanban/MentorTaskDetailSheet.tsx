@@ -40,6 +40,7 @@ import {
 } from "@/services/task-comments";
 import { getTaskDetail, updateTaskStatus } from "@/services/tasks";
 import { toApiError } from "@/lib/api";
+import { emitNotificationsChanged } from "@/lib/notification-bus";
 import { humanizeSignalType } from "@/lib/constants";
 import { fmtRelative } from "@/lib/format";
 import { cn, getInitials } from "@/lib/utils";
@@ -100,6 +101,7 @@ export function MentorTaskDetailSheet({
       qc.invalidateQueries({ queryKey: ["task-comments", taskId] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) =>
       toast.error("Could not send comment", {
@@ -123,6 +125,7 @@ export function MentorTaskDetailSheet({
       qc.invalidateQueries({ queryKey: ["task-comments", taskId] });
       qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      emitNotificationsChanged();
     },
     onError: (err) =>
       toast.error("Could not update task", {

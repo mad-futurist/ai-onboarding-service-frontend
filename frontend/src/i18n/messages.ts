@@ -885,6 +885,285 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Live generation": "Жива генерація",
   "Live generation workspace": "Робочий простір живої генерації",
   "Building the skill check": "Створюємо перевірку навичок",
+
+  // Guided demo tour — additional titles & bodies
+  "Document preview": "Попередній перегляд документа",
+  "The document is readable before any AI layer appears. The next steps show mind map and chat.":
+    "Документ можна читати ще до появи AI-шару. Наступні кроки показують mind map і чат.",
+  "Mind map tab": "Вкладка mind map",
+  "Open Mind map manually. The tour will not switch tabs for you.":
+    "Відкрийте вкладку Mind map вручну. Тур не перемикає вкладки за вас.",
+  "Generate the mind map": "Згенерувати mind map",
+  "Click Generate mind map to turn the document into a visual structure.":
+    "Натисніть «Згенерувати mind map», щоб перетворити документ на візуальну структуру.",
+  "Mind map generated": "Mind map згенеровано",
+  "The map turns a 20-page document into a navigable structure — central topic, branches, leaf ideas. Marina can scan the shape of the doc in 30 seconds before reading.":
+    "Мапа перетворює 20-сторінковий документ на навігаційну структуру — центральна тема, гілки, ключові ідеї. Marina охопить форму документа за 30 секунд до прочитання.",
+  "Ask about the document": "Запитайте про документ",
+  "Open the Ask tab so Marina can discuss a real HR process question.":
+    "Відкрийте вкладку «Запитати», щоб Marina могла обговорити реальне питання HR-процесу.",
+  "Chat about the HR process": "Чат про HR-процес",
+  "The question is prefilled. Click Ask to keep the answer grounded in available sources.":
+    "Питання вже заповнене. Натисніть «Запитати», щоб відповідь спиралася на доступні джерела.",
+  "Can you explain the HR onboarding process and what I should do first?":
+    "Можеш пояснити HR-процес онбордингу і що мені робити насамперед?",
+  "Read the HR process answer": "Прочитати відповідь про HR-процес",
+  "Wait for the grounded answer to render in the document chat. The highlighted response is the moment to pause before continuing.":
+    "Дочекайтеся, поки відповідь з джерел з'явиться в чаті документа. Підсвічена відповідь — момент паузи перед продовженням.",
+  "Back to mentor": "Назад до ментора",
+  "Open Viewing as again so we can return to Oleg's mentor workspace.":
+    "Знову відкрийте «Перегляд як», щоб повернутися до простору ментора Oleg.",
+  "Choose Oleg": "Вибрати Oleg",
+  "Select the mentor persona.": "Виберіть персону ментора.",
+  "Add a course": "Додати курс",
+  "Use the mentor sidebar to open Courses.": "Через sidebar ментора відкрийте «Курси».",
+  "Create a new course": "Створити новий курс",
+  "Click New course. We will draft a small HR/process course that Marina can see.":
+    "Натисніть «Новий курс». Створимо невеликий HR/process-курс, який побачить Marina.",
+  "Course inputs are ready": "Поля курсу готові",
+  "The fields are prefilled for a short process course. Click Generate with AI when ready.":
+    "Поля заповнені для короткого process-курсу. Натисніть «Згенерувати з AI», коли будете готові.",
+  "HR Process Essentials for Newcomers": "Основи HR-процесу для новачків",
+  "Create a concise onboarding course that explains the HR process, first-week admin steps, and where a newcomer asks for help.":
+    "Створи стислий онбординг-курс, що пояснює HR-процес, адмінкроки першого тижня та куди новачку звертатися по допомогу.",
+  "Course draft, ready to refine": "Чернетка курсу, готова до доопрацювання",
+  "AI drafts the course from the selected knowledge sources — title, lessons, structure. The mentor stays in control: edit any lesson, then approve before it's visible to newcomers.":
+    "AI створює чернетку курсу з вибраних джерел знань — назву, уроки, структуру. Ментор контролює: редагуйте будь-який урок, а потім схваліть, перш ніж він стане видимим новачкам.",
+  "Submit the course": "Надіслати курс",
+  "Click Submit for review. This is still a deliberate mentor action.":
+    "Натисніть «Надіслати на review». Це залишається свідомою дією ментора.",
+  "Approve the course": "Схвалити курс",
+  "Approve the course so it becomes visible to newcomers.":
+    "Схваліть курс, щоб він став видимим новачкам.",
+  "Return to Marina": "Повернутися до Marina",
+  "Open the persona switcher again.": "Знову відкрийте перемикач персон.",
+  "View as Marina again": "Знову переглянути як Marina",
+  "Select Marina to verify the course is available from her workspace.":
+    "Виберіть Marina, щоб переконатися, що курс доступний з її простору.",
+  "Open Marina's courses": "Відкрити курси Marina",
+  "Use the newcomer sidebar to open Courses.": "Через sidebar новачка відкрийте «Курси».",
+  "See the course": "Подивитися курс",
+  "Open the first recommended course to show the newcomer learning view.":
+    "Відкрийте перший рекомендований курс, щоб показати вигляд навчання для новачка.",
+  "Course reader": "Читач курсу",
+  "Marina can read lessons, track progress, and take notes without leaving her workspace.":
+    "Marina може читати уроки, відстежувати прогрес і робити нотатки, не виходячи з робочого простору.",
+  "Back to mentor signals": "Назад до сигналів ментора",
+  "Open Viewing as so Oleg can inspect Tanya's attention signals.":
+    "Відкрийте «Перегляд як», щоб Oleg перевірив сигнали уваги для Tanya.",
+  "Return to the mentor persona.": "Поверніться до персони ментора.",
+  "Open Signals": "Відкрити «Сигнали»",
+  "Use the sidebar to open the Signals center.":
+    "Через sidebar відкрийте «Центр сигналів».",
+  "Select Tanya": "Вибрати Tanya",
+  "Open the newcomer selector to inspect Tanya's attention state.":
+    "Відкрийте перемикач новачків, щоб перевірити стан уваги Tanya.",
+  "Tanya needs attention": "Tanya потребує уваги",
+  "Choose Tanya Petrova. Her open signals show where mentor intervention is useful.":
+    "Виберіть Tanya Petrova. Її відкриті сигнали показують, де корисне втручання ментора.",
+  "Open an attention signal": "Відкрити сигнал уваги",
+  "Click the highlighted signal to see evidence and suggested actions.":
+    "Клікніть підсвічений сигнал, щоб побачити докази й запропоновані дії.",
+  "Turn a signal into a plan change": "Перетворіть сигнал на зміну плану",
+  "From the signal drawer, click Regenerate plan. The AI proposes targeted modifications informed by the signal evidence — the mentor stays in the loop to approve.":
+    "З панелі сигналу натисніть «Згенерувати план повторно». AI пропонує цільові зміни на основі доказів сигналу — ментор схвалює.",
+  "Targeted changes": "Цільові зміни",
+  "Choose targeted changes so the draft can modify individual tasks precisely.":
+    "Виберіть цільові зміни, щоб чернетка могла точно змінювати окремі завдання.",
+  "Pick the period": "Виберіть період",
+  "Confirm the recommended period for the signal-aware adjustment.":
+    "Підтвердіть рекомендований період для коригування з урахуванням сигналу.",
+  "Generate the adjustment draft": "Згенерувати чернетку коригування",
+  "Click Generate from signal. The draft is created only after this deliberate mentor action.":
+    "Натисніть «Згенерувати з сигналу». Чернетка створюється лише після цієї свідомої дії ментора.",
+  "Adjustment draft": "Чернетка коригування",
+  "The draft proposes changes to unfinished work. You can accept, skip, defer, or edit each change.":
+    "Чернетка пропонує зміни до незавершеної роботи. Кожну зміну можна прийняти, пропустити, відкласти або редагувати.",
+  "Precise task edits": "Точні правки завдань",
+  "Open the editor on a proposed change to adjust the exact task title, description, week, day, and reason.":
+    "Відкрийте редактор на запропонованій зміні, щоб налаштувати точну назву завдання, опис, тиждень, день і причину.",
+  "Save the precise edit": "Зберегти точну правку",
+  "The edit fields are prefilled with a sharper action. Click Save edits.":
+    "Поля правки заповнені чіткішою дією. Натисніть «Зберегти правки».",
+  "Add a focused staging dry run": "Додати сфокусований staging dry run",
+  "Schedule a hands-on staging deployment dry run with Victor, then capture rollback checkpoints in the PR notes.":
+    "Запланувати практичний staging dry run розгортання з Victor, потім зафіксувати точки rollback у нотатках PR.",
+  "Tanya needs practice on deployment confidence before independent release work.":
+    "Tanya потрібна практика з впевненості в розгортанні перед самостійним релізом.",
+  "Apply modifications": "Застосувати зміни",
+  "Apply the selected changes to the plan when the mentor is satisfied.":
+    "Застосуйте вибрані зміни до плану, коли ментор задоволений.",
+  "Add a new newcomer": "Додати нового новачка",
+  "Now use the sidebar to add a brand-new newcomer.":
+    "Тепер через sidebar додайте абсолютно нового новачка.",
+  "Profile is prefilled": "Профіль заповнено",
+  "Review the prepared profile, then click Continue.":
+    "Перегляньте підготовлений профіль і натисніть «Продовжити».",
+  "Role context": "Контекст ролі",
+  "The Backend/Platform context is ready. Click Continue.":
+    "Контекст Backend/Platform готовий. Натисніть «Продовжити».",
+  "Generate the skill test": "Згенерувати перевірку навичок",
+  "The skill gaps and two-question assessment are prepared. Click Generate fast.":
+    "Прогалини навичок і перевірка з двох питань підготовлені. Натисніть «Згенерувати швидко».",
+  "Two questions ready": "Два питання готові",
+  "The newcomer test is now a short draft with two questions. Review it before finishing setup.":
+    "Тест новачка тепер — коротка чернетка з двох питань. Перегляньте її перед завершенням налаштування.",
+  "Review the newcomer": "Перегляньте новачка",
+  "Move to the final review step.": "Перейдіть до фінального кроку перегляду.",
+  "Create newcomer": "Створити новачка",
+  "Click Add newcomer. The assessment will be published to this new workspace.":
+    "Натисніть «Додати новачка». Перевірка буде опублікована в цьому новому просторі.",
+  "Newcomer created": "Новачка створено",
+  "The new profile is created. Next, switch into the latest newcomer workspace to take the two-question test.":
+    "Новий профіль створено. Далі перемкніться в простір останнього новачка, щоб пройти тест із двох питань.",
+  "View as the new newcomer": "Переглянути як нового новачка",
+  "Open the persona switcher.": "Відкрийте перемикач персон.",
+  "Choose the new newcomer": "Вибрати нового новачка",
+  "Select the latest newcomer persona created in this demo.":
+    "Виберіть останню персону новачка, створену в цьому демо.",
+  "Take the two-question test": "Пройти тест із двох питань",
+  "The skill check appears in the newcomer dashboard. Click Start.":
+    "Перевірка навичок з'являється на панелі новачка. Натисніть «Почати».",
+  "Question 1": "Питання 1",
+  "The first answer is prefilled. Click Next.":
+    "Перша відповідь заповнена. Натисніть «Далі».",
+  "I would read the release checklist, run tests locally, and ask the owner to confirm the rollback path before staging.":
+    "Я б прочитав release-чекліст, локально запустив тести й попросив власника підтвердити шлях rollback перед staging.",
+  "Question 2": "Питання 2",
+  "The second answer is prefilled. Click Submit to finish the test and trigger plan generation.":
+    "Друга відповідь заповнена. Натисніть «Надіслати», щоб завершити тест і запустити генерацію плану.",
+  "If I am blocked, I would document the exact error, tag the owner, and propose the smallest next diagnostic step.":
+    "Якщо я заблокований, я б задокументував точну помилку, відмітив власника та запропонував найменший наступний діагностичний крок.",
+  "Back to mentor after submission": "Назад до ментора після надсилання",
+  "The submitted test triggers plan generation in the background. Open Viewing as and return to Oleg.":
+    "Надісланий тест запускає генерацію плану у фоні. Відкрийте «Перегляд як» і поверніться до Oleg.",
+  "Back to Overview": "Назад до огляду",
+  "After the assessment, return to the mentor Overview first so the navigation and dashboard context are clear.":
+    "Після перевірки спершу поверніться до огляду ментора, щоб контекст навігації та панелі був зрозумілим.",
+  "Plan generated for Noa": "План згенеровано для Noa",
+  "Back on the dashboard, the new newcomer appears with her freshly generated draft plan. The card is highlighted; the next step opens her workspace.":
+    "Знову на панелі — новий новачок з'являється зі свіжо згенерованою чернеткою плану. Картка підсвічена; наступний крок відкриває її простір.",
+  "Open the AI Plan Generator": "Відкрити генератор планів AI",
+  "To extend a newcomer's plan with a new period — and demo live editing — open the AI Plan Generator from the sidebar.":
+    "Щоб розширити план новачка новим періодом — і показати live-редагування — відкрийте генератор планів AI у sidebar.",
+  "The journey timeline": "Хронологія шляху",
+  "The plan is split into periods. Add a new period to extend the plan with a focused chunk — for example, a fourth onboarding sprint.":
+    "План розбито на періоди. Додайте новий період, щоб розширити план сфокусованим блоком — наприклад, четвертим спринтом онбордингу.",
+  "Click New period — the flow opens as a multi-step sheet: period info, generation mode, then review.":
+    "Натисніть «Новий період» — потік відкриється багатокроковою панеллю: інфо про період, режим генерації, потім перегляд.",
+  "Period info": "Інфо про період",
+  "Label, dates, and a goal — the AI uses these to scope the period. Fields are pre-filled. Click Next.":
+    "Назва, дати й ціль — AI використовує їх, щоб окреслити період. Поля заповнені. Натисніть «Далі».",
+  "Sprint 4 — Production readiness": "Спринт 4 — Готовність до продакшну",
+  "Independent on-call rotation, comfortable shipping production changes solo with confidence.":
+    "Самостійна on-call ротація, впевнене самостійне впровадження продакшн-змін.",
+  "Choose Live collaboration": "Виберіть Live-співпрацю",
+  "Live mode streams the AI's reasoning, sources, and tasks as they are generated — the mentor watches and steers, instead of waiting for a black-box draft.":
+    "Live-режим транслює міркування AI, джерела й завдання в міру їх генерації — ментор спостерігає і скеровує замість того, щоб чекати на чернетку «чорної скриньки».",
+  "Review the choice": "Переглянути вибір",
+  "Click Next to confirm the mode and move to the review step.":
+    "Натисніть «Далі», щоб підтвердити режим і перейти до перегляду.",
+  "Open live mode": "Відкрити live-режим",
+  "Click Open live mode — the sheet closes and the live workspace takes over. The AI starts generating the period in real time.":
+    "Натисніть «Відкрити live-режим» — панель закривається, і live-простір бере керування. AI починає генерувати період у реальному часі.",
+  "View the draft, then commit": "Перегляньте чернетку, потім підтвердьте",
+  "Reasoning streams on the left, the draft plan builds on the right. When it's ready (or hit Skip step to jump ahead), click Commit draft to persist this period.":
+    "Міркування транслюється ліворуч, чернетка плану будується праворуч. Коли готово (або натисніть «Пропустити крок»), натисніть «Зберегти чернетку», щоб зафіксувати цей період.",
+  "Switch to All tasks": "Перейти до «Усі завдання»",
+  "The new period landed on the workspace. Switch to the All tasks view to see the flat list and pick one to refine.":
+    "Новий період з'явився в просторі. Перейдіть на вигляд «Усі завдання», щоб побачити плаский список і вибрати одне для доопрацювання.",
+  "Click a task to edit it": "Клікніть завдання, щоб його редагувати",
+  "Every task is editable. Click the highlighted task to open the editor.":
+    "Кожне завдання можна редагувати. Клікніть підсвічене завдання, щоб відкрити редактор.",
+  "Edit the task content": "Редагуйте вміст завдання",
+  "Title, description, priority, success and acceptance criteria — every field is editable. The mentor refines what the AI drafted. We've sharpened the title for you.":
+    "Назва, опис, пріоритет, успіх і критерії прийняття — кожне поле редаговане. Ментор доопрацьовує те, що накидав AI. Ми вже загострили назву за вас.",
+  "Pair on a real staging-to-prod release with rollback rehearsal":
+    "Парне виконання реального релізу staging→prod із репетицією rollback",
+  "Click Save changes — the task title updates instantly. The newcomer sees the new wording on her plan next time she loads it.":
+    "Натисніть «Зберегти зміни» — назва завдання оновлюється миттєво. Новачок побачить нове формулювання у плані під час наступного завантаження.",
+  "Back to the period workspace": "Назад до простору періоду",
+  "Click the back arrow to return to the period workspace and publish.":
+    "Натисніть стрілку «назад», щоб повернутися до простору періоду і опублікувати.",
+  "Publish the period": "Опублікувати період",
+  "Click Approve period — the draft becomes live for the newcomer. Generated by AI, refined by the mentor, owned by the mentor. That's the loop.":
+    "Натисніть «Схвалити період» — чернетка стає live для новачка. Згенеровано AI, доопрацьовано ментором, відповідальність ментора. Це і є цикл.",
+  "Step back into Marina": "Знову увійти як Marina",
+  "Setup is done. Now switch back to Marina to show her daily operating rhythm: progress, calendar, kanban — the surfaces she lives in.":
+    "Налаштування завершено. Тепер перемкніться назад на Marina, щоб показати її щоденний ритм: прогрес, календар, kanban — поверхні, в яких вона живе.",
+  "Choose Marina again": "Знову вибрати Marina",
+  "Re-enter Marina's workspace. The next beats show how a newcomer actually uses the product day after day.":
+    "Знову увійдіть у простір Marina. Наступні кроки показують, як новачок реально використовує продукт день за днем.",
+  "Open Marina's Progress page": "Відкрити сторінку прогресу Marina",
+  "Use the sidebar to open Progress. This is Marina's source of truth for where she stands in the journey.":
+    "Через sidebar відкрийте «Прогрес». Це джерело істини Marina, де вона перебуває у шляху.",
+  "Progress at a glance": "Прогрес із першого погляду",
+  "Completed, in progress, blocked, and a weekly hint. Marina sees momentum without asking; the mentor sees the same numbers on the dashboard. One shared truth.":
+    "Завершено, у процесі, заблоковано і щотижнева підказка. Marina бачить динаміку без запитань; ментор бачить ті самі числа на панелі. Одна спільна істина.",
+  "Weekly velocity & milestones": "Тижнева швидкість і віхи",
+  "Velocity per week and milestone tracking turn onboarding from vibes into evidence — useful both for Marina and for her mentor's quarterly review.":
+    "Швидкість за тиждень і відстеження віх перетворюють онбординг із «відчуттів» на докази — корисно і Marina, і квартальному review ментора.",
+  "Open the Calendar": "Відкрити календар",
+  "Move to Marina's calendar. Mentor syncs, demo sessions, and ad-hoc help meetings all live here.":
+    "Перейдіть до календаря Marina. Синки з ментором, демо-сесії й ad-hoc зустрічі допомоги — усе тут.",
+  "A month at a glance": "Місяць із першого погляду",
+  "The calendar shows the full month. Every scheduled session, with its time and Teams link, is here. Marina (or the mentor) can add a meeting on any day.":
+    "Календар показує весь місяць. Кожна запланована сесія з часом і Teams-посиланням — тут. Marina (або ментор) може додати зустріч у будь-який день.",
+  "Click Add meeting to open the scheduling dialog. Watch how it appears: bright and on top of the page — the spotlight no longer dims it.":
+    "Натисніть «Додати зустріч», щоб відкрити діалог планування. Подивіться, як він з'являється: яскраво й поверх сторінки — spotlight більше його не затемнює.",
+  "30-minute weekly sync": "30-хвилинний щотижневий sync",
+  "Title and agenda are pre-filled. The mentor is the default attendee. Click Schedule — the meeting is created, an invite goes out, and a notification fires for the mentor.":
+    "Назва й порядок денний заповнені. Ментор — учасник за замовчуванням. Натисніть «Запланувати» — зустріч створено, надіслано запрошення, і ментор отримує сповіщення.",
+  "Weekly sync with Marina": "Щотижневий sync з Marina",
+  "1) Wins from the week\n2) Blockers and questions\n3) Plan for next week\n4) Anything I can support faster?":
+    "1) Перемоги тижня\n2) Блокери й питання\n3) План на наступний тиждень\n4) Що я можу підтримати швидше?",
+  "Meeting saved": "Зустріч збережено",
+  "The new meeting is now on Marina's calendar and on the mentor's. Both sides see the same source of truth — no email chains, no rescheduling drift.":
+    "Нова зустріч тепер у календарі Marina і ментора. Обидві сторони бачать одне джерело істини — без email-ланцюжків, без переплутаних переплануваннь.",
+  "Open Marina's task board": "Відкрити дошку завдань Marina",
+  "Use the sidebar to open her Kanban. This is where Marina actually moves work forward day to day.":
+    "Через sidebar відкрийте її Kanban. Саме тут Marina реально рухає роботу день за днем.",
+  "Five lanes, one flow": "П'ять колонок, один потік",
+  "To do, In progress, In review, Blocked, Done. Marina drags her own work forward; In review hands off to the mentor for validation; only the mentor moves a task to Done.":
+    "До виконання, У процесі, На review, Заблоковано, Готово. Marina рухає свою роботу; «На review» передає завдання ментору на валідацію; тільки ментор переводить у «Готово».",
+  "Pick a task in progress": "Виберіть завдання у процесі",
+  "Click an in-progress task to open it. Marina is going to submit her work for mentor review in one click.":
+    "Клікніть завдання у процесі, щоб відкрити його. Marina надішле свою роботу ментору на review в один клік.",
+  "Submit for review": "Надіслати на review",
+  "One click. The task moves to In review on Marina's board, lands on the mentor's review queue, and fires a notification. Click Submit for review.":
+    "Один клік. Завдання переходить у «На review» на дошці Marina, потрапляє в чергу review ментора й викликає сповіщення. Натисніть «Надіслати на review».",
+  "Back to the board": "Назад до дошки",
+  "Open Marina's Kanban again to see where the task landed.":
+    "Знову відкрийте Kanban Marina, щоб побачити, куди потрапило завдання.",
+  "Now in the mentor's hands": "Тепер у руках ментора",
+  "The task has moved to In review. Marina cannot drag it from here — only the mentor can approve. The handoff is explicit, not implicit.":
+    "Завдання перейшло у «На review». Marina не може його тягнути звідси — тільки ментор може схвалити. Передача явна, а не неявна.",
+  "Switch to the mentor": "Перемкнутися на ментора",
+  "Open the persona switcher to step back into Oleg and close the loop on the review side.":
+    "Відкрийте перемикач персон, щоб знову увійти як Oleg і закрити цикл на стороні review.",
+  "Re-enter the mentor workspace. The mentor will now see real notifications from Marina's actions.":
+    "Знову увійдіть у простір ментора. Ментор зараз побачить реальні сповіщення від дій Marina.",
+  "Notifications fired": "Сповіщення спрацювали",
+  "Marina scheduled a meeting and submitted a task — both fired notifications to the mentor. The bell shows unread items. Click it to open the inbox.":
+    "Marina запланувала зустріч і надіслала завдання — обидва дії викликали сповіщення для ментора. Дзвіночок показує непрочитані. Клікніть його, щоб відкрити інбокс.",
+  "Each notification is a shortcut": "Кожне сповіщення — це швидкий доступ",
+  "Clicking a notification routes straight to the related task, signal, or meeting — no hunting through tabs. Mentor and newcomer share the same notification spine.":
+    "Клік на сповіщенні веде прямо до пов'язаного завдання, сигналу або зустрічі — без пошуку по вкладках. Ментор і новачок мають один спільний канал сповіщень.",
+  "Open the mentor Kanban": "Відкрити Kanban ментора",
+  "Open the mentor task board from the sidebar. This is the operations cockpit across every newcomer.":
+    "Відкрийте дошку завдань ментора через sidebar. Це операційна панель по всіх новачках.",
+  "The review queue": "Черга review",
+  "Every newcomer submission lands in this In review column — sorted by urgency, with AI signal markers. Marina's just-submitted task is here.":
+    "Кожне надсилання новачка потрапляє у цю колонку «На review» — відсортоване за терміновістю, з маркерами AI-сигналів. Щойно надіслане завдання Marina — тут.",
+  "Open the submission": "Відкрити надсилання",
+  "Click the highlighted card to open the review sheet. The mentor sees the task, the conversation, prior signals, and review history — everything to decide in seconds.":
+    "Клікніть підсвічену картку, щоб відкрити панель review. Ментор бачить завдання, розмову, попередні сигнали й історію review — усе, щоб вирішити за секунди.",
+  "Approve in one click": "Схвалити в один клік",
+  "Click Approve. The task moves to Done in both boards, Marina is notified, and her Progress page updates instantly. The full submit → review → approve loop is closed.":
+    "Натисніть «Схвалити». Завдання переходить у «Готово» на обох дошках, Marina отримує сповіщення, її сторінка прогресу оновлюється миттєво. Повний цикл надсилання → review → схвалення закрито.",
+  "The full loop, in one tour": "Повний цикл за один тур",
+  "Setup → plan → grounded knowledge → courses → signals → adjustments → new hire onboarded → daily rhythm → submit → approve. Mentor and newcomer always on the same surface, AI doing the heavy lifting, humans deciding.":
+    "Налаштування → план → знання з джерел → курси → сигнали → коригування → новий найм онбординг → щоденний ритм → надсилання → схвалення. Ментор і новачок завжди на одній поверхні, AI виконує важку роботу, люди вирішують.",
 };
 
 export function formatMessage(
