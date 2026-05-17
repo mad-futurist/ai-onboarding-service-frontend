@@ -281,7 +281,12 @@ export default function SettingsPage() {
           <Button variant="outline" onClick={() => void refresh()}>
             <RefreshCcw className="h-4 w-4" /> Refresh demo data
           </Button>
-          <Button variant="ai" disabled={resetMut.isPending} onClick={handleRegenerate}>
+          <Button
+            variant="ai"
+            disabled={resetMut.isPending}
+            onClick={handleRegenerate}
+            data-demo-id="settings-regenerate"
+          >
             <RefreshCcw className="h-4 w-4" /> {resetMut.isPending ? "Regenerating..." : "Regenerate database"}
           </Button>
         </CardContent>

@@ -35,8 +35,6 @@ interface DemoTourStep {
   waitForClickTarget?: string;
   advanceDelayAfterClick?: number;
   autoNavigate?: boolean;
-  /** Action to run when the step becomes active. Next button stays disabled until it resolves. */
-  actionOnEnter?: "regenerate-base";
 }
 
 interface TargetRect {
@@ -55,18 +53,27 @@ const TOUR_STEPS: DemoTourStep[] = [
     role: "mentor",
     target: "demo-tour-start",
     title: "Welcome to the ReadySet.AI walkthrough",
-    body: "In about 5 minutes we'll cover the full loop: mentor cockpit, knowledge-grounded plan, Marina's daily work, AI signals & plan adjustments, course authoring, onboarding a new hire, then the daily rhythm — notifications, progress, calendar, submit & approve. Click Next to regenerate fresh demo data and begin.",
+    body: "In about 5 minutes we'll cover the full loop: mentor cockpit, knowledge-grounded plan, Marina's daily work, AI signals & plan adjustments, course authoring, onboarding a new hire, then the daily rhythm — notifications, progress, calendar, submit & approve. Click Next to start by regenerating fresh demo data.",
     autoNavigate: false,
   },
   {
-    id: "regenerate-base",
+    id: "nav-settings-regenerate",
     route: "/demo",
     role: "mentor",
-    target: "demo-tour-start",
-    title: "Regenerating the demo base",
-    body: "Resetting seeded data so the walkthrough starts from a clean, predictable state — same personas, same plans, same documents every time. This takes a few seconds.",
-    actionOnEnter: "regenerate-base",
-    autoNavigate: false,
+    target: "nav-mentor-settings",
+    title: "Open Settings",
+    body: "We'll start by resetting the demo database so the walkthrough runs from a clean, predictable state. The reset button lives at the bottom of Settings — open it from the sidebar.",
+    waitForClickTarget: "nav-mentor-settings",
+  },
+  {
+    id: "regenerate-database",
+    route: "/mentor/settings",
+    role: "mentor",
+    target: "settings-regenerate",
+    title: "Regenerate the demo database",
+    body: "Click Regenerate database. Confirm in the browser prompt — this wipes the workspace and recreates Oleg, Marina, Tanya, their plans, documents, courses and signals. Takes a few seconds.",
+    waitForClickTarget: "settings-regenerate",
+    advanceDelayAfterClick: 5500,
   },
   {
     id: "mentor-dashboard",
@@ -940,12 +947,10 @@ export function GuidedDemoTour() {
     setGuidedDemoStep,
     stopGuidedDemo,
     setRole,
-    refresh,
   } = useDemo();
   const [targetRect, setTargetRect] = React.useState<TargetRect | null>(null);
   const [targetReady, setTargetReady] = React.useState(false);
   const [paused, setPaused] = React.useState(false);
-  const [actionPending, setActionPending] = React.useState(false);
   const scrolledStepRef = React.useRef<string | null>(null);
   const filledStepRef = React.useRef<string | null>(null);
   const pendingClickAdvanceRef = React.useRef<string | null>(null);
@@ -992,21 +997,6 @@ export function GuidedDemoTour() {
   React.useEffect(() => {
     pendingClickAdvanceRef.current = null;
   }, [step?.id]);
-
-  React.useEffect(() => {
-    if (!guidedDemoActive || !step) return;
-    if (step.actionOnEnter !== "regenerate-base") return;
-    let cancelled = false;
-    setActionPending(true);
-    refresh()
-      .catch(() => undefined)
-      .finally(() => {
-        if (!cancelled) setActionPending(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [guidedDemoActive, refresh, step?.actionOnEnter, step?.id]);
 
   React.useEffect(() => {
     if (!guidedDemoActive) return;
@@ -1119,7 +1109,7 @@ export function GuidedDemoTour() {
   const current = guidedDemoStep + 1;
   const total = TOUR_STEPS.length;
   const waitingForClick = !!step.waitForClickTarget;
-  const canAdvance = onTargetRoute && targetReady && !paused && !actionPending;
+  const canAdvance = onTargetRoute && targetReady && !paused;
 
   return (
     <AnimatePresence>
@@ -1234,9 +1224,7 @@ export function GuidedDemoTour() {
                 onClick={() => completeStep({ delay: 0 })}
               >
                 {!canAdvance
-                  ? actionPending
-                    ? "Regenerating..."
-                    : "Waiting..."
+                  ? "Waiting..."
                   : guidedDemoStep >= TOUR_STEPS.length - 1
                     ? "Finish"
                     : "Next"}
