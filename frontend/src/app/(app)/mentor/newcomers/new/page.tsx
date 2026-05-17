@@ -164,12 +164,18 @@ export default function AddNewcomerPage() {
     return valid;
   };
 
+  const stepRef = React.useRef(step);
+  React.useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
+
   const handleNext = async () => {
     if (await validateCurrentStep()) setStep((s) => Math.min(STEPS.length, s + 1));
   };
   const handleBack = () => setStep((s) => Math.max(1, s - 1));
 
   const onSubmit = (values: FormValues) => {
+    if (stepRef.current < STEPS.length) return;
     createMut.mutate({
       ...values,
       start_date: values.start_date || null,
@@ -427,7 +433,15 @@ export default function AddNewcomerPage() {
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < STEPS.length ? (
-                <Button type="button" onClick={handleNext} data-demo-id="add-newcomer-next">
+                <Button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void handleNext();
+                  }}
+                  data-demo-id="add-newcomer-next"
+                >
                   {step === 3 ? "Review newcomer" : "Continue"}{" "}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
