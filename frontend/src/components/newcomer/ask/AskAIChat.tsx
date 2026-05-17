@@ -49,12 +49,13 @@ export function AskAIChat({
 }: AskAIChatProps) {
   const [draft, setDraft] = React.useState("");
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const lastMessagePending = messages[messages.length - 1]?.pending;
 
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
-  }, [messages.length, messages[messages.length - 1]?.pending]);
+  }, [messages.length, lastMessagePending]);
 
   const submit = (text: string) => {
     const value = text.trim();
@@ -91,13 +92,14 @@ export function AskAIChat({
 
       <form onSubmit={handleSubmit} className="border-t border-[color:var(--color-border)] bg-white p-3 sm:p-4">
         <div className="mx-auto max-w-3xl">
-          <div className="ai-border rounded-2xl">
+          <div className="ai-border rounded-2xl" data-demo-id="ask-ai-composer">
             <div className="rounded-2xl bg-white p-2 shadow-[var(--shadow-elevated)]">
               <Textarea
                 rows={4}
                 placeholder="Ask anything about your team, processes, docs…"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                data-demo-id="ask-ai-input"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -110,7 +112,13 @@ export function AskAIChat({
                 <span className="text-[11px] text-[color:var(--color-fg-subtle)]">
                   Press Enter to send · Shift+Enter for newline
                 </span>
-                <Button type="submit" variant="ai" size="sm" disabled={!draft.trim() || isSubmitting}>
+                <Button
+                  type="submit"
+                  variant="ai"
+                  size="sm"
+                  disabled={!draft.trim() || isSubmitting}
+                  data-demo-id="ask-ai-submit"
+                >
                   <Send className="h-3.5 w-3.5" /> Ask AI
                 </Button>
               </div>

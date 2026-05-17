@@ -1,9 +1,10 @@
 "use client";
 
-import { Search, Sparkles, BellRing } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RoleSwitcher } from "@/components/app-shell/RoleSwitcher";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { useDemo } from "@/providers/demo-provider";
 import { getInitials } from "@/lib/utils";
 
@@ -35,9 +36,7 @@ export function TopBar() {
           AI live
         </div>
         <RoleSwitcher />
-        <button className="grid h-9 w-9 place-items-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-[color:var(--color-fg-muted)] hover:bg-[color:var(--color-surface-muted)] transition-colors">
-          <BellRing className="h-4 w-4" />
-        </button>
+        <NotificationBell />
         <Avatar>
           <AvatarFallback>{getInitials(activeName)}</AvatarFallback>
         </Avatar>

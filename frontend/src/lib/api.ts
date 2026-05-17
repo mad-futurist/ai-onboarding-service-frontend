@@ -1,12 +1,14 @@
 import axios, { AxiosError } from "axios";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_API_BASE ??
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  "http://localhost:8000";
+function normalizeBaseUrl(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed.replace(/\/+$/, "") : undefined;
+}
+
+export const apiBaseUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE) ?? "/api";
 
 export const api = axios.create({
-  baseURL,
+  baseURL: apiBaseUrl,
   headers: { "Content-Type": "application/json" },
   timeout: 60_000,
 });

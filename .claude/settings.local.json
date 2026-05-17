@@ -9,7 +9,9 @@
       "Bash(npx next *)",
       "Bash(echo \"BUILD_EXIT=$?\")",
       "Bash(echo \"EXITCODE=$?\")",
-      "Bash(python -m py_compile app/models/ai_conversation.py app/models/ai_question.py app/schemas/ai_question.py app/services/rag_service.py app/api/routes/ai.py app/api/routes/newcomer_kb.py alembic/versions/c5a8f3e1d942_add_ai_conversations.py alembic/env.py)"
+      "Bash(python -m py_compile app/models/ai_conversation.py app/models/ai_question.py app/schemas/ai_question.py app/services/rag_service.py app/api/routes/ai.py app/api/routes/newcomer_kb.py alembic/versions/c5a8f3e1d942_add_ai_conversations.py alembic/env.py)",
+      "Bash(git stash *)",
+      "Bash(python -c ' *)"
     ]
   }
 }

@@ -83,18 +83,25 @@ export function PeriodFlowSheet({
   // Seed defaults when the sheet opens.
   React.useEffect(() => {
     if (!open) return;
-    setStep("period");
-    setNotes(initialNotes);
-    setSources(new Set(initialSources));
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setStep("period");
+      setNotes(initialNotes);
+      setSources(new Set(initialSources));
 
-    const nextOffset = inferNextOffset(journey);
-    const preset = PRESETS.find((p) => p.offset === nextOffset) ?? PRESETS[0];
-    const startAnchor = newcomer?.start_date ?? new Date().toISOString().slice(0, 10);
-    setLabel(preset.label);
-    setStart(addDays(startAnchor, preset.offset));
-    setEnd(addDays(startAnchor, preset.offset + preset.length - 1));
-    setGoal(newcomer?.main_goal ?? "");
-    setMode("fast");
+      const nextOffset = inferNextOffset(journey);
+      const preset = PRESETS.find((p) => p.offset === nextOffset) ?? PRESETS[0];
+      const startAnchor = newcomer?.start_date ?? new Date().toISOString().slice(0, 10);
+      setLabel(preset.label);
+      setStart(addDays(startAnchor, preset.offset));
+      setEnd(addDays(startAnchor, preset.offset + preset.length - 1));
+      setGoal(newcomer?.main_goal ?? "");
+      setMode("fast");
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [open, journey, newcomer, initialNotes, initialSources]);
 
   const applyPreset = (preset: (typeof PRESETS)[number]) => {
@@ -145,6 +152,7 @@ export function PeriodFlowSheet({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-x-0 bottom-0 top-6 mx-auto flex max-w-5xl flex-col overflow-hidden rounded-t-[24px] border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-elevated)] sm:inset-y-6 sm:rounded-[24px]"
+        data-demo-id="period-flow-sheet"
       >
         {/* Header */}
         <header className="relative border-b border-[color:var(--color-border)] bg-gradient-to-b from-white to-[color:var(--color-bg)] px-6 py-4">
@@ -264,11 +272,21 @@ export function PeriodFlowSheet({
                 </Button>
               )}
               {step !== "review" ? (
-                <Button variant="ai" onClick={goNext} disabled={!canNext}>
+                <Button
+                  variant="ai"
+                  onClick={goNext}
+                  disabled={!canNext}
+                  data-demo-id="period-flow-next"
+                >
                   Next <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button variant="ai" onClick={handleSubmit} className="shadow-[var(--shadow-ai)]">
+                <Button
+                  variant="ai"
+                  onClick={handleSubmit}
+                  className="shadow-[var(--shadow-ai)]"
+                  data-demo-id="period-flow-generate"
+                >
                   <Sparkles className="h-4 w-4" />
                   {mode === "live" ? "Open live mode" : "Generate draft"}
                 </Button>
@@ -369,7 +387,7 @@ function PeriodStep({
   const endDay = computeDayFromStart(newcomer, end);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]" data-demo-id="period-flow-period">
       <div className="space-y-6">
         {/* Mini-timeline showing where this new period lands */}
         <MiniTimeline journey={journey} startDay={startDay} endDay={endDay} />
@@ -402,13 +420,27 @@ function PeriodStep({
         {/* Label, dates, goal */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Label" full>
-            <Input value={label} onChange={(e) => onLabelChange(e.target.value)} />
+            <Input
+              value={label}
+              onChange={(e) => onLabelChange(e.target.value)}
+              data-demo-id="period-flow-label"
+            />
           </Field>
           <Field label="Start date">
-            <Input type="date" value={start} onChange={(e) => onStartChange(e.target.value)} />
+            <Input
+              type="date"
+              value={start}
+              onChange={(e) => onStartChange(e.target.value)}
+              data-demo-id="period-flow-start"
+            />
           </Field>
           <Field label="End date">
-            <Input type="date" value={end} onChange={(e) => onEndChange(e.target.value)} />
+            <Input
+              type="date"
+              value={end}
+              onChange={(e) => onEndChange(e.target.value)}
+              data-demo-id="period-flow-end"
+            />
           </Field>
           <Field label="Goal for this period" full>
             <Textarea
@@ -416,6 +448,7 @@ function PeriodStep({
               value={goal}
               placeholder="e.g. Own a small feature end-to-end with minimal mentor help."
               onChange={(e) => onGoalChange(e.target.value)}
+              data-demo-id="period-flow-goal"
             />
           </Field>
           <Field label="Mentor notes (intent for the AI)" full>
@@ -424,6 +457,7 @@ function PeriodStep({
               value={notes}
               placeholder="Strong on APIs, weak on infra. Lighter week 1, intros booked."
               onChange={(e) => onNotesChange(e.target.value)}
+              data-demo-id="period-flow-notes"
             />
           </Field>
         </div>
@@ -552,6 +586,7 @@ function ModeStep({
         title="Fast draft"
         subtitle="Generate in ~10s, you review"
         bullets={["AI runs end-to-end without questions", "Best for routine periods", "You can regenerate anytime"]}
+        dataDemoId="period-flow-fast-mode"
       />
       <ModeCard
         active={mode === "live"}
@@ -565,6 +600,7 @@ function ModeStep({
           "AI asks you 2–4 questions when uncertain",
           "Add comments any time during generation",
         ]}
+        dataDemoId="period-flow-live-mode"
       />
     </div>
   );
@@ -578,6 +614,7 @@ function ModeCard({
   subtitle,
   bullets,
   accent,
+  dataDemoId,
 }: {
   active: boolean;
   onClick: () => void;
@@ -586,11 +623,13 @@ function ModeCard({
   subtitle: string;
   bullets: string[];
   accent?: boolean;
+  dataDemoId?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-demo-id={dataDemoId}
       className={cn(
         "group relative overflow-hidden rounded-2xl border p-5 text-left transition-all",
         active
@@ -667,7 +706,7 @@ function ReviewStep({
     },
   ];
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="mx-auto max-w-3xl space-y-4" data-demo-id="period-flow-review">
       <div className="rounded-2xl border border-[color:var(--color-border)] bg-white p-5 shadow-[var(--shadow-card)]">
         <div className="flex items-center justify-between gap-2">
           <div>

@@ -48,7 +48,7 @@ export interface OnboardingTask {
   week_id?: ID | null;
   sprint_id?: ID | null;
   task_type: string;
-  status: "todo" | "in_progress" | "done" | "blocked" | string;
+  status: "todo" | "in_progress" | "in_review" | "done" | "blocked" | string;
   priority: "low" | "medium" | "high" | string;
   success_criteria: string | null;
   acceptance_criteria?: string | null;
@@ -590,6 +590,7 @@ export interface NewcomerDashboardProgress {
   total_tasks: number;
   completed_tasks: number;
   in_progress_tasks: number;
+  in_review_tasks?: number;
   blocked_tasks: number;
   todo_tasks: number;
   progress_percent: number;

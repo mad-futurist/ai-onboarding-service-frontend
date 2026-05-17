@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -85,9 +86,11 @@ export default function PlanGeneratorEntryPage() {
   // Auto-pick a sensible set of sources by domain once knowledge base loads.
   React.useEffect(() => {
     if (!kbQ.data || defaultSources.size > 0) return;
-    const initial = new Set<ID>();
-    kbQ.data.groups.forEach((g) => g.documents.slice(0, 5).forEach((d) => initial.add(d.id)));
-    setDefaultSources(initial);
+    queueMicrotask(() => {
+      const initial = new Set<ID>();
+      kbQ.data?.groups.forEach((g) => g.documents.slice(0, 5).forEach((d) => initial.add(d.id)));
+      setDefaultSources(initial);
+    });
   }, [kbQ.data, defaultSources.size]);
 
   const journeyQ = useQuery<NewcomerJourney>({
@@ -188,6 +191,7 @@ export default function PlanGeneratorEntryPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        data-demo-id="plan-generator-journey"
       >
         {journeyQ.isLoading ? (
           <Skeleton className="h-[280px] rounded-[18px]" />
@@ -269,9 +273,9 @@ function NewcomerSelector({
   if (newcomers.length === 0) {
     return (
       <Button variant="outline" size="sm" asChild>
-        <a href="/mentor/newcomers/new">
+        <Link href="/mentor/newcomers/new">
           <Users className="h-3.5 w-3.5" /> Add newcomer
-        </a>
+        </Link>
       </Button>
     );
   }

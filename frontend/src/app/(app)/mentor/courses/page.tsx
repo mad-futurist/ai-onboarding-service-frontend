@@ -126,7 +126,7 @@ export default function CoursesIndexPage() {
         description="Build a tailored mini-curriculum from your knowledge base. AI drafts the outline and each lesson — you stay in full control."
         actions={
           <Button asChild variant="ai">
-            <Link href="/mentor/courses/new">
+            <Link href="/mentor/courses/new" data-demo-id="mentor-courses-new">
               <Sparkles className="h-4 w-4" /> New course
             </Link>
           </Button>

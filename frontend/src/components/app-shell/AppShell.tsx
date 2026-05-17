@@ -4,11 +4,16 @@ import * as React from "react";
 
 import { Sidebar } from "@/components/app-shell/Sidebar";
 import { TopBar } from "@/components/app-shell/TopBar";
+import { GuidedDemoTour } from "@/components/demo/GuidedDemoTour";
+import { apiBaseUrl } from "@/lib/api";
 import { useDemo } from "@/providers/demo-provider";
 import { Sparkles } from "lucide-react";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
-const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? backendUrl;
+const backendUrl =
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  (process.env.NODE_ENV === "production"
+    ? "https://ai-onboarding-service.onrender.com"
+    : "http://localhost:8000");
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { ready, seeding, error } = useDemo();
@@ -28,6 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         </main>
       </div>
+      <GuidedDemoTour />
     </div>
   );
 }
@@ -59,11 +65,11 @@ function BackendError({ message }: { message: string }) {
           <code className="rounded bg-[color:var(--color-surface-muted)] px-1.5 py-0.5 font-mono text-[11px]">
             {backendUrl}
           </code>
-          . The frontend calls{" "}
+          . The browser calls{" "}
           <code className="rounded bg-[color:var(--color-surface-muted)] px-1.5 py-0.5 font-mono text-[11px]">
-            {apiBase}/*
+            {`${apiBaseUrl}/*`}
           </code>
-          . Make sure FastAPI allows this frontend origin in CORS.
+          , and Next.js proxies it to the backend configured for this environment.
         </p>
       </div>
     </div>

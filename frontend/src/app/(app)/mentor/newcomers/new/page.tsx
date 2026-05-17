@@ -244,12 +244,16 @@ export default function AddNewcomerPage() {
             }}
           >
             {step === 1 ? (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2" data-demo-id="add-newcomer-profile">
                 <Field
                   label="Full name"
                   error={form.formState.errors.full_name?.message}
                 >
-                  <Input placeholder="Tanya Petrova" {...form.register("full_name")} />
+                  <Input
+                    placeholder="Tanya Petrova"
+                    data-demo-id="add-newcomer-full-name"
+                    {...form.register("full_name")}
+                  />
                 </Field>
                 <Field
                   label="Work email"
@@ -258,6 +262,7 @@ export default function AddNewcomerPage() {
                   <Input
                     type="email"
                     placeholder="tanya@company.com"
+                    data-demo-id="add-newcomer-email"
                     {...form.register("email")}
                   />
                 </Field>
@@ -269,13 +274,14 @@ export default function AddNewcomerPage() {
             ) : null}
 
             {step === 2 ? (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2" data-demo-id="add-newcomer-role-context">
                 <Field
                   label="Role"
                   error={form.formState.errors.job_title?.message}
                 >
                   <Input
                     placeholder="Backend Developer"
+                    data-demo-id="add-newcomer-job-title"
                     {...form.register("job_title")}
                   />
                 </Field>
@@ -306,10 +312,18 @@ export default function AddNewcomerPage() {
                   label="Team"
                   error={form.formState.errors.team?.message}
                 >
-                  <Input placeholder="Payments" {...form.register("team")} />
+                  <Input
+                    placeholder="Payments"
+                    data-demo-id="add-newcomer-team"
+                    {...form.register("team")}
+                  />
                 </Field>
                 <Field label="Start date">
-                  <Input type="date" {...form.register("start_date")} />
+                  <Input
+                    type="date"
+                    data-demo-id="add-newcomer-start-date"
+                    {...form.register("start_date")}
+                  />
                 </Field>
                 <Field
                   label="Main goal for the first month"
@@ -317,6 +331,7 @@ export default function AddNewcomerPage() {
                 >
                   <Input
                     placeholder="Ship first backend PR within 2 weeks"
+                    data-demo-id="add-newcomer-main-goal"
                     {...form.register("main_goal")}
                   />
                 </Field>
@@ -324,7 +339,7 @@ export default function AddNewcomerPage() {
             ) : null}
 
             {step === 3 ? (
-              <div className="grid gap-5">
+              <div className="grid gap-5" data-demo-id="add-newcomer-skills">
                 <Field
                   label="Known skills"
                   hint="Comma-separated. The AI uses these to deprioritize redundant tasks."
@@ -332,6 +347,7 @@ export default function AddNewcomerPage() {
                   <Textarea
                     rows={2}
                     placeholder="Python, PostgreSQL, REST APIs"
+                    data-demo-id="add-newcomer-known-skills"
                     {...form.register("known_skills")}
                   />
                 </Field>
@@ -342,6 +358,7 @@ export default function AddNewcomerPage() {
                   <Textarea
                     rows={2}
                     placeholder="Deployment, internal architecture"
+                    data-demo-id="add-newcomer-known-gaps"
                     {...form.register("known_gaps")}
                   />
                 </Field>
@@ -368,7 +385,7 @@ export default function AddNewcomerPage() {
             ) : null}
 
             {step === 4 ? (
-              <div className="space-y-4">
+              <div className="space-y-4" data-demo-id="add-newcomer-review">
                 <ReviewSection title="Profile" onEdit={() => setStep(1)}>
                   <ReviewRow label="Name" value={form.watch("full_name") || "-"} />
                   <ReviewRow label="Email" value={form.watch("email") || "-"} />
@@ -407,7 +424,7 @@ export default function AddNewcomerPage() {
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < STEPS.length ? (
-                <Button type="button" onClick={handleNext}>
+                <Button type="button" onClick={handleNext} data-demo-id="add-newcomer-next">
                   {step === 3 ? "Review newcomer" : "Continue"}{" "}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -416,6 +433,7 @@ export default function AddNewcomerPage() {
                   type="submit"
                   disabled={createMut.isPending}
                   variant="ai"
+                  data-demo-id="add-newcomer-submit"
                 >
                   <Sparkles className="h-4 w-4" />
                   {createMut.isPending ? "Adding..." : "Add newcomer"}

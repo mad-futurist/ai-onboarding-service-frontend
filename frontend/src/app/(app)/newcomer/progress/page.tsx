@@ -56,6 +56,7 @@ export default function NewcomerProgressPage() {
   const tasks: OnboardingTask[] = data?.tasks ?? [];
   const completed = tasks.filter((t) => t.status === "done");
   const inProgress = tasks.filter((t) => t.status === "in_progress");
+  const inReview = tasks.filter((t) => t.status === "in_review");
   const todo = tasks.filter((t) => t.status === "todo");
   const blocked = tasks.filter((t) => t.status === "blocked");
 
@@ -95,6 +96,13 @@ export default function NewcomerProgressPage() {
           icon={CheckCircle2}
           tasks={recentlyDone}
           empty="No completed tasks yet — that's normal early on."
+        />
+        <TaskListCard
+          title="Waiting for review"
+          eyebrow="Review"
+          icon={Sparkles}
+          tasks={inReview.slice(0, 4)}
+          empty="No tasks are waiting for mentor review."
         />
         {blocked.length > 0 ? (
           <TaskListCard
@@ -173,7 +181,7 @@ function TaskListCard({
         ) : (
           tasks.map((t) => (
             <li key={t.id}>
-              <TaskRow task={t} href={`/newcomer/tasks/${t.id}`} />
+              <TaskRow task={t} href={`/newcomer/tasks/${t.id}`} showActions />
             </li>
           ))
         )}

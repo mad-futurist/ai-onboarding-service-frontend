@@ -150,6 +150,7 @@ export default function SignalsCenterPage() {
               variant="ai"
               disabled={!activeNewcomer || detectMut.isPending}
               onClick={() => detectMut.mutate()}
+              data-demo-id="signals-run-detection"
             >
               <Sparkles className="h-4 w-4" />
               {detectMut.isPending ? "Scanning…" : "Run detection"}

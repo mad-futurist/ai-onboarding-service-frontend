@@ -15,6 +15,7 @@ import {
   Compass,
   GraduationCap,
   CalendarDays,
+  KanbanSquare,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ type NavItem = {
 
 const MENTOR_NAV: NavItem[] = [
   { href: "/mentor", label: "Overview", icon: LayoutDashboard },
+  { href: "/mentor/kanban", label: "Tasks board", icon: KanbanSquare, badge: "AI" },
   { href: "/mentor/newcomers/new", label: "Add newcomer", icon: Users },
   { href: "/mentor/knowledge", label: "Knowledge base", icon: BookOpen },
   { href: "/mentor/plan-generator", label: "AI Plan Generator", icon: Sparkles, badge: "AI" },
@@ -42,6 +44,7 @@ const MENTOR_NAV: NavItem[] = [
 
 const NEWCOMER_NAV: NavItem[] = [
   { href: "/newcomer", label: "Home", icon: Home },
+  { href: "/newcomer/kanban", label: "Tasks board", icon: KanbanSquare },
   { href: "/newcomer/plan", label: "My plan", icon: ListChecks },
   { href: "/newcomer/courses", label: "Courses", icon: GraduationCap },
   { href: "/newcomer/knowledge", label: "Knowledge", icon: BookOpen, badge: "AI" },

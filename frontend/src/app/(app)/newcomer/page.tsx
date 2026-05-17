@@ -63,7 +63,7 @@ export default function NewcomerHomePage() {
           <>
             <BlockedTrigger />
             <Button asChild variant="ai">
-              <Link href="/newcomer/ask">
+              <Link href="/newcomer/ask" data-demo-id="newcomer-ask-ai">
                 <Sparkles className="h-4 w-4" /> Ask AI
               </Link>
             </Button>
@@ -77,7 +77,7 @@ export default function NewcomerHomePage() {
         <Card className="sm:col-span-2 overflow-hidden">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div>
-              <CardTitle>This week's goal</CardTitle>
+              <CardTitle>This week&apos;s goal</CardTitle>
               <CardDescription>{weekGoal}</CardDescription>
             </div>
             <Badge tone="ai" size="lg">
@@ -122,7 +122,7 @@ export default function NewcomerHomePage() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <section className="space-y-5">
-          <Card>
+          <Card data-demo-id="newcomer-today-list">
             <CardHeader>
               <CardTitle>Today</CardTitle>
               <CardDescription>What you should focus on right now.</CardDescription>
@@ -180,7 +180,7 @@ export default function NewcomerHomePage() {
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-[color:var(--color-primary)]" /> Recommended docs
               </CardTitle>
-              <CardDescription>Picked by AI based on this week's focus.</CardDescription>
+              <CardDescription>Picked by AI based on this week&apos;s focus.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-2 sm:grid-cols-2">
               {recommendedDocs.length ? (

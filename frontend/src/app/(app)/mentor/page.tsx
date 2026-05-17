@@ -140,19 +140,21 @@ export default function MentorOverviewPage() {
             actions={
               <>
                 <Button asChild variant="outline">
-                  <Link href="/mentor/knowledge">
+                  <Link href="/mentor/knowledge" data-demo-id="mentor-hero-knowledge">
                     {t("mentor.dash.hero.actionKnowledge")}
                   </Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/mentor/newcomers/new">
+                  <Link href="/mentor/newcomers/new" data-demo-id="mentor-hero-add-newcomer">
                     <Plus className="h-4 w-4" /> {t("mentor.dash.hero.actionAdd")}
                   </Link>
                 </Button>
               </>
             }
           />
-          <AIPulseStrip data={data} />
+          <div data-demo-id="mentor-ai-pulse">
+            <AIPulseStrip data={data} />
+          </div>
         </div>
       </section>
 

@@ -6,19 +6,21 @@ import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  AnimatePresence,
   motion,
   useReducedMotion,
 } from "framer-motion";
 import {
   ArrowLeft,
   BookOpen,
-  Check,
   CheckCircle2,
+  Eye,
   ExternalLink,
   FileText,
   Link as LinkIcon,
+  Loader2,
   MessageCircle,
+  PlayCircle,
+  Send,
   Sparkles,
   Target,
   Users,
@@ -39,9 +41,9 @@ import { StatusBadge, PriorityBadge } from "@/components/shared/StatusBadge";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { BlockedTrigger } from "@/components/newcomer/BlockedDialog";
 import { InteractiveChecklist } from "@/components/newcomer/task/InteractiveChecklist";
-import { TaskCompleteOverlay } from "@/components/newcomer/task/TaskCompleteOverlay";
 
 import { getTaskDetail, updateTaskStatus } from "@/services/tasks";
+import { listTaskComments } from "@/services/task-comments";
 import { toApiError } from "@/lib/api";
 import { cn, getInitials } from "@/lib/utils";
 import type { TaskExample, TaskLink } from "@/types";
@@ -76,16 +78,32 @@ export default function TaskDetailPage() {
     enabled: Number.isFinite(id),
   });
 
-  const [progressRatio, setProgressRatio] = React.useState(0);
-  const [showCelebration, setShowCelebration] = React.useState(false);
+  const commentsQuery = useQuery({
+    queryKey: ["task-comments", id],
+    queryFn: () => listTaskComments(id),
+    enabled: Number.isFinite(id),
+  });
 
-  const completeMut = useMutation({
-    mutationFn: () => updateTaskStatus(id, "done"),
-    onSuccess: () => {
-      setShowCelebration(true);
+  const [progressRatio, setProgressRatio] = React.useState(0);
+
+  const statusMut = useMutation({
+    mutationFn: (nextStatus: "in_progress" | "in_review") =>
+      updateTaskStatus(id, nextStatus),
+    onSuccess: (_, nextStatus) => {
+      toast.success(
+        nextStatus === "in_review" ? "Submitted for review" : "Task started",
+        {
+          description:
+            nextStatus === "in_review"
+              ? "Your mentor will review and respond."
+              : undefined,
+        },
+      );
       qc.invalidateQueries({ queryKey: ["task-detail", id] });
       qc.invalidateQueries({ queryKey: ["newcomer-plan"] });
       qc.invalidateQueries({ queryKey: ["newcomer-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["task-comments", id] });
+      qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
     },
     onError: (err) =>
       toast.error("Couldn't update", { description: toApiError(err).message }),
@@ -103,13 +121,17 @@ export default function TaskDetailPage() {
 
   const task = data.task;
   const done = task.status === "done";
+  const inReview = task.status === "in_review";
   const acceptanceItems = splitCriteria(task.acceptance_criteria);
   const examples = task.examples ?? [];
   const links = task.links ?? [];
+  const latestReturn =
+    (commentsQuery.data ?? []).find((c) => c.comment_type === "review_return") ??
+    null;
 
   const allChecked =
     acceptanceItems.length > 0 && progressRatio >= 1 - 1e-6;
-  const ctaReady = allChecked && !done;
+  const ctaReady = allChecked && task.status === "in_progress";
 
   return (
     <>
@@ -155,11 +177,13 @@ export default function TaskDetailPage() {
                     <MessageCircle className="h-4 w-4" /> Chat
                   </Link>
                 </Button>
-                <CompleteButton
-                  done={done}
+                <TaskReviewButton
+                  status={task.status}
                   ready={ctaReady}
-                  pending={completeMut.isPending}
-                  onClick={() => completeMut.mutate()}
+                  pending={statusMut.isPending}
+                  pendingStatus={statusMut.variables}
+                  onStart={() => statusMut.mutate("in_progress")}
+                  onSubmit={() => statusMut.mutate("in_review")}
                 />
               </>
             }
@@ -175,6 +199,35 @@ export default function TaskDetailPage() {
             </motion.div>
           ) : null}
         </motion.div>
+
+        {latestReturn && task.status === "in_progress" ? (
+          <motion.div variants={fadeUp}>
+            <div className="rounded-[18px] border border-[color:var(--color-danger-soft)] bg-[color:var(--color-danger-soft)]/25 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-danger-fg)]">
+                <MessageCircle className="h-3.5 w-3.5" />
+                Mentor review note
+              </div>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[color:var(--color-fg)]">
+                {latestReturn.body}
+              </p>
+            </div>
+          </motion.div>
+        ) : null}
+
+        {inReview ? (
+          <motion.div variants={fadeUp}>
+            <div className="rounded-[18px] border border-[color:var(--color-info-soft)] bg-[color:var(--color-info-soft)]/25 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-info-fg)]">
+                <Eye className="h-3.5 w-3.5" />
+                Waiting for mentor review
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
+                Your task is with your mentor. If changes are needed, it will
+                come back to In progress with feedback.
+              </p>
+            </div>
+          </motion.div>
+        ) : null}
 
         <motion.div
           variants={fadeUp}
@@ -253,24 +306,30 @@ export default function TaskDetailPage() {
             <CardContent className="space-y-2">
               {data.related_documents?.length ? (
                 data.related_documents.map((d) => (
-                  <motion.article
+                  <motion.div
                     key={d.id}
                     whileHover={reduce ? undefined : { x: 3 }}
                     transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                    className="flex items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]/30"
                   >
-                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)]">
-                      <BookOpen className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-[color:var(--color-fg)]">
-                        {d.title}
+                    <Link
+                      href={`/newcomer/knowledge/${d.id}`}
+                      className="group flex items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-left transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]/30"
+                      aria-label={`Open source ${d.title}`}
+                    >
+                      <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)]">
+                        <BookOpen className="h-4 w-4" />
                       </div>
-                      <div className="text-xs text-[color:var(--color-fg-muted)]">
-                        {d.domain}
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium text-[color:var(--color-fg)] group-hover:text-[color:var(--color-primary-active)]">
+                          {d.title}
+                        </div>
+                        <div className="text-xs text-[color:var(--color-fg-muted)]">
+                          {d.domain}
+                        </div>
                       </div>
-                    </div>
-                  </motion.article>
+                      <ExternalLink className="mt-1 h-3.5 w-3.5 shrink-0 text-[color:var(--color-fg-faint)] transition-colors group-hover:text-[color:var(--color-primary)]" />
+                    </Link>
+                  </motion.div>
                 ))
               ) : (
                 <EmptyInline>No related sources surfaced yet.</EmptyInline>
@@ -333,51 +392,90 @@ export default function TaskDetailPage() {
               "Ready when you are"
             )}
           </div>
-          <CompleteButton
-            done={done}
+          <TaskReviewButton
+            status={task.status}
             ready={ctaReady}
-            pending={completeMut.isPending}
-            onClick={() => completeMut.mutate()}
+            pending={statusMut.isPending}
+            pendingStatus={statusMut.variables}
+            onStart={() => statusMut.mutate("in_progress")}
+            onSubmit={() => statusMut.mutate("in_review")}
             size="md"
           />
         </div>
       </div>
-
-      <AnimatePresence>
-        {showCelebration ? (
-          <TaskCompleteOverlay
-            open={showCelebration}
-            taskTitle={task.title}
-            onClose={() => {
-              setShowCelebration(false);
-              router.push("/newcomer");
-            }}
-          />
-        ) : null}
-      </AnimatePresence>
     </>
   );
 }
 
-function CompleteButton({
-  done,
+function TaskReviewButton({
+  status,
   ready,
   pending,
-  onClick,
+  pendingStatus,
+  onStart,
+  onSubmit,
   size = "md",
 }: {
-  done: boolean;
+  status: string;
   ready: boolean;
   pending: boolean;
-  onClick(): void;
+  pendingStatus?: "in_progress" | "in_review";
+  onStart(): void;
+  onSubmit(): void;
   size?: "md" | "lg";
 }) {
   const reduce = useReducedMotion();
 
-  if (done) {
+  if (status === "done") {
     return (
       <Button variant="secondary" disabled size={size}>
-        <CheckCircle2 className="h-4 w-4" /> Done
+        <CheckCircle2 className="h-4 w-4" /> Approved
+      </Button>
+    );
+  }
+
+  if (status === "in_review") {
+    return (
+      <Button variant="secondary" disabled size={size}>
+        <Eye className="h-4 w-4" /> In review
+      </Button>
+    );
+  }
+
+  if (status === "blocked") {
+    return (
+      <Button
+        variant="outline"
+        disabled={pending}
+        onClick={onStart}
+        size={size}
+        className="gap-1.5"
+      >
+        {pending && pendingStatus === "in_progress" ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <PlayCircle className="h-4 w-4" />
+        )}
+        Resume task
+      </Button>
+    );
+  }
+
+  if (status === "todo") {
+    return (
+      <Button
+        variant="ai"
+        disabled={pending}
+        onClick={onStart}
+        size={size}
+        className="gap-1.5"
+      >
+        {pending && pendingStatus === "in_progress" ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <PlayCircle className="h-4 w-4" />
+        )}
+        Start task
       </Button>
     );
   }
@@ -405,12 +503,18 @@ function CompleteButton({
       <Button
         variant="ai"
         disabled={pending}
-        onClick={onClick}
+        onClick={onSubmit}
         size={size}
-        className="relative"
+        className="relative gap-1.5"
       >
-        <Check className="h-4 w-4" />
-        {pending ? "Marking…" : ready ? "Mark as done 🎉" : "Mark as done"}
+        {pending && pendingStatus === "in_review" ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Send className="h-4 w-4" />
+        )}
+        {pending && pendingStatus === "in_review"
+          ? "Submitting..."
+          : "Submit for review"}
       </Button>
     </motion.div>
   );

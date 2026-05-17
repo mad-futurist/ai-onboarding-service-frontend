@@ -24,11 +24,25 @@ export async function getTask(taskId: ID): Promise<OnboardingTask> {
   return data;
 }
 
+export interface UpdateTaskStatusOptions {
+  comment?: string;
+  actorUserId?: ID | null;
+}
+
 export async function updateTaskStatus(
   taskId: ID,
   status: OnboardingTask["status"],
+  options?: UpdateTaskStatusOptions,
 ): Promise<OnboardingTask> {
-  const { data } = await api.patch<OnboardingTask>(`/tasks/${taskId}/status`, { status });
+  const payload: Record<string, unknown> = { status };
+  if (options?.comment !== undefined) payload.comment = options.comment;
+  if (options?.actorUserId !== undefined && options.actorUserId !== null) {
+    payload.actor_user_id = options.actorUserId;
+  }
+  const { data } = await api.patch<OnboardingTask>(
+    `/tasks/${taskId}/status`,
+    payload,
+  );
   return data;
 }
 

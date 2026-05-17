@@ -93,7 +93,7 @@ export function TakeAssessmentBanner({ newcomerId }: Props) {
               variant="default"
               className="bg-white text-[color:var(--color-primary-active)] hover:bg-white/90 shadow-xl shadow-black/10 px-6"
             >
-              <Link href="/newcomer/assessment">
+              <Link href="/newcomer/assessment" data-demo-id="newcomer-assessment-start">
                 {t("assessment.cta.start")}
                 <ArrowRight className="h-4 w-4" />
               </Link>

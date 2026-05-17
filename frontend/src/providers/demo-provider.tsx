@@ -13,6 +13,8 @@ const SEED_KEY = "onbord.seeded.v1";
 const ROLE_KEY = "onbord.role.v1";
 const MENTOR_KEY = "onbord.mentor_id.v1";
 const NEWCOMER_KEY = "onbord.newcomer_id.v1";
+const GUIDED_DEMO_KEY = "onbord.guidedDemo.active.v1";
+const GUIDED_DEMO_STEP_KEY = "onbord.guidedDemo.step.v1";
 
 interface DemoContextValue {
   ready: boolean;
@@ -25,7 +27,12 @@ interface DemoContextValue {
   newcomerName: string;
   personas: DemoPersona[];
   activePersona: DemoPersona | null;
+  guidedDemoActive: boolean;
+  guidedDemoStep: number;
   setRole: (role: Role) => void;
+  startGuidedDemo: () => void;
+  stopGuidedDemo: () => void;
+  setGuidedDemoStep: (step: number) => void;
   selectPersona: (
     persona: DemoPersona,
     options?: { preserveRole?: boolean },
@@ -101,6 +108,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [mentorName, setMentorName] = React.useState<string>("Oleg Bondarenko");
   const [newcomerName, setNewcomerName] = React.useState<string>("Marina Kovalenko");
   const [personas, setPersonas] = React.useState<DemoPersona[]>([]);
+  const [guidedDemoActive, setGuidedDemoActive] = React.useState(false);
+  const [guidedDemoStepState, setGuidedDemoStepState] = React.useState(0);
 
   const seedMut = useMutation({
     mutationFn: seedDemo,
@@ -118,6 +127,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
       const storedNewcomerId = parseStoredId(NEWCOMER_KEY);
       if (storedNewcomerId) setNewcomerId(storedNewcomerId);
+
+      const guidedActive = window.sessionStorage.getItem(GUIDED_DEMO_KEY) === "1";
+      const guidedStep = Number(window.sessionStorage.getItem(GUIDED_DEMO_STEP_KEY) ?? "0");
+      setGuidedDemoActive(guidedActive);
+      setGuidedDemoStepState(Number.isFinite(guidedStep) ? guidedStep : 0);
     });
   }, []);
 
@@ -212,12 +226,37 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   }, [hydrateFromBackend]);
 
   React.useEffect(() => {
-    void bootstrap();
+    queueMicrotask(() => void bootstrap());
   }, [bootstrap]);
 
   const setRole = React.useCallback((r: Role) => {
     setRoleState(r);
     setStored(ROLE_KEY, r);
+  }, []);
+
+  const setGuidedDemoStep = React.useCallback((step: number) => {
+    const next = Math.max(0, step);
+    setGuidedDemoStepState(next);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(GUIDED_DEMO_STEP_KEY, String(next));
+    }
+  }, []);
+
+  const startGuidedDemo = React.useCallback(() => {
+    setGuidedDemoActive(true);
+    setGuidedDemoStep(0);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(GUIDED_DEMO_KEY, "1");
+    }
+  }, [setGuidedDemoStep]);
+
+  const stopGuidedDemo = React.useCallback(() => {
+    setGuidedDemoActive(false);
+    setGuidedDemoStepState(0);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem(GUIDED_DEMO_KEY);
+      window.sessionStorage.removeItem(GUIDED_DEMO_STEP_KEY);
+    }
   }, []);
 
   const refreshPersonas = React.useCallback(async () => {
@@ -253,7 +292,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       newcomerName,
       personas,
       activePersona,
+      guidedDemoActive,
+      guidedDemoStep: guidedDemoStepState,
       setRole,
+      startGuidedDemo,
+      stopGuidedDemo,
+      setGuidedDemoStep,
       selectPersona,
       refresh,
       refreshPersonas,
@@ -269,7 +313,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       newcomerName,
       personas,
       activePersona,
+      guidedDemoActive,
+      guidedDemoStepState,
       setRole,
+      startGuidedDemo,
+      stopGuidedDemo,
+      setGuidedDemoStep,
       selectPersona,
       refresh,
       refreshPersonas,

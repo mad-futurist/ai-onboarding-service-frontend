@@ -495,6 +495,15 @@ body {
   50%      { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); opacity: 0.95; }
 }
 
+@keyframes demo-auto-click {
+  0%, 100% { transform: scale(1); box-shadow: var(--shadow-ai); }
+  45%      { transform: scale(0.96); box-shadow: 0 0 0 8px rgba(249, 115, 22, 0.20), var(--shadow-ai); }
+}
+
+.demo-auto-click {
+  animation: demo-auto-click 520ms ease-in-out both;
+}
+
 /* ---------- Wow-effect utilities (aurora, glass, glow, shimmer) ---------- */
 .aurora-bg {
   position: absolute;
@@ -603,7 +612,8 @@ body {
   .shimmer::after,
   .animate-float-y,
   .audio-bar,
-  .confetti-piece { animation: none !important; }
+  .confetti-piece,
+  .demo-auto-click { animation: none !important; }
 }
 
 [data-state="open"][data-radix-dialog-overlay],

@@ -111,7 +111,13 @@ export function JourneyTimeline({
             </p>
           </div>
           {onAddPeriod ? (
-            <Button variant="ai" size="lg" onClick={onAddPeriod} className="shadow-[var(--shadow-ai)]">
+            <Button
+              variant="ai"
+              size="lg"
+              onClick={onAddPeriod}
+              className="shadow-[var(--shadow-ai)]"
+              data-demo-id="plan-generator-new-period"
+            >
               <Wand2 className="h-4 w-4" /> New period
             </Button>
           ) : null}
