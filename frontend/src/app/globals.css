@@ -612,3 +612,17 @@ body {
 [data-state="open"][data-radix-dialog-content] { animation: content-in 180ms cubic-bezier(0.22, 1, 0.36, 1); }
 [data-state="closed"][data-radix-dialog-content] { animation: content-out 140ms ease-in; }
 [data-radix-popper-content-wrapper] { animation: pop-in 140ms ease-out; }
+
+/* ---------- Demo mode: lift Radix portals above the GuidedDemoTour overlay (z-80) ---------- */
+/* The tour spotlight at z-80 uses a 9999px box-shadow to dim the page. Radix portals default to
+   z-50, which makes opened dialogs / dropdowns / popovers appear "in shadow" during the tour.
+   Scoping this override to body.demo-active keeps normal product use unchanged. */
+body.demo-active [data-radix-popper-content-wrapper],
+body.demo-active [data-radix-dialog-overlay],
+body.demo-active [data-radix-dialog-content],
+body.demo-active [data-radix-dropdown-menu-content],
+body.demo-active [data-radix-popover-content],
+body.demo-active [data-radix-select-content],
+body.demo-active [data-sonner-toaster] {
+  z-index: 90 !important;
+}

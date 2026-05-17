@@ -63,25 +63,24 @@ export default function NewcomerCoursesPage() {
     [published.data, mine],
   );
 
-  // ─── Per-course progress (localStorage) ───────────────────────────────────
+  // ─── Per-course progress (localStorage, client-only) ──────────────────────
+  // Read in useEffect (not during render) so the first paint matches SSR
+  // and React hydration succeeds. The hints / counters below stay at their
+  // empty-state values until the effect fills the real data in.
   const [progressMap, setProgressMap] = React.useState<Map<ID, number>>(
     () => new Map(),
   );
   const [lastViewedId, setLastViewedId] = React.useState<ID | null>(null);
-  const [hydrated, setHydrated] = React.useState(false);
 
-  if (!hydrated) {
-    setHydrated(true);
-    if (typeof window !== "undefined") {
-      const entries = readAllCourseProgress();
-      const map = new Map<ID, number>();
-      for (const e of entries) {
-        map.set(e.courseId, e.completedLessonIds.length);
-      }
-      setProgressMap(map);
-      setLastViewedId(readLastViewedCourseId());
+  React.useEffect(() => {
+    const entries = readAllCourseProgress();
+    const map = new Map<ID, number>();
+    for (const e of entries) {
+      map.set(e.courseId, e.completedLessonIds.length);
     }
-  }
+    setProgressMap(map);
+    setLastViewedId(readLastViewedCourseId());
+  }, []);
 
   // ─── Search + role-target filter ──────────────────────────────────────────
   const [query, setQuery] = React.useState("");

@@ -233,7 +233,12 @@ function ScheduleMeetingForm({
       <div className="space-y-3">
         <div className="space-y-1.5">
           <Label htmlFor="meet-title">Title</Label>
-          <Input id="meet-title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Input
+            id="meet-title"
+            data-demo-id="schedule-meeting-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="meet-with">With</Label>
@@ -268,7 +273,13 @@ function ScheduleMeetingForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="meet-agenda">Agenda</Label>
-          <Textarea id="meet-agenda" rows={4} value={agenda} onChange={(e) => setAgenda(e.target.value)} />
+          <Textarea
+            id="meet-agenda"
+            data-demo-id="schedule-meeting-agenda"
+            rows={4}
+            value={agenda}
+            onChange={(e) => setAgenda(e.target.value)}
+          />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -326,6 +337,7 @@ function ScheduleMeetingForm({
         <Button
           onClick={() => createMut.mutate()}
           disabled={!title.trim() || missingParticipant || createMut.isPending}
+          data-demo-id="schedule-meeting-submit"
         >
           <Save className="h-4 w-4" /> {createMut.isPending ? "Scheduling..." : "Schedule"}
         </Button>

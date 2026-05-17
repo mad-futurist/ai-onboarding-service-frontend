@@ -259,6 +259,14 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.classList.toggle("demo-active", guidedDemoActive);
+    return () => {
+      document.body.classList.remove("demo-active");
+    };
+  }, [guidedDemoActive]);
+
   const refreshPersonas = React.useCallback(async () => {
     await hydrateFromBackend();
   }, [hydrateFromBackend]);

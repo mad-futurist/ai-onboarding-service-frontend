@@ -6,17 +6,13 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
-  BookOpen,
-  CalendarDays,
-  ClipboardCheck,
-  GraduationCap,
   GitBranch,
+  GraduationCap,
   MessagesSquare,
   MousePointerClick,
   Network,
   PlayCircle,
   Sparkles,
-  Wand2,
   X,
 } from "lucide-react";
 
@@ -29,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 import { useDemo } from "@/providers/demo-provider";
 
-interface Scene {
+interface Act {
   id: number;
   title: string;
   message: string;
@@ -38,115 +34,79 @@ interface Scene {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-const SCENES: Scene[] = [
+const ACTS: Act[] = [
   {
     id: 1,
-    title: "Mentor cockpit starts the story",
+    title: "Act 1 — Setup",
     message:
-      "Oleg opens the dashboard and sees progress, attention signals, today's focus, mentor moves, and saved time without digging through tabs.",
-    outcome: "Establishes the operating center.",
-    links: [{ label: "Mentor cockpit", href: "/mentor", role: "mentor" }],
+      "Oleg opens the mentor cockpit, grounds it in the company knowledge base, and generates Marina's 30/60/90 plan with the AI Plan Generator. Period by period, sources selected, mentor approves.",
+    outcome: "The operating center and the journey are in place.",
+    links: [
+      { label: "Mentor cockpit", href: "/mentor", role: "mentor" },
+      { label: "Knowledge base", href: "/mentor/knowledge", role: "mentor" },
+      { label: "AI Plan Generator", href: "/mentor/plan-generator", role: "mentor" },
+    ],
     icon: Activity,
   },
   {
     id: 2,
-    title: "Newcomer setup captures context",
+    title: "Act 2 — Marina's daily life",
     message:
-      "The mentor adds profile, role, strengths, gaps, and an optional day-1 skill check so AI starts from a real brief.",
-    outcome: "Personalization before plan generation.",
-    links: [
-      { label: "Add newcomer", href: "/mentor/newcomers/new", role: "mentor" },
-      { label: "Skill check setup", href: "/mentor/newcomers/new", role: "mentor" },
-    ],
-    icon: ClipboardCheck,
-  },
-  {
-    id: 3,
-    title: "Knowledge base grounds everything",
-    message:
-      "Company docs become reusable sources for plans, answers, assessments, lessons, and source citations.",
-    outcome: "No generic chatbot answers.",
-    links: [{ label: "Knowledge base", href: "/mentor/knowledge", role: "mentor" }],
-    icon: BookOpen,
-  },
-  {
-    id: 4,
-    title: "AI builds the journey",
-    message:
-      "Oleg generates onboarding period by period, selects sources, chooses fast or live mode, and reviews before approving.",
-    outcome: "A 30/60/90 journey becomes editable work.",
-    links: [{ label: "AI Plan Generator", href: "/mentor/plan-generator", role: "mentor" }],
-    icon: Wand2,
-  },
-  {
-    id: 5,
-    title: "Courses turn docs into learning",
-    message:
-      "AI drafts mini-courses and lessons from selected sources. The mentor reviews, approves, and publishes them to newcomers.",
-    outcome: "Learning is structured, not scattered.",
-    links: [
-      { label: "Courses", href: "/mentor/courses", role: "mentor" },
-      { label: "New course", href: "/mentor/courses/new", role: "mentor" },
-    ],
-    icon: GraduationCap,
-  },
-  {
-    id: 6,
-    title: "AI detects friction early",
-    message:
-      "Signals surface repeated questions, blocked tasks, source friction, code review patterns, fast wins, and suggested next actions.",
-    outcome: "Mentor intervenes before the newcomer escalates.",
-    links: [{ label: "Signals center", href: "/mentor/signals", role: "mentor" }],
-    icon: Network,
-  },
-  {
-    id: 7,
-    title: "Meetings and plan adjustments close the loop",
-    message:
-      "From a signal, the mentor can schedule support, adapt the plan, or spin up a targeted course.",
-    outcome: "AI proposes, humans decide.",
-    links: [
-      { label: "Calendar", href: "/mentor/meetings", role: "mentor" },
-      { label: "Plan adjustments", href: "/mentor/signals", role: "mentor" },
-    ],
-    icon: CalendarDays,
-  },
-  {
-    id: 8,
-    title: "Newcomer gets only what matters today",
-    message:
-      "Marina or Tanya sees today's work, recommended docs, people to know, assessments, courses, and Ask AI with clickable sources.",
-    outcome: "The experience feels focused, not overwhelming.",
+      "Switch into Marina. She opens her plan, picks a task, chats with task-context AI, then reads a grounded HR document — with mind map and source-cited answers. The experience feels focused, not overwhelming.",
+    outcome: "Newcomer sees only what matters today, with grounded answers.",
     links: [
       { label: "Newcomer home", href: "/newcomer", role: "newcomer" },
+      { label: "My plan", href: "/newcomer/plan", role: "newcomer" },
       { label: "Ask AI", href: "/newcomer/ask", role: "newcomer" },
-      { label: "Assessment", href: "/newcomer/assessment", role: "newcomer" },
     ],
     icon: MessagesSquare,
   },
   {
-    id: 9,
-    title: "Progress is visible to both sides",
+    id: 3,
+    title: "Act 3 — Signals & adjustments",
     message:
-      "The newcomer tracks progress and the mentor sees cohort health, creating a shared source of truth for onboarding.",
-    outcome: "No one has to guess where onboarding stands.",
+      "Back to mentor. AI flags that Tanya needs attention with evidence — repeated questions, blocked tasks, review patterns. Oleg opens a signal, regenerates a targeted plan change, edits a precise task, and applies the adjustment.",
+    outcome: "AI proposes, the mentor decides. Friction caught early.",
+    links: [
+      { label: "Signals center", href: "/mentor/signals", role: "mentor" },
+    ],
+    icon: Network,
+  },
+  {
+    id: 4,
+    title: "Act 4 — Author courses & onboard a new hire",
+    message:
+      "Mentor drafts a short HR/process course from selected sources, reviews it, and approves it. Then adds a brand-new hire (Noa Benali), generates a 2-question skill check, and Noa takes the test — triggering plan generation in the background.",
+    outcome: "The system scales: courses and new newcomers in minutes, not days.",
+    links: [
+      { label: "Courses", href: "/mentor/courses", role: "mentor" },
+      { label: "Add newcomer", href: "/mentor/newcomers/new", role: "mentor" },
+    ],
+    icon: GraduationCap,
+  },
+  {
+    id: 5,
+    title: "Act 5 — Daily rhythm & closing the loop",
+    message:
+      "Switch back to Marina. Notifications keep her in sync, the Progress page shows momentum, the Calendar lets her schedule a weekly sync (the dialog is bright, not in shadow), her Kanban submits a task for review. Then back to mentor — same task in his review queue, one click to approve. Loop closed.",
+    outcome: "Both sides share the same surface, AI does the lifting, humans decide.",
     links: [
       { label: "Progress", href: "/newcomer/progress", role: "newcomer" },
-      { label: "My plan", href: "/newcomer/plan", role: "newcomer" },
+      { label: "Calendar", href: "/newcomer/calendar", role: "newcomer" },
+      { label: "Newcomer Kanban", href: "/newcomer/kanban", role: "newcomer" },
+      { label: "Mentor Kanban", href: "/mentor/kanban", role: "mentor" },
     ],
     icon: GitBranch,
   },
 ];
 
 const SHOWCASE = [
-  "Manual role switching",
   "Source-grounded answers",
-  "AI plan periods",
-  "Live generation flow",
-  "Skill checks",
+  "AI plan & adjustments",
   "Course authoring",
   "Signals with evidence",
-  "Meetings and adjustments",
+  "Submit & approve loop",
+  "Shared calendar & progress",
 ];
 
 export default function DemoPage() {
@@ -254,10 +214,10 @@ export default function DemoPage() {
       />
 
       <ol className="grid gap-4 lg:grid-cols-2">
-        {SCENES.map((scene) => {
-          const Icon = scene.icon;
+        {ACTS.map((act) => {
+          const Icon = act.icon;
           return (
-            <li key={scene.id}>
+            <li key={act.id}>
               <Card className="h-full transition-shadow hover:shadow-md">
                 <CardHeader>
                   <div className="flex items-start gap-3">
@@ -267,27 +227,27 @@ export default function DemoPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge tone="brand" size="sm">
-                          Scene {scene.id}
+                          Act {act.id}
                         </Badge>
-                        <CardTitle className="text-base">{scene.title}</CardTitle>
+                        <CardTitle className="text-base">{act.title}</CardTitle>
                       </div>
-                      <CardDescription className="mt-1">{scene.message}</CardDescription>
+                      <CardDescription className="mt-1">{act.message}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/45 px-3 py-2 text-xs text-[color:var(--color-fg-muted)]">
                     <span className="font-medium text-[color:var(--color-fg)]">Show: </span>
-                    {scene.outcome}
+                    {act.outcome}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    {scene.links.map((link, index) => (
+                    {act.links.map((link, index) => (
                       <Button
                         key={`${link.href}-${index}`}
                         size="sm"
                         variant={index === 0 ? "ai" : "outline"}
                         onClick={() => go(link.href, link.role)}
-                        data-demo-id={`demo-scene-${scene.id}-${index}`}
+                        data-demo-id={`demo-act-${act.id}-${index}`}
                         className={cn(index === 0 && "shadow-sm")}
                       >
                         {index === 0 ? <Sparkles className="h-3.5 w-3.5" /> : null}

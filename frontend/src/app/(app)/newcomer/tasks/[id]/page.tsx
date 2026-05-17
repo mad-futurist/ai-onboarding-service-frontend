@@ -553,6 +553,7 @@ function TaskReviewButton({
         disabled={pending}
         onClick={onSubmit}
         size={size}
+        data-demo-id="newcomer-task-submit-review"
         className="relative gap-1.5"
       >
         {pending && pendingStatus === "in_review" ? (

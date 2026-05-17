@@ -35,6 +35,8 @@ interface DemoTourStep {
   waitForClickTarget?: string;
   advanceDelayAfterClick?: number;
   autoNavigate?: boolean;
+  /** Action to run when the step becomes active. Next button stays disabled until it resolves. */
+  actionOnEnter?: "regenerate-base";
 }
 
 interface TargetRect {
@@ -48,12 +50,31 @@ interface TargetRect {
 
 const TOUR_STEPS: DemoTourStep[] = [
   {
+    id: "welcome",
+    route: "/demo",
+    role: "mentor",
+    target: "demo-tour-start",
+    title: "Welcome to the ReadySet.AI walkthrough",
+    body: "In about 5 minutes we'll cover the full loop: mentor cockpit, knowledge-grounded plan, Marina's daily work, AI signals & plan adjustments, course authoring, onboarding a new hire, then the daily rhythm — notifications, progress, calendar, submit & approve. Click Next to regenerate fresh demo data and begin.",
+    autoNavigate: false,
+  },
+  {
+    id: "regenerate-base",
+    route: "/demo",
+    role: "mentor",
+    target: "demo-tour-start",
+    title: "Regenerating the demo base",
+    body: "Resetting seeded data so the walkthrough starts from a clean, predictable state — same personas, same plans, same documents every time. This takes a few seconds.",
+    actionOnEnter: "regenerate-base",
+    autoNavigate: false,
+  },
+  {
     id: "mentor-dashboard",
     route: "/mentor",
     role: "mentor",
     target: "mentor-dashboard-newcomers",
-    title: "Mentor dashboard first",
-    body: "Start in Oleg's mentor cockpit. The seeded demo shows two active newcomers: Marina in Sales and Tanya in Backend/Payments.",
+    title: "Mentor cockpit first",
+    body: "Start in Oleg's cockpit. The seeded demo shows two active newcomers — Marina (Sales) and Tanya (Backend/Payments) — with live progress, attention signals, today's focus, and saved time, all in one place.",
   },
   {
     id: "open-marina-switcher",
@@ -88,7 +109,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     role: "newcomer",
     target: "newcomer-plan-journey",
     title: "Marina's onboarding journey",
-    body: "Show the journey view, progress, and week-by-week task structure.",
+    body: "Her plan reads like a journey, not a wall of tickets — progress per week, day-level tasks, AI-recommended sources and people for each beat. Focused, not overwhelming.",
   },
   {
     id: "open-marina-task",
@@ -199,7 +220,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     role: "newcomer",
     target: "document-mindmap-result",
     title: "Mind map generated",
-    body: "The map shows the central topic, branches, and leaf ideas extracted from the source.",
+    body: "The map turns a 20-page document into a navigable structure — central topic, branches, leaf ideas. Marina can scan the shape of the doc in 30 seconds before reading.",
   },
   {
     id: "open-document-chat",
@@ -298,8 +319,8 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "course-editor",
-    title: "Course draft",
-    body: "The AI-created course opens in the mentor editor. Review it, then move it through approval.",
+    title: "Course draft, ready to refine",
+    body: "AI drafts the course from the selected knowledge sources — title, lessons, structure. The mentor stays in control: edit any lesson, then approve before it's visible to newcomers.",
     autoNavigate: false,
   },
   {
@@ -430,8 +451,8 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/signals",
     role: "mentor",
     target: "signal-drawer-adjust-plan",
-    title: "Adjust the plan",
-    body: "From the signal drawer, click Regenerate plan to add targeted plan modifications.",
+    title: "Turn a signal into a plan change",
+    body: "From the signal drawer, click Regenerate plan. The AI proposes targeted modifications informed by the signal evidence — the mentor stays in the loop to approve.",
     waitForClickTarget: "signal-drawer-adjust-plan",
   },
   {
@@ -680,21 +701,232 @@ const TOUR_STEPS: DemoTourStep[] = [
     body: "Back in the mentor dashboard, the new newcomer can appear with a generated draft plan after the assessment background job completes.",
   },
   {
-    id: "nav-mentor-kanban",
+    id: "closing-open-switcher-to-marina",
+    route: "/mentor",
+    role: "mentor",
+    target: "role-switcher-trigger",
+    title: "Step back into Marina",
+    body: "Setup is done. Now switch back to Marina to show her daily operating rhythm: notifications, progress, calendar, kanban — the surfaces she lives in.",
+    waitForClickTarget: "role-switcher-trigger",
+  },
+  {
+    id: "closing-choose-marina",
+    route: "/mentor",
+    role: "mentor",
+    target: "role-persona-marina-kovalenko",
+    title: "Choose Marina again",
+    body: "Re-enter Marina's workspace. The next beats show how a newcomer actually uses the product day after day.",
+    waitForClickTarget: "role-persona-marina-kovalenko",
+  },
+  {
+    id: "closing-notifications-bell",
+    route: "/newcomer",
+    role: "newcomer",
+    target: "notification-bell",
+    title: "Notifications keep Marina in sync",
+    body: "The bell polls every 30 seconds. Mentor comments, plan changes, meeting invites, and signal updates all surface here so Marina never misses a step. Click it.",
+    waitForClickTarget: "notification-bell",
+  },
+  {
+    id: "closing-notifications-item",
+    route: "/newcomer",
+    role: "newcomer",
+    target: "notifications-first-item",
+    title: "Each notification is a shortcut",
+    body: "Clicking a notification routes straight to the related task, signal, or meeting — no hunting through tabs. Mentor and newcomer share the same notification spine.",
+  },
+  {
+    id: "closing-nav-progress",
+    route: "/newcomer",
+    role: "newcomer",
+    target: "nav-newcomer-progress",
+    title: "Open Marina's Progress page",
+    body: "Use the sidebar to open Progress. This is Marina's source of truth for where she stands in the journey.",
+    waitForClickTarget: "nav-newcomer-progress",
+  },
+  {
+    id: "closing-progress-hero",
+    route: "/newcomer/progress",
+    role: "newcomer",
+    target: "newcomer-progress-hero",
+    title: "Progress at a glance",
+    body: "Completed, in progress, blocked, and a weekly hint. Marina sees momentum without asking; the mentor sees the same numbers on the dashboard. One shared truth.",
+  },
+  {
+    id: "closing-progress-velocity",
+    route: "/newcomer/progress",
+    role: "newcomer",
+    target: "newcomer-progress-velocity",
+    title: "Weekly velocity & milestones",
+    body: "Velocity per week and milestone tracking turn onboarding from vibes into evidence — useful both for Marina and for her mentor's quarterly review.",
+  },
+  {
+    id: "closing-nav-calendar",
+    route: "/newcomer/progress",
+    role: "newcomer",
+    target: "nav-newcomer-calendar",
+    title: "Open the Calendar",
+    body: "Move to Marina's calendar. Mentor syncs, demo sessions, and ad-hoc help meetings all live here.",
+    waitForClickTarget: "nav-newcomer-calendar",
+  },
+  {
+    id: "closing-calendar-grid",
+    route: "/newcomer/calendar",
+    role: "newcomer",
+    target: "newcomer-calendar-grid",
+    title: "A month at a glance",
+    body: "The calendar shows the full month. Every scheduled session, with its time and Teams link, is here. Marina (or the mentor) can add a meeting on any day.",
+  },
+  {
+    id: "closing-calendar-add",
+    route: "/newcomer/calendar",
+    role: "newcomer",
+    target: "newcomer-calendar-add",
+    title: "Schedule a meeting",
+    body: "Click Add meeting to open the scheduling dialog. Watch how it appears: bright and on top of the page — the spotlight no longer dims it.",
+    waitForClickTarget: "newcomer-calendar-add",
+  },
+  {
+    id: "closing-meeting-dialog-fill",
+    route: "/newcomer/calendar",
+    role: "newcomer",
+    target: "schedule-meeting-submit",
+    title: "30-minute weekly sync",
+    body: "Title and agenda are pre-filled. The mentor is the default attendee. Click Schedule — the meeting is created, an invite goes out, and a notification fires for the mentor.",
+    fill: [
+      { target: "schedule-meeting-title", value: "Weekly sync with Marina" },
+      {
+        target: "schedule-meeting-agenda",
+        value: "1) Wins from the week\n2) Blockers and questions\n3) Plan for next week\n4) Anything I can support faster?",
+      },
+    ],
+    waitForClickTarget: "schedule-meeting-submit",
+    advanceDelayAfterClick: 1400,
+  },
+  {
+    id: "closing-meeting-saved",
+    route: "/newcomer/calendar",
+    role: "newcomer",
+    target: "newcomer-calendar-grid",
+    title: "Meeting saved",
+    body: "The new meeting is now on Marina's calendar and on the mentor's. Both sides see the same source of truth — no email chains, no rescheduling drift.",
+  },
+  {
+    id: "closing-nav-kanban",
+    route: "/newcomer/calendar",
+    role: "newcomer",
+    target: "nav-newcomer-kanban",
+    title: "Open Marina's task board",
+    body: "Use the sidebar to open her Kanban. This is where Marina actually moves work forward day to day.",
+    waitForClickTarget: "nav-newcomer-kanban",
+  },
+  {
+    id: "closing-kanban-overview",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "newcomer-kanban-board",
+    title: "Five lanes, one flow",
+    body: "To do, In progress, In review, Blocked, Done. Marina drags her own work forward; In review hands off to the mentor for validation; only the mentor moves a task to Done.",
+  },
+  {
+    id: "closing-kanban-in-progress-task",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "newcomer-kanban-first-active-task",
+    title: "Pick a task in progress",
+    body: "Click an in-progress task to open it. Marina is going to submit her work for mentor review in one click.",
+    waitForClickTarget: "newcomer-kanban-first-active-task",
+  },
+  {
+    id: "closing-task-submit-review",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-task-submit-review",
+    title: "Submit for review",
+    body: "One click. The task moves to In review on Marina's board, lands on the mentor's review queue, and fires a notification. Click Submit for review.",
+    waitForClickTarget: "newcomer-task-submit-review",
+    advanceDelayAfterClick: 1200,
+  },
+  {
+    id: "closing-back-to-kanban",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "nav-newcomer-kanban",
+    title: "Back to the board",
+    body: "Open Marina's Kanban again to see where the task landed.",
+    waitForClickTarget: "nav-newcomer-kanban",
+  },
+  {
+    id: "closing-kanban-in-review-column",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "newcomer-kanban-column-in_review",
+    title: "Now in the mentor's hands",
+    body: "The task has moved to In review. Marina cannot drag it from here — only the mentor can approve. The handoff is explicit, not implicit.",
+  },
+  {
+    id: "closing-open-switcher-to-mentor",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "role-switcher-trigger",
+    title: "Switch to the mentor",
+    body: "Open the persona switcher to step back into Oleg and close the loop on the review side.",
+    waitForClickTarget: "role-switcher-trigger",
+  },
+  {
+    id: "closing-choose-mentor",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "role-persona-oleg-bondarenko",
+    title: "Choose Oleg",
+    body: "Re-enter the mentor workspace.",
+    waitForClickTarget: "role-persona-oleg-bondarenko",
+  },
+  {
+    id: "closing-nav-mentor-kanban",
     route: "/mentor",
     role: "mentor",
     target: "nav-mentor-kanban",
-    title: "Open mentor Kanban",
-    body: "Finish by opening the mentor task board from the sidebar.",
+    title: "Open the mentor Kanban",
+    body: "Open the mentor task board from the sidebar. This is the operations cockpit across every newcomer.",
     waitForClickTarget: "nav-mentor-kanban",
   },
   {
-    id: "mentor-kanban",
+    id: "closing-mentor-in-review",
+    route: "/mentor/kanban",
+    role: "mentor",
+    target: "mentor-kanban-column-in_review",
+    title: "The review queue",
+    body: "Every newcomer submission lands in this In review column — sorted by urgency, with AI signal markers. Marina's just-submitted task is here.",
+  },
+  {
+    id: "closing-mentor-open-review-task",
+    route: "/mentor/kanban",
+    role: "mentor",
+    target: "mentor-kanban-in-review-task",
+    title: "Open the submission",
+    body: "Click the highlighted card to open the review sheet. The mentor sees the task, the conversation, prior signals, and review history — everything to decide in seconds.",
+    waitForClickTarget: "mentor-kanban-in-review-task",
+  },
+  {
+    id: "closing-mentor-approve",
+    route: "/mentor/kanban",
+    role: "mentor",
+    target: "mentor-task-approve",
+    title: "Approve in one click",
+    body: "Click Approve. The task moves to Done in both boards, Marina is notified, and her Progress page updates instantly. The full submit → review → approve loop is closed.",
+    waitForClickTarget: "mentor-task-approve",
+    advanceDelayAfterClick: 1200,
+  },
+  {
+    id: "closing-final-board",
     route: "/mentor/kanban",
     role: "mentor",
     target: "mentor-kanban-board",
-    title: "Mentor Kanban",
-    body: "The Kanban board closes the loop with active work, reviews, blockers, and AI signal markers across newcomers.",
+    title: "The full loop, in one tour",
+    body: "Setup → plan → grounded knowledge → courses → signals → adjustments → new hire onboarded → daily rhythm → submit → approve. Mentor and newcomer always on the same surface, AI doing the heavy lifting, humans deciding.",
   },
 ];
 
@@ -708,10 +940,12 @@ export function GuidedDemoTour() {
     setGuidedDemoStep,
     stopGuidedDemo,
     setRole,
+    refresh,
   } = useDemo();
   const [targetRect, setTargetRect] = React.useState<TargetRect | null>(null);
   const [targetReady, setTargetReady] = React.useState(false);
   const [paused, setPaused] = React.useState(false);
+  const [actionPending, setActionPending] = React.useState(false);
   const scrolledStepRef = React.useRef<string | null>(null);
   const filledStepRef = React.useRef<string | null>(null);
   const pendingClickAdvanceRef = React.useRef<string | null>(null);
@@ -758,6 +992,21 @@ export function GuidedDemoTour() {
   React.useEffect(() => {
     pendingClickAdvanceRef.current = null;
   }, [step?.id]);
+
+  React.useEffect(() => {
+    if (!guidedDemoActive || !step) return;
+    if (step.actionOnEnter !== "regenerate-base") return;
+    let cancelled = false;
+    setActionPending(true);
+    refresh()
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setActionPending(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [guidedDemoActive, refresh, step?.actionOnEnter, step?.id]);
 
   React.useEffect(() => {
     if (!guidedDemoActive) return;
@@ -870,7 +1119,7 @@ export function GuidedDemoTour() {
   const current = guidedDemoStep + 1;
   const total = TOUR_STEPS.length;
   const waitingForClick = !!step.waitForClickTarget;
-  const canAdvance = onTargetRoute && targetReady && !paused;
+  const canAdvance = onTargetRoute && targetReady && !paused && !actionPending;
 
   return (
     <AnimatePresence>
@@ -985,7 +1234,9 @@ export function GuidedDemoTour() {
                 onClick={() => completeStep({ delay: 0 })}
               >
                 {!canAdvance
-                  ? "Waiting..."
+                  ? actionPending
+                    ? "Regenerating..."
+                    : "Waiting..."
                   : guidedDemoStep >= TOUR_STEPS.length - 1
                     ? "Finish"
                     : "Next"}

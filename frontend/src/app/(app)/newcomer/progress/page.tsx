@@ -69,16 +69,20 @@ export default function NewcomerProgressPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      <ProgressHero
-        completedCount={completed.length}
-        inProgressCount={inProgress.length}
-        blockedCount={blocked.length}
-        todoCount={todo.length}
-        hint={thisWeekHint}
-      />
+      <div data-demo-id="newcomer-progress-hero">
+        <ProgressHero
+          completedCount={completed.length}
+          inProgressCount={inProgress.length}
+          blockedCount={blocked.length}
+          todoCount={todo.length}
+          hint={thisWeekHint}
+        />
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <WeeklyVelocity tasks={tasks} />
+        <div data-demo-id="newcomer-progress-velocity">
+          <WeeklyVelocity tasks={tasks} />
+        </div>
         <MilestoneTrack tasks={tasks} />
       </div>
 

@@ -43,7 +43,11 @@ export default function NewcomerCalendarPage() {
         title="Meetings calendar"
         description="Your mentor sessions and syncs in one place."
         actions={
-          <Button variant="ai" onClick={() => openMeetingDialog()}>
+          <Button
+            variant="ai"
+            onClick={() => openMeetingDialog()}
+            data-demo-id="newcomer-calendar-add"
+          >
             <Plus className="h-4 w-4" /> Add meeting
           </Button>
         }
@@ -87,7 +91,10 @@ function CalendarBoard({
   const monthLabel = today.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
   return (
-    <section className="rounded-lg border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-card)]">
+    <section
+      data-demo-id="newcomer-calendar-grid"
+      className="rounded-lg border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-card)]"
+    >
       <div className="flex flex-col gap-3 border-b border-[color:var(--color-border)] px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="flex items-center gap-2 text-base font-semibold text-[color:var(--color-fg)]">

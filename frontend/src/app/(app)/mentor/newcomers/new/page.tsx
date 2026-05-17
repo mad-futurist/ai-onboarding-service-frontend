@@ -16,7 +16,6 @@ import {
   Briefcase,
   Brain,
   Check,
-  ClipboardCheck,
 } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -73,7 +72,6 @@ const STEPS = [
     icon: Brain,
     fields: ["known_skills", "known_gaps"] as const,
   },
-  { id: 4, label: "Review", icon: ClipboardCheck, fields: [] as const },
 ];
 
 export default function AddNewcomerPage() {
@@ -389,36 +387,6 @@ export default function AddNewcomerPage() {
               </div>
             ) : null}
 
-            {step === 4 ? (
-              <div className="space-y-4" data-demo-id="add-newcomer-review">
-                <ReviewSection title="Profile" onEdit={() => setStep(1)}>
-                  <ReviewRow label="Name" value={form.watch("full_name") || "-"} />
-                  <ReviewRow label="Email" value={form.watch("email") || "-"} />
-                </ReviewSection>
-                <ReviewSection title="Role context" onEdit={() => setStep(2)}>
-                  <ReviewRow label="Role" value={form.watch("job_title") || "-"} />
-                  <ReviewRow label="Seniority" value={form.watch("seniority") || "-"} />
-                  <ReviewRow label="Team" value={form.watch("team") || "-"} />
-                  <ReviewRow label="Start date" value={form.watch("start_date") || "-"} />
-                  <ReviewRow label="Goal" value={form.watch("main_goal") || "-"} />
-                </ReviewSection>
-                <ReviewSection title="Skills & gaps" onEdit={() => setStep(3)}>
-                  <ReviewRow
-                    label="Known skills"
-                    value={form.watch("known_skills") || "Not specified"}
-                  />
-                  <ReviewRow
-                    label="Known gaps"
-                    value={form.watch("known_gaps") || "Not specified"}
-                  />
-                </ReviewSection>
-                <AssessmentReviewSection
-                  assessment={assessment}
-                  onEdit={() => setStep(3)}
-                />
-              </div>
-            ) : null}
-
             <div className="flex items-center justify-between border-t border-[color:var(--color-border)] pt-5">
               <Button
                 type="button"
@@ -430,8 +398,7 @@ export default function AddNewcomerPage() {
               </Button>
               {step < STEPS.length ? (
                 <Button type="button" onClick={handleNext} data-demo-id="add-newcomer-next">
-                  {step === 3 ? "Review newcomer" : "Continue"}{" "}
-                  <ArrowRight className="h-4 w-4" />
+                  Continue <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
                 <Button
@@ -539,100 +506,6 @@ function Field({
         <div className="text-xs text-[color:var(--color-danger-fg)]">{error}</div>
       ) : null}
     </div>
-  );
-}
-
-function ReviewSection({
-  title,
-  children,
-  onEdit,
-}: {
-  title: string;
-  children: React.ReactNode;
-  onEdit: () => void;
-}) {
-  return (
-    <section className="rounded-lg border border-[color:var(--color-border)] bg-white p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">
-          {title}
-        </h2>
-        <Button type="button" size="sm" variant="ghost" onClick={onEdit}>
-          Edit
-        </Button>
-      </div>
-      <dl className="space-y-2">{children}</dl>
-    </section>
-  );
-}
-
-function ReviewRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="grid gap-1 text-sm sm:grid-cols-[140px_1fr]">
-      <dt className="text-[color:var(--color-fg-subtle)]">{label}</dt>
-      <dd className="text-[color:var(--color-fg)]">{value}</dd>
-    </div>
-  );
-}
-
-function AssessmentReviewSection({
-  assessment,
-  onEdit,
-}: {
-  assessment: Assessment | null;
-  onEdit: () => void;
-}) {
-  if (!assessment) {
-    return (
-      <section className="rounded-lg border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] p-4">
-        <div className="mb-1 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">
-            Skill check
-          </h2>
-          <Button type="button" size="sm" variant="ghost" onClick={onEdit}>
-            Edit
-          </Button>
-        </div>
-        <p className="text-xs text-[color:var(--color-fg-muted)]">
-          No skill check generated yet. The newcomer will skip the day-1 test if
-          you finish without one.
-        </p>
-      </section>
-    );
-  }
-  const counts: Record<string, number> = {};
-  assessment.questions.forEach((q) => {
-    counts[q.question_type] = (counts[q.question_type] ?? 0) + 1;
-  });
-  return (
-    <section className="rounded-lg border border-[color:var(--color-border)] bg-white p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">
-          Skill check ({assessment.questions.length} questions)
-        </h2>
-        <Button type="button" size="sm" variant="ghost" onClick={onEdit}>
-          Edit
-        </Button>
-      </div>
-      <dl className="space-y-2 text-sm">
-        <ReviewRow label="Title" value={assessment.title} />
-        <ReviewRow
-          label="Mix"
-          value={Object.entries(counts)
-            .map(([k, v]) => `${v} ${k.replace("_", " ")}`)
-            .join(" / ")}
-        />
-        {assessment.mentor_notes ? (
-          <ReviewRow label="Notes" value={assessment.mentor_notes} />
-        ) : null}
-      </dl>
-    </section>
   );
 }
 

@@ -226,7 +226,10 @@ export default function NewcomerKanbanPage() {
       </section>
 
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div
+          data-demo-id="newcomer-kanban-board"
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5"
+        >
           {BOARD_STATUSES.map((status) => (
             <KanbanColumn
               key={status}
@@ -259,6 +262,7 @@ function KanbanColumn({
   return (
     <section
       ref={setNodeRef}
+      data-demo-id={`newcomer-kanban-column-${status}`}
       className={cn(
         "flex min-h-[58vh] flex-col rounded-[18px] border border-[color:var(--color-border)] p-3 transition-colors",
         meta.column,
@@ -286,12 +290,13 @@ function KanbanColumn({
 
       <div className="flex-1 space-y-2 overflow-y-auto">
         {tasks.length ? (
-          tasks.map((task) => (
+          tasks.map((task, index) => (
             <TaskCard
               key={task.id}
               task={task}
               status={status}
               pending={pendingTaskId === task.id}
+              isFirst={index === 0}
             />
           ))
         ) : (
@@ -308,10 +313,12 @@ function TaskCard({
   task,
   status,
   pending,
+  isFirst,
 }: {
   task: OnboardingTask;
   status: NewcomerKanbanStatus;
   pending: boolean;
+  isFirst: boolean;
 }) {
   const draggable = canDragStatus(status);
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -372,6 +379,7 @@ function TaskCard({
           </div>
           <Link
             href={`/newcomer/tasks/${task.id}`}
+            data-demo-alt-id={isFirst && status === "in_progress" ? "newcomer-kanban-first-active-task" : undefined}
             className="mt-2 block text-sm font-medium leading-snug text-[color:var(--color-fg)] hover:text-[color:var(--color-primary-active)]"
           >
             {task.title}

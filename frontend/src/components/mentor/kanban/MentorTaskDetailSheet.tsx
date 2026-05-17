@@ -444,6 +444,7 @@ export function MentorTaskDetailSheet({
                             size="sm"
                             disabled={statusMut.isPending}
                             onClick={() => statusMut.mutate({ status: "done" })}
+                            data-demo-id="mentor-task-approve"
                           >
                             {statusMut.isPending ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />

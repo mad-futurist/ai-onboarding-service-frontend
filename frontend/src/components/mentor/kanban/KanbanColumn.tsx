@@ -81,6 +81,7 @@ export function KanbanColumn({ status, cards, onCardClick }: Props) {
   return (
     <div
       ref={setNodeRef}
+      data-demo-id={`mentor-kanban-column-${status}`}
       className={cn(
         "flex h-full min-h-[64vh] flex-col overflow-hidden rounded-[18px] border border-[color:var(--color-border)] shadow-[var(--shadow-card)] transition-all",
         theme.shell,
@@ -128,11 +129,12 @@ export function KanbanColumn({ status, cards, onCardClick }: Props) {
             Drop a card here
           </div>
         ) : (
-          cards.map((card) => (
+          cards.map((card, index) => (
             <KanbanTaskCardItem
               key={card.id}
               card={card}
               onClick={onCardClick}
+              isFirst={index === 0}
             />
           ))
         )}

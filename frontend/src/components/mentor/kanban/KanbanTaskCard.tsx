@@ -25,6 +25,7 @@ import type { KanbanTaskCard as KanbanTaskCardData } from "@/services/mentor-kan
 interface Props {
   card: KanbanTaskCardData;
   onClick?: (card: KanbanTaskCardData) => void;
+  isFirst?: boolean;
 }
 
 const TONE_CLASSES: Record<string, string> = {
@@ -68,7 +69,7 @@ function initials(name: string) {
   return letters || "NC";
 }
 
-export function KanbanTaskCardItem({ card, onClick }: Props) {
+export function KanbanTaskCardItem({ card, onClick, isFirst }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `task-${card.id}`,
@@ -120,6 +121,7 @@ export function KanbanTaskCardItem({ card, onClick }: Props) {
         <button
           type="button"
           onClick={() => onClick?.(card)}
+          data-demo-alt-id={isFirst && card.status === "in_review" ? "mentor-kanban-in-review-task" : undefined}
           className="min-w-0 flex-1 text-left"
         >
           <div className="flex items-center gap-1.5 flex-wrap">

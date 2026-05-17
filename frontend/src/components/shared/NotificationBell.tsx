@@ -97,6 +97,7 @@ export function NotificationBell() {
             unread.length > 0 && "text-[color:var(--color-fg)]",
           )}
           aria-label="Notifications"
+          data-demo-id="notification-bell"
         >
           <BellRing className="h-4 w-4" />
           {unread.length > 0 ? (
@@ -141,11 +142,12 @@ export function NotificationBell() {
             </div>
           ) : (
             <ul className="divide-y divide-[color:var(--color-border)]">
-              {data.map((n) => (
+              {data.map((n, index) => (
                 <li key={n.id}>
                   <button
                     type="button"
                     onClick={() => handleClickItem(n)}
+                    data-demo-id={index === 0 ? "notifications-first-item" : undefined}
                     className={cn(
                       "block w-full px-3 py-2.5 text-left transition-colors hover:bg-[color:var(--color-surface-muted)]",
                       !n.read_at && "bg-[color:var(--color-primary-soft)]/40",
