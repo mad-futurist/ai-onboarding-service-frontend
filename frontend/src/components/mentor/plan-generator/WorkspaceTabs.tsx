@@ -106,7 +106,7 @@ export function WorkspaceTabs({
             </Badge>
           ) : null}
         </TabsTrigger>
-        <TabsTrigger value="tasks" className="gap-2">
+        <TabsTrigger value="tasks" className="gap-2" data-demo-id="plan-workspace-all-tasks-tab">
           <ListChecks className="h-3.5 w-3.5" /> All tasks
           {tasks.length ? (
             <Badge tone="neutral" size="sm" className="ml-1">
@@ -169,10 +169,11 @@ export function WorkspaceTabs({
                     (a.week_number ?? 0) - (b.week_number ?? 0) ||
                     (a.day_number ?? 0) - (b.day_number ?? 0),
                 )
-                .map((t) => (
+                .map((t, taskIndex) => (
                   <li key={t.id}>
                     <Link
                       href={`/mentor/plan-generator/${plan.id}/task/${t.id}`}
+                      data-demo-alt-id={taskIndex === 0 ? "plan-workspace-first-task" : undefined}
                       className="flex items-center justify-between gap-3 rounded-lg border border-[color:var(--color-border)] bg-white px-3 py-2 text-sm hover:border-[color:var(--color-primary-ring)]"
                     >
                       <div className="min-w-0">

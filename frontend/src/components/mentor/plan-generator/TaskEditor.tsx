@@ -383,7 +383,7 @@ export function TaskEditor({ task, onSave, saving }: TaskEditorProps) {
       </Card>
 
       <div className="sticky bottom-4 z-10 flex justify-end">
-        <Button onClick={handleSave} disabled={saving}>
+        <Button onClick={handleSave} disabled={saving} data-demo-id="mentor-task-editor-save">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Save changes
         </Button>
       </div>

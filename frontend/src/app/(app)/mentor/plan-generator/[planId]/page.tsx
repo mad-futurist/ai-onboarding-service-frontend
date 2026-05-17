@@ -83,6 +83,7 @@ export default function PlanWorkspacePage() {
   // Load local versions (sessionStorage today, real backend tomorrow).
   React.useEffect(() => {
     if (!Number.isFinite(planId)) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVersions(listPeriodVersions(planId));
   }, [planId]);
 
@@ -241,7 +242,13 @@ export default function PlanWorkspacePage() {
                   <Check className="h-3 w-3" /> Approved
                 </Badge>
               ) : (
-                <Button size="sm" variant="ai" disabled={approveMut.isPending} onClick={() => approveMut.mutate()}>
+                <Button
+                  size="sm"
+                  variant="ai"
+                  disabled={approveMut.isPending}
+                  onClick={() => approveMut.mutate()}
+                  data-demo-id="plan-workspace-approve"
+                >
                   <Check className="h-3.5 w-3.5" /> {approveMut.isPending ? "Approving…" : "Approve period"}
                 </Button>
               )}

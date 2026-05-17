@@ -253,6 +253,7 @@ export function LiveModeWorkspace(props: LiveModeWorkspaceProps) {
 
   React.useEffect(() => {
     // Auto-start as soon as the workspace mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     start();
     return () => handleRef.current?.stop();
   }, [start]);
@@ -301,7 +302,7 @@ export function LiveModeWorkspace(props: LiveModeWorkspaceProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50" data-demo-id="live-mode-workspace">
       {/* Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -359,7 +360,13 @@ export function LiveModeWorkspace(props: LiveModeWorkspaceProps) {
                   )}
                 </Button>
               ) : null}
-              <Button size="sm" variant="ai" disabled={!canCommit} onClick={() => onCommit(buildFinalNotes())}>
+              <Button
+                size="sm"
+                variant="ai"
+                disabled={!canCommit}
+                onClick={() => onCommit(buildFinalNotes())}
+                data-demo-id="live-mode-commit"
+              >
                 {generating ? (
                   <>
                     <Loader2 className="h-3.5 w-3.5 animate-spin" /> Committing…

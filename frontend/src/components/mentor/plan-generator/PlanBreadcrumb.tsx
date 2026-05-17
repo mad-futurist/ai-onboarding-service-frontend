@@ -25,6 +25,7 @@ export function PlanBreadcrumb({ crumbs, actions }: PlanBreadcrumbProps) {
           {backHref ? (
             <Link
               href={backHref}
+              data-demo-id="plan-breadcrumb-back"
               className="grid h-7 w-7 place-items-center rounded-md text-[color:var(--color-fg-subtle)] hover:bg-[color:var(--color-surface-muted)] hover:text-[color:var(--color-fg)]"
               aria-label="Back"
             >
