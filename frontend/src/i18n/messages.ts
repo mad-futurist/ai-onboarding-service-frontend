@@ -617,7 +617,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Generating...": "Генерація...",
   "Streaming...": "Потокова генерація...",
   "Back": "Назад",
-  "Next": "Далі",
   "Submit": "Надіслати",
   "Submitting...": "Надсилання...",
   "All done!": "Готово!",
