@@ -258,7 +258,7 @@ export default function NewcomerCourseDetailPage() {
   const progressPct = lessons.length ? Math.round((totalCompleted / lessons.length) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 space-y-4">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 space-y-4" data-demo-id="newcomer-course-reader">
       <div className="flex items-center justify-between gap-3">
         <Link
           href="/newcomer/courses"

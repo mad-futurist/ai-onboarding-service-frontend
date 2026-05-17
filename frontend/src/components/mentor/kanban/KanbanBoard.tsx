@@ -43,7 +43,10 @@ export function KanbanBoard({ data, onDropCard, onCardClick }: Props) {
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div
+        className="grid grid-cols-1 gap-4 md:grid-cols-3 md:items-stretch"
+        data-demo-id="mentor-kanban-board"
+      >
         {COLUMN_ORDER.map((status) => (
           <KanbanColumn
             key={status}

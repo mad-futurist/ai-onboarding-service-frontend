@@ -155,7 +155,12 @@ export function DocumentMindMap({ documentId }: DocumentMindMapProps) {
             <p className="text-sm text-[color:var(--color-fg-muted)]">
               Generate an interactive mind map. AI will extract the central topic and its main branches so you can see how it all fits together at a glance.
             </p>
-            <Button variant="ai" onClick={() => mut.mutate()} disabled={!newcomerId}>
+            <Button
+              variant="ai"
+              onClick={() => mut.mutate()}
+              disabled={!newcomerId}
+              data-demo-id="document-mindmap-generate"
+            >
               <Sparkles className="h-4 w-4" /> Generate mind map
             </Button>
           </div>
@@ -189,7 +194,7 @@ export function DocumentMindMap({ documentId }: DocumentMindMapProps) {
   if (!flow) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-demo-id="document-mindmap-result">
       <div className="flex items-center justify-between gap-3">
         <div className="text-sm font-medium text-[color:var(--color-fg-muted)]">
           Central topic:{" "}

@@ -139,7 +139,7 @@ const SCENES: Scene[] = [
 ];
 
 const SHOWCASE = [
-  "Auto role switching",
+  "Manual role switching",
   "Source-grounded answers",
   "AI plan periods",
   "Live generation flow",
@@ -193,10 +193,10 @@ export default function DemoPage() {
               <MousePointerClick className="h-3.5 w-3.5" /> Guided walkthrough
             </div>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[color:var(--color-fg)]">
-              Demo mode points, fills, clicks, and moves.
+              Demo mode points, fills, and waits for your click.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
-              Use it during a pitch when you want the app to guide the room: spotlight overlays dim the rest of the UI, arrows pulse on the next control, safe buttons auto-click, and form fields fill with demo data.
+              Use it during a pitch when you want the app to guide the room: spotlight overlays dim the rest of the UI, arrows pulse on the next control, and form fields fill with demo data. Every navigation and action still waits for a user click, with a Do it helper when you want the tour to perform the highlighted action.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {SHOWCASE.map((item) => (
@@ -219,7 +219,7 @@ export default function DemoPage() {
                   {guidedDemoActive ? "Demo mode is running" : "Start the guided mode"}
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-[color:var(--color-fg-muted)]">
-                  The tour is safe: it avoids final submit/generate actions that would create or mutate important records.
+                  The tour is deliberate: it never clicks by itself. You can click the target, or use the Do it helper in the tour panel to perform the highlighted action.
                 </p>
               </div>
             </div>

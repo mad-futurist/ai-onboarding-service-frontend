@@ -121,7 +121,15 @@ export function DocumentChatPanel({ doc }: DocumentChatPanelProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: easing }}
             >
-              <ChatMessage item={msg} name={newcomerName} />
+              <ChatMessage
+                item={msg}
+                name={newcomerName}
+                dataDemoId={
+                  idx === chat.length - 1 && msg.response
+                    ? "document-chat-latest-answer"
+                    : undefined
+                }
+              />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -133,10 +141,12 @@ export function DocumentChatPanel({ doc }: DocumentChatPanelProps) {
           void submit(draft);
         }}
         className="sticky bottom-4 z-10"
+        data-demo-id="document-chat-composer"
       >
         <div className="rounded-2xl border border-[color:var(--color-border)] bg-white p-2 shadow-[var(--shadow-elevated)]">
           <div className="ai-border rounded-xl">
             <Textarea
+              data-demo-id="document-chat-input"
               rows={2}
               placeholder={`Pose une question sur "${doc.title}"…`}
               value={draft}
@@ -159,6 +169,7 @@ export function DocumentChatPanel({ doc }: DocumentChatPanelProps) {
               variant="ai"
               size="sm"
               disabled={!draft.trim() || askMut.isPending}
+              data-demo-id="document-chat-submit"
             >
               <Send className="h-3.5 w-3.5" /> Ask
             </Button>
@@ -169,7 +180,15 @@ export function DocumentChatPanel({ doc }: DocumentChatPanelProps) {
   );
 }
 
-function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
+function ChatMessage({
+  item,
+  name,
+  dataDemoId,
+}: {
+  item: ChatItem;
+  name: string;
+  dataDemoId?: string;
+}) {
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-3">
@@ -196,16 +215,18 @@ function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
           ) : item.errored ? (
             <AIInsightCard title="Something went wrong" description={item.errored} tone="soft" />
           ) : item.response ? (
-            <AIInsightCard title="Answer" tone="soft">
-              <Markdown>{item.response.answer}</Markdown>
-              {item.response.sources?.length ? (
-                <div className="mt-3 space-y-1.5">
-                  {item.response.sources.slice(0, 3).map((s, i) => (
-                    <SourceCitation key={i} source={s} index={i} />
-                  ))}
-                </div>
-              ) : null}
-            </AIInsightCard>
+            <div data-demo-id={dataDemoId}>
+              <AIInsightCard title="Answer" tone="soft">
+                <Markdown>{item.response.answer}</Markdown>
+                {item.response.sources?.length ? (
+                  <div className="mt-3 space-y-1.5">
+                    {item.response.sources.slice(0, 3).map((s, i) => (
+                      <SourceCitation key={i} source={s} index={i} />
+                    ))}
+                  </div>
+                ) : null}
+              </AIInsightCard>
+            </div>
           ) : null}
         </div>
       </div>

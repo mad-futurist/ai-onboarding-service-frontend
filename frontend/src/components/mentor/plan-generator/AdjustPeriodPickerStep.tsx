@@ -150,6 +150,7 @@ export function AdjustPeriodPickerStep({
           variant="ai"
           disabled={selectedPeriodId == null || isLoading}
           onClick={onConfirm}
+          data-demo-id="adjust-period-confirm"
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Generate proposal <ArrowRight className="h-3.5 w-3.5" />

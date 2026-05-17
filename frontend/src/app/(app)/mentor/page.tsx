@@ -241,7 +241,7 @@ export default function MentorOverviewPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <section className="space-y-3">
+        <section className="space-y-3" data-demo-id="mentor-dashboard-newcomers">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">

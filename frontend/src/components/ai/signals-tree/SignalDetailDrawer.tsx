@@ -5,11 +5,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   AlertTriangle,
+  CalendarDays,
   CheckCircle2,
   Flame,
-  GraduationCap,
   Sparkles,
-  Wand2,
   X,
 } from "lucide-react";
 
@@ -165,40 +164,54 @@ export function SignalDetailDrawer({
           ) : null}
 
           {/* Audience-specific actions */}
-          <div className="flex flex-wrap gap-2">
+          <div className="rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/70 p-3">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+              Actions
+            </div>
             {audience === "mentor" ? (
-              <>
+              <div className="flex flex-wrap gap-2">
                 {onMakeCourse ? (
-                  <Button size="sm" variant="ai" onClick={() => onMakeCourse(signal)}>
-                    <GraduationCap className="h-3.5 w-3.5" /> Make course
+                  <Button
+                    size="sm"
+                    variant="ai"
+                    onClick={() => onMakeCourse(signal)}
+                    data-demo-id="signal-drawer-make-course"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" /> Make course
                   </Button>
                 ) : null}
                 {onAdjustPlan ? (
-                  <Button size="sm" variant="outline" onClick={() => onAdjustPlan(signal)}>
-                    <Wand2 className="h-3.5 w-3.5" /> Adjust plan
+                  <Button
+                    size="sm"
+                    variant="ai"
+                    onClick={() => onAdjustPlan(signal)}
+                    data-demo-id="signal-drawer-adjust-plan"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" /> Regenerate plan
                   </Button>
                 ) : null}
                 {onSchedule ? (
-                  <Button size="sm" variant="default" onClick={() => onSchedule(signal)}>
+                  <Button size="sm" variant="outline" onClick={() => onSchedule(signal)}>
+                    <CalendarDays className="h-3.5 w-3.5" />
                     Schedule walkthrough
                   </Button>
                 ) : null}
                 {onResolve && signal.status === "open" ? (
-                  <Button size="sm" variant="soft" onClick={() => onResolve(signal)}>
+                  <Button size="sm" variant="ghost" onClick={() => onResolve(signal)}>
                     <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
                   </Button>
                 ) : null}
                 {onIgnore && signal.status === "open" ? (
                   <Button size="sm" variant="ghost" onClick={() => onIgnore(signal)}>
-                    Ignore
+                    <X className="h-3.5 w-3.5" /> Ignore
                   </Button>
                 ) : null}
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex flex-wrap gap-2">
                 <Button
                   size="sm"
-                  variant="ai"
+                  variant="outline"
                   disabled={!!signal.acknowledged_at || ackMut.isPending}
                   onClick={() => ackMut.mutate(signal.id)}
                 >
@@ -207,14 +220,14 @@ export function SignalDetailDrawer({
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ai"
                   disabled={adjustMut.isPending}
                   onClick={() => adjustMut.mutate(signal.id)}
                 >
-                  <Wand2 className="h-3.5 w-3.5" />
+                  <Sparkles className="h-3.5 w-3.5" />
                   {adjustMut.isPending ? "Sending…" : "Ask mentor to adjust plan"}
                 </Button>
-              </>
+              </div>
             )}
           </div>
 

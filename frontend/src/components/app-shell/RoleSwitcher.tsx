@@ -28,6 +28,12 @@ export function RoleSwitcher() {
   } = useDemo();
 
   const activeName = role === "mentor" ? mentorName : newcomerName;
+  const latestNewcomerId = personas
+    .filter((persona) => persona.role === "newcomer" && persona.newcomer_id != null)
+    .reduce<number | null>((latest, persona) => {
+      const id = persona.newcomer_id ?? null;
+      return id == null ? latest : latest == null ? id : Math.max(latest, id);
+    }, null);
 
   const handleSwitch = (persona: DemoPersona) => {
     selectPersona(persona);
@@ -45,6 +51,7 @@ export function RoleSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          data-demo-id="role-switcher-trigger"
           className={cn(
             "inline-flex h-9 items-center gap-2 rounded-lg border border-[color:var(--color-border)] bg-white px-3 text-sm font-medium text-[color:var(--color-fg)] shadow-sm transition-colors hover:bg-[color:var(--color-surface-muted)]",
           )}
@@ -54,13 +61,24 @@ export function RoleSwitcher() {
           <ChevronDown className="h-3.5 w-3.5 opacity-60" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent align="end" className="z-[90] w-72">
         <DropdownMenuLabel>Switch persona</DropdownMenuLabel>
         {personas.map((persona) => {
           const Icon = persona.role === "mentor" ? Users : Sparkles;
+          const demoId = `role-persona-${slugifyPersonaName(persona.name)}`;
+          const altIds = [
+            persona.role === "mentor" ? "role-persona-mentor" : null,
+            persona.role === "newcomer" && persona.newcomer_id === latestNewcomerId
+              ? "role-persona-latest-newcomer"
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" ");
           return (
             <DropdownMenuItem
               key={`${persona.role}-${persona.user_id}-${persona.newcomer_id ?? "mentor"}`}
+              data-demo-id={demoId}
+              data-demo-alt-id={altIds || undefined}
               onSelect={() => handleSwitch(persona)}
               className={cn(
                 "items-start gap-3",
@@ -86,4 +104,14 @@ export function RoleSwitcher() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function slugifyPersonaName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }

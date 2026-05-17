@@ -40,7 +40,7 @@ const VIEW_KEY = "newcomer.plan.view";
 type ViewKey = "journey" | "phases";
 
 export default function MyPlanPage() {
-  const { newcomerId } = useDemo();
+  const { newcomerId, guidedDemoActive } = useDemo();
   const { data, isLoading } = useQuery({
     queryKey: ["newcomer-plan", newcomerId],
     queryFn: () => getNewcomerPlan(newcomerId!),
@@ -56,12 +56,16 @@ export default function MyPlanPage() {
     try {
       const stored =
         typeof window !== "undefined" ? window.localStorage.getItem(VIEW_KEY) : null;
-      if (stored === "journey" || stored === "phases") {
+      if (!guidedDemoActive && (stored === "journey" || stored === "phases")) {
         setView(stored);
       }
     } catch {
       // ignore
     }
+  }
+
+  if (guidedDemoActive && view !== "journey") {
+    setView("journey");
   }
 
   const onTabChange = (next: string) => {
@@ -137,9 +141,9 @@ export default function MyPlanPage() {
         </CardContent>
       </Card>
 
-      <Tabs value={view} onValueChange={onTabChange}>
+      <Tabs value={view} onValueChange={onTabChange} data-demo-id="newcomer-plan-tabs">
         <TabsList>
-          <TabsTrigger value="journey" className="gap-1.5">
+          <TabsTrigger value="journey" className="gap-1.5" data-demo-id="newcomer-plan-journey-tab">
             <Map className="h-3.5 w-3.5" /> Journey
           </TabsTrigger>
           <TabsTrigger value="phases" className="gap-1.5">

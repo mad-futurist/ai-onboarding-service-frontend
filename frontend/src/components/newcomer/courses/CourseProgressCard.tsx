@@ -23,6 +23,7 @@ interface CourseProgressCardProps {
   totalLessons?: number | null;
   /** When true, the card uses the brighter "assigned to you" styling. */
   highlighted?: boolean;
+  dataDemoId?: string;
 }
 
 export function CourseProgressCard({
@@ -30,6 +31,7 @@ export function CourseProgressCard({
   completedCount,
   totalLessons,
   highlighted = false,
+  dataDemoId,
 }: CourseProgressCardProps) {
   const total = totalLessons ?? course.lessons_count ?? null;
   const { pct, done, total: totalDisplay, complete } = computeProgress(
@@ -51,6 +53,7 @@ export function CourseProgressCard({
     >
       <Link
         href={`/newcomer/courses/${course.id}`}
+        data-demo-id={dataDemoId}
         className={cn(
           "group relative flex h-full flex-col overflow-hidden rounded-[18px] border bg-white p-5 transition-colors",
           highlighted

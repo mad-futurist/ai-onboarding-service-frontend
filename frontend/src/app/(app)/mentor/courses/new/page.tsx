@@ -132,6 +132,7 @@ function NewCourseBuilder() {
                   placeholder="Backend Onboarding: Payments"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  data-demo-id="course-title"
                 />
               </div>
               <div className="space-y-1.5">
@@ -141,6 +142,7 @@ function NewCourseBuilder() {
                   rows={5}
                   value={promptHint}
                   onChange={(e) => setPromptHint(e.target.value)}
+                  data-demo-id="course-prompt"
                 />
                 <p className="text-[11px] text-[color:var(--color-fg-subtle)]">
                   Be specific — the more concrete the better the outline.
@@ -201,6 +203,7 @@ function NewCourseBuilder() {
                     placeholder="backend_developer"
                     value={roleTarget}
                     onChange={(e) => setRoleTarget(e.target.value)}
+                    data-demo-id="course-role-target"
                   />
                   <p className="text-[11px] text-[color:var(--color-fg-subtle)]">
                     Role-matched courses appear in the newcomer&apos;s recommended list.
@@ -252,6 +255,7 @@ function NewCourseBuilder() {
                 className="w-full"
                 disabled={aiMut.isPending || !promptHint.trim()}
                 onClick={() => aiMut.mutate()}
+                data-demo-id="course-generate-ai"
               >
                 {aiMut.isPending ? (
                   <Wand2 className="h-4 w-4 animate-pulse" />

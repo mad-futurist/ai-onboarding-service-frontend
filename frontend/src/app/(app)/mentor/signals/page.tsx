@@ -165,12 +165,16 @@ export default function SignalsCenterPage() {
             value={String(activeNewcomer?.id ?? "")}
             onValueChange={(value) => setSelectedNewcomerId(Number(value))}
           >
-            <SelectTrigger>
+            <SelectTrigger data-demo-id="signals-newcomer-select">
               <SelectValue placeholder="Choose a newcomer" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[90]">
               {newcomers.map((n) => (
-                <SelectItem key={n.id} value={String(n.id)}>
+                <SelectItem
+                  key={n.id}
+                  value={String(n.id)}
+                  data-demo-id={`signals-newcomer-${slugify(n.full_name ?? `newcomer-${n.id}`)}`}
+                >
                   {n.full_name ?? `Newcomer #${n.id}`}
                 </SelectItem>
               ))}
@@ -224,6 +228,7 @@ export default function SignalsCenterPage() {
               <SignalRow
                 key={s.id}
                 signal={s}
+                onOpen={openDrawer}
                 onResolve={filter !== "resolved" && filter !== "ignored" ? (sig) => resolveMut.mutate(sig.id) : undefined}
                 onIgnore={filter !== "resolved" && filter !== "ignored" ? (sig) => ignoreMut.mutate(sig.id) : undefined}
                 onSchedule={(sig) => {
@@ -322,6 +327,16 @@ export default function SignalsCenterPage() {
       />
     </div>
   );
+}
+
+function slugify(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function normalizeRoleTarget(value: string): string {

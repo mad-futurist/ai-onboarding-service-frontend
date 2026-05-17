@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import {
   AlertCircle,
   CalendarDays,
-  ChevronDown,
   Compass,
   Edit3,
   ListChecks,
@@ -177,13 +176,12 @@ export default function PlanGeneratorEntryPage() {
           </>
         }
         description="Start small, grow period by period. Each chapter can be generated live or fast, then refined."
-        actions={
-          <NewcomerSelector
-            newcomers={newcomersQ.data ?? []}
-            activeId={activeNewcomer?.id}
-            onSelect={setSelectedNewcomerId}
-          />
-        }
+      />
+
+      <NewcomerSelector
+        newcomers={newcomersQ.data ?? []}
+        activeId={activeNewcomer?.id}
+        onSelect={setSelectedNewcomerId}
       />
 
       {/* Journey timeline (centerpiece) */}
@@ -280,16 +278,10 @@ function NewcomerSelector({
     );
   }
   return (
-    <div className="flex items-center gap-2">
+    <div className="max-w-sm space-y-1.5">
       <Select value={String(activeId ?? "")} onValueChange={(v) => onSelect(Number(v))}>
-        <SelectTrigger className="h-9 min-w-[220px] rounded-full border-[color:var(--color-border-strong)] bg-white pl-3 pr-2">
-          <span className="inline-flex items-center gap-2">
-            <span className="grid h-5 w-5 place-items-center rounded-full ai-gradient text-white">
-              <Sparkles className="h-3 w-3" />
-            </span>
-            <SelectValue placeholder="Choose a newcomer" />
-          </span>
-          <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+        <SelectTrigger>
+          <SelectValue placeholder="Choose a newcomer" />
         </SelectTrigger>
         <SelectContent>
           {newcomers.map((n) => (

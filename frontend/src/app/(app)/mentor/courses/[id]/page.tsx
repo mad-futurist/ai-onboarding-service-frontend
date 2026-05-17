@@ -174,7 +174,7 @@ export default function CourseEditorPage() {
   const selected = course.lessons?.find((l) => l.id === selectedLessonId) ?? null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-4">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-4" data-demo-id="course-editor">
       <div className="sticky top-0 z-20 -mx-4 sm:-mx-6 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/85 px-4 sm:px-6 py-2.5 backdrop-blur">
         <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px ai-gradient opacity-60" />
         {approveBurst > 0 ? (
@@ -209,6 +209,7 @@ export default function CourseEditorPage() {
                 variant="outline"
                 onClick={() => submitMut.mutate()}
                 disabled={submitMut.isPending}
+                data-demo-id="course-submit-review"
               >
                 <Send className="h-3.5 w-3.5" /> Submit for review
               </Button>
@@ -229,6 +230,7 @@ export default function CourseEditorPage() {
                   onClick={() => approveMut.mutate()}
                   disabled={approveMut.isPending}
                   className="glow-ring"
+                  data-demo-id="course-approve"
                 >
                   <CheckCircle2 className="h-3.5 w-3.5" /> Approve
                 </Button>
@@ -240,6 +242,7 @@ export default function CourseEditorPage() {
                 variant="ai"
                 onClick={() => publishMut.mutate()}
                 disabled={publishMut.isPending}
+                data-demo-id="course-publish"
               >
                 {publishMut.isPending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />

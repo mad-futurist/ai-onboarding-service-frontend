@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CalendarDays, Save, Sparkles, X } from "lucide-react";
+import { CalendarDays, Save, Sparkles, UserRound, X } from "lucide-react";
 
 import {
   Dialog,
@@ -18,11 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { createMeeting } from "@/services/meetings";
 import { toApiError } from "@/lib/api";
 import { useDemo } from "@/providers/demo-provider";
-import type { AISignal, ID } from "@/types";
+import type { AISignal, DemoPersona, ID } from "@/types";
 
 interface ScheduleMeetingDialogProps {
   open: boolean;
@@ -116,7 +117,37 @@ function ScheduleMeetingForm({
   onOpenChange: (open: boolean) => void;
 }) {
   const qc = useQueryClient();
-  const { mentorId } = useDemo();
+  const {
+    activePersona,
+    mentorId: demoMentorId,
+    newcomerId: demoNewcomerId,
+    personas,
+    role,
+  } = useDemo();
+
+  const newcomerOptions = React.useMemo(
+    () =>
+      personas.filter(
+        (persona): persona is DemoPersona & { newcomer_id: ID } =>
+          persona.role === "newcomer" && typeof persona.newcomer_id === "number",
+      ),
+    [personas],
+  );
+  const mentorOptions = React.useMemo(
+    () => personas.filter((persona) => persona.role === "mentor"),
+    [personas],
+  );
+  const fallbackNewcomerId =
+    newcomerId ??
+    signal?.newcomer_id ??
+    (role === "newcomer" ? demoNewcomerId : null) ??
+    newcomerOptions[0]?.newcomer_id ??
+    null;
+  const fallbackOrganizerUserId =
+    (role === "mentor" ? demoMentorId : null) ??
+    demoMentorId ??
+    mentorOptions[0]?.user_id ??
+    null;
 
   const [title, setTitle] = React.useState(seed.title);
   const [agenda, setAgenda] = React.useState(seed.agenda);
@@ -124,32 +155,58 @@ function ScheduleMeetingForm({
   const [duration, setDuration] = React.useState(30);
   const [teamsUrl, setTeamsUrl] = React.useState("");
   const [attendees, setAttendees] = React.useState("");
+  const [selectedNewcomerId, setSelectedNewcomerId] = React.useState(() =>
+    toSelectValue(fallbackNewcomerId),
+  );
+  const [selectedOrganizerUserId, setSelectedOrganizerUserId] = React.useState(() =>
+    toSelectValue(fallbackOrganizerUserId),
+  );
+
+  const effectiveSelectedNewcomerId =
+    selectedNewcomerId || toSelectValue(fallbackNewcomerId);
+  const effectiveSelectedOrganizerUserId =
+    selectedOrganizerUserId || toSelectValue(fallbackOrganizerUserId);
+  const targetNewcomerId =
+    fromSelectValue(effectiveSelectedNewcomerId) ?? newcomerId ?? signal?.newcomer_id ?? null;
+  const targetOrganizerUserId =
+    fromSelectValue(effectiveSelectedOrganizerUserId) ?? demoMentorId ?? null;
+  const selectedPartner =
+    role === "mentor"
+      ? newcomerOptions.find((persona) => String(persona.newcomer_id) === effectiveSelectedNewcomerId)
+      : mentorOptions.find((persona) => String(persona.user_id) === effectiveSelectedOrganizerUserId);
+  const missingParticipant = role === "mentor" ? !targetNewcomerId : !targetOrganizerUserId;
 
   const createMut = useMutation({
     mutationFn: () => {
       const starts = new Date(startAt);
       const ends = new Date(starts.getTime() + duration * 60_000);
+      const attendeeEmails = uniqueEmails([
+        selectedPartner?.email,
+        ...attendees
+          .split(/[,;\n]/)
+          .map((e) => e.trim())
+          .filter(Boolean),
+      ]);
       return createMeeting({
         title: title.trim(),
         agenda: agenda.trim() || null,
         starts_at: starts.toISOString(),
         ends_at: ends.toISOString(),
-        newcomer_id: newcomerId ?? signal?.newcomer_id ?? null,
-        organizer_user_id: mentorId ?? null,
+        newcomer_id: targetNewcomerId,
+        organizer_user_id: targetOrganizerUserId,
+        created_by_user_id: activePersona?.user_id ?? null,
         plan_id: planId ?? null,
         task_id: taskId ?? null,
         signal_id: signal?.id ?? null,
         teams_join_url: teamsUrl.trim() || null,
-        attendee_emails: attendees
-          .split(/[,;\n]/)
-          .map((e) => e.trim())
-          .filter(Boolean),
+        attendee_emails: attendeeEmails,
         status: "proposed",
       });
     },
     onSuccess: () => {
       toast.success("Meeting scheduled");
       qc.invalidateQueries({ queryKey: ["meetings"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
       onOpenChange(false);
     },
     onError: (err) => toast.error("Schedule failed", { description: toApiError(err).message }),
@@ -161,7 +218,7 @@ function ScheduleMeetingForm({
         <DialogTitle className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-[color:var(--color-primary)]" /> Schedule a meeting
         </DialogTitle>
-        <DialogDescription>Basic scheduler for mentor sessions, with optional Teams URL.</DialogDescription>
+        <DialogDescription>Choose a participant, time, agenda, and optional Teams URL.</DialogDescription>
       </DialogHeader>
 
       {signal ? (
@@ -177,6 +234,37 @@ function ScheduleMeetingForm({
         <div className="space-y-1.5">
           <Label htmlFor="meet-title">Title</Label>
           <Input id="meet-title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="meet-with">With</Label>
+          <Select
+            value={role === "mentor" ? effectiveSelectedNewcomerId : effectiveSelectedOrganizerUserId}
+            onValueChange={role === "mentor" ? setSelectedNewcomerId : setSelectedOrganizerUserId}
+            disabled={(role === "mentor" ? newcomerOptions : mentorOptions).length === 0}
+          >
+            <SelectTrigger id="meet-with">
+              <UserRound className="h-4 w-4 text-[color:var(--color-fg-subtle)]" />
+              <SelectValue placeholder={role === "mentor" ? "Choose a newcomer" : "Choose a mentor"} />
+            </SelectTrigger>
+            <SelectContent className="z-[90]">
+              {role === "mentor"
+                ? newcomerOptions.map((persona) => (
+                    <SelectItem key={persona.newcomer_id} value={String(persona.newcomer_id)}>
+                      {persona.name}
+                    </SelectItem>
+                  ))
+                : mentorOptions.map((persona) => (
+                    <SelectItem key={persona.user_id} value={String(persona.user_id)}>
+                      {persona.name}
+                    </SelectItem>
+                  ))}
+              {(role === "mentor" ? newcomerOptions : mentorOptions).length === 0 ? (
+                <div className="px-2 py-1.5 text-sm text-[color:var(--color-fg-muted)]">
+                  No participants available
+                </div>
+              ) : null}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="meet-agenda">Agenda</Label>
@@ -235,12 +323,38 @@ function ScheduleMeetingForm({
         <Button variant="ghost" onClick={() => onOpenChange(false)}>
           <X className="h-4 w-4" /> Cancel
         </Button>
-        <Button onClick={() => createMut.mutate()} disabled={!title.trim() || createMut.isPending}>
+        <Button
+          onClick={() => createMut.mutate()}
+          disabled={!title.trim() || missingParticipant || createMut.isPending}
+        >
           <Save className="h-4 w-4" /> {createMut.isPending ? "Scheduling..." : "Schedule"}
         </Button>
       </DialogFooter>
     </>
   );
+}
+
+function toSelectValue(value: ID | null | undefined): string {
+  return value ? String(value) : "";
+}
+
+function fromSelectValue(value: string): ID | null {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function uniqueEmails(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const emails: string[] = [];
+  for (const value of values) {
+    const email = value?.trim();
+    if (!email) continue;
+    const key = email.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    emails.push(email);
+  }
+  return emails;
 }
 
 function buildMeetingSeed(

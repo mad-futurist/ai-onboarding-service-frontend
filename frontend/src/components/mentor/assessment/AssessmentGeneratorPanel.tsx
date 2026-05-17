@@ -79,7 +79,10 @@ export function AssessmentGeneratorPanel({
   };
 
   return (
-    <div className="rounded-xl border border-[color:var(--color-primary-soft)] bg-gradient-to-br from-[color:var(--color-primary-softer)] to-transparent p-5 space-y-4">
+    <div
+      className="rounded-xl border border-[color:var(--color-primary-soft)] bg-gradient-to-br from-[color:var(--color-primary-softer)] to-transparent p-5 space-y-4"
+      data-demo-id="assessment-generator-panel"
+    >
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-[color:var(--color-primary-active)]" />
         <h3 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">
@@ -99,6 +102,7 @@ export function AssessmentGeneratorPanel({
           placeholder="Focus on git fluency, our deployment flow, and async communication."
           value={mentorNotes}
           onChange={(e) => setMentorNotes(e.target.value)}
+          data-demo-id="assessment-mentor-notes"
         />
       </div>
 
@@ -162,12 +166,15 @@ export function AssessmentGeneratorPanel({
               type="button"
               size="icon-sm"
               variant="outline"
-              onClick={() => setCount((c) => Math.max(3, c - 1))}
-              disabled={count <= 3}
+              onClick={() => setCount((c) => Math.max(2, c - 1))}
+              disabled={count <= 2}
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
-            <div className="min-w-12 text-center text-lg font-semibold text-[color:var(--color-fg)]">
+            <div
+              className="min-w-12 text-center text-lg font-semibold text-[color:var(--color-fg)]"
+              data-demo-id="assessment-question-count"
+            >
               {count}
             </div>
             <Button
@@ -179,7 +186,7 @@ export function AssessmentGeneratorPanel({
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
-            <span className="text-xs text-[color:var(--color-fg-muted)]">3-15</span>
+            <span className="text-xs text-[color:var(--color-fg-muted)]">2-15</span>
           </div>
         </div>
       </div>
@@ -190,6 +197,7 @@ export function AssessmentGeneratorPanel({
           variant="default"
           onClick={() => build("fast")}
           disabled={isGenerating}
+          data-demo-id="assessment-generate-fast"
         >
           <Zap className="h-4 w-4" />
           {isGenerating && mode === "fast" ? "Generating…" : "Generate (fast)"}
@@ -199,6 +207,7 @@ export function AssessmentGeneratorPanel({
           variant="ai"
           onClick={() => build("live")}
           disabled={isGenerating}
+          data-demo-id="assessment-generate-live"
         >
           <Wand2 className="h-4 w-4" />
           {isGenerating && mode === "live" ? "Streaming…" : "Generate live"}

@@ -25,7 +25,7 @@ import type { AISignal, ID } from "@/types";
 type View = "tree" | "story" | "list";
 
 export default function NewcomerSignalsPage() {
-  const { newcomerId, newcomerName, mentorName } = useDemo();
+  const { activePersona, newcomerId, newcomerName, mentorName } = useDemo();
   const [view, setView] = React.useState<View>("tree");
   const [drawerSignal, setDrawerSignal] = React.useState<AISignal | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -105,7 +105,7 @@ export default function NewcomerSignalsPage() {
         ) : (
           <div className="space-y-3">
             {data.map((s) => (
-              <SignalRow key={s.id} signal={s} />
+              <SignalRow key={s.id} signal={s} onOpen={openDrawer} />
             ))}
           </div>
         )
@@ -133,7 +133,7 @@ export default function NewcomerSignalsPage() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         audience="newcomer"
-        userId={newcomerId ?? null}
+        userId={activePersona?.user_id ?? null}
         mentorName={mentorName}
         newcomerName={newcomerName}
       />

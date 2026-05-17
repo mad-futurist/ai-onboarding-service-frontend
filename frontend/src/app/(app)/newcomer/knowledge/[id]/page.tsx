@@ -55,18 +55,18 @@ export default function NewcomerKnowledgeDetailPage() {
       ) : (
         <Tabs defaultValue="preview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="preview">
+            <TabsTrigger value="preview" data-demo-id="document-tab-preview">
               <BookOpen className="h-3.5 w-3.5 mr-1.5" /> Preview
             </TabsTrigger>
-            <TabsTrigger value="ask">
+            <TabsTrigger value="ask" data-demo-id="document-tab-ask">
               <MessageSquareText className="h-3.5 w-3.5 mr-1.5" /> Ask
             </TabsTrigger>
-            <TabsTrigger value="mindmap">
+            <TabsTrigger value="mindmap" data-demo-id="document-tab-mindmap">
               <Network className="h-3.5 w-3.5 mr-1.5" /> Mind map
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="preview">
+          <TabsContent value="preview" data-demo-id="document-preview">
             <DocumentPreviewPremium doc={data} />
           </TabsContent>
 

@@ -126,7 +126,7 @@ export function AssessmentDraftEditor({ assessment, onChange }: Props) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-demo-id="assessment-draft-editor">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-[color:var(--color-fg)]">

@@ -100,6 +100,7 @@ function AdjustEntryDialogInner({
             accent="ai"
             recommended={recommendGranular}
             onClick={() => setPath("granular")}
+            dataDemoId="adjust-entry-granular"
           />
           <ChoiceCard
             title="Rewrite plan with notes"
@@ -107,6 +108,7 @@ function AdjustEntryDialogInner({
             icon={<Layers className="h-5 w-5" />}
             accent="warning"
             onClick={() => setPath("rewrite")}
+            dataDemoId="adjust-entry-rewrite"
           />
         </div>
 
@@ -126,6 +128,7 @@ function ChoiceCard({
   accent,
   recommended,
   onClick,
+  dataDemoId,
 }: {
   title: string;
   description: string;
@@ -133,11 +136,13 @@ function ChoiceCard({
   accent: "ai" | "warning";
   recommended?: boolean;
   onClick: () => void;
+  dataDemoId?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-demo-id={dataDemoId}
       className={cn(
         "group relative rounded-2xl border border-[color:var(--color-border)] bg-white p-4 text-left transition-all",
         "hover:-translate-y-0.5 hover:border-[color:var(--color-primary-ring)] hover:shadow-[var(--shadow-ai)]",

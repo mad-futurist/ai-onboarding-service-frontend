@@ -78,7 +78,7 @@ const STEPS = [
 
 export default function AddNewcomerPage() {
   const router = useRouter();
-  const { mentorId, refreshPersonas, selectPersona } = useDemo();
+  const { mentorId, refreshPersonas, selectPersona, guidedDemoActive } = useDemo();
   const [step, setStep] = React.useState(1);
   const [assessment, setAssessment] = React.useState<Assessment | null>(null);
   const [genMode, setGenMode] = React.useState<"fast" | "live" | null>(null);
@@ -365,10 +365,15 @@ export default function AddNewcomerPage() {
 
                 <AssessmentGeneratorPanel
                   initial={{
-                    mentorNotes: liveInputCache?.notes,
+                    mentorNotes:
+                      liveInputCache?.notes ??
+                      (guidedDemoActive
+                        ? "Keep it short: two practical questions on release workflow and incident handoff."
+                        : undefined),
                     documentIds: liveInputCache?.docIds,
-                    questionTypes: liveInputCache?.types,
-                    questionCount: liveInputCache?.count,
+                    questionTypes:
+                      liveInputCache?.types ?? (guidedDemoActive ? ["short_answer"] : undefined),
+                    questionCount: liveInputCache?.count ?? (guidedDemoActive ? 2 : undefined),
                   }}
                   isGenerating={generateMut.isPending}
                   mode={genMode}

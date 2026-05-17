@@ -57,7 +57,7 @@ export default function KnowledgeBasePage() {
   const filteredCount = filteredGroups.reduce((sum, g) => sum + g.documents.length, 0);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6" data-demo-id="mentor-knowledge-page">
       <PageHeader
         eyebrow="Knowledge base"
         title="Feed the AI with your company knowledge"

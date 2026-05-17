@@ -49,6 +49,7 @@ export function SignalNode({ signal, onClick }: SignalNodeProps) {
         "hover:border-[color:var(--color-primary-ring)]",
         fresh && !reduced ? TONE_GLOW[tone] : "shadow-[var(--shadow-card)]",
       ].join(" ")}
+      data-demo-id={tone === "attention" ? "signals-attention-signal" : undefined}
     >
       {fresh && !reduced ? (
         <span

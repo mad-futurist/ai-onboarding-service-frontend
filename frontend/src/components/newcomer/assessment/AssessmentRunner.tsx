@@ -134,7 +134,10 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
 
   if (submitted) {
     return (
-      <div className="relative flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
+      <div
+        className="relative flex min-h-[60vh] flex-col items-center justify-center text-center px-4"
+        data-demo-id="assessment-submitted"
+      >
         <Confetti trigger={confettiTrigger} />
         <motion.div
           initial={reduceMotion ? false : { scale: 0.5, opacity: 0 }}
@@ -163,7 +166,7 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+    <div className="mx-auto max-w-2xl px-4 py-8 space-y-6" data-demo-id="assessment-runner">
       <header className="space-y-3">
         <div className="flex items-center justify-between text-xs uppercase tracking-wide text-[color:var(--color-fg-muted)]">
           <span className="inline-flex items-center gap-1.5 font-semibold text-[color:var(--color-primary-active)]">
@@ -196,6 +199,7 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
             exit={reduceMotion ? undefined : { opacity: 0, x: -60 * direction }}
             transition={{ type: "spring", stiffness: 240, damping: 28 }}
             className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-lg"
+            data-demo-id="assessment-question-card"
           >
             <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-wide">
               {question.skill_tag ? (
@@ -238,6 +242,7 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
                         <button
                           type="button"
                           onClick={() => setOption(o.id)}
+                          data-demo-id={i === 0 ? "assessment-option" : undefined}
                           className={cn(
                             "w-full text-left rounded-xl border px-4 py-3 transition-all",
                             selected
@@ -275,6 +280,7 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
                 <Textarea
                   autoFocus
                   rows={question.question_type === "scenario" ? 6 : 4}
+                  data-demo-id="assessment-answer-input"
                   placeholder={
                     question.question_type === "scenario"
                       ? t("assessment.runner.placeholderScenario")
@@ -321,6 +327,7 @@ export function AssessmentRunner({ assessment, newcomerId }: Props) {
           variant="ai"
           onClick={goNext}
           disabled={!canAdvance() || submitMut.isPending}
+          data-demo-id="assessment-runner-next"
         >
           {isLast
             ? submitMut.isPending

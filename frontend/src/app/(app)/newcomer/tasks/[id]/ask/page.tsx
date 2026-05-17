@@ -123,7 +123,7 @@ export default function TaskAskAIPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-4">
         <Button asChild variant="ghost">
-          <Link href={`/newcomer/tasks/${task.id}`}>
+          <Link href={`/newcomer/tasks/${task.id}`} data-demo-id="task-ask-back-to-task">
             <ArrowLeft className="h-4 w-4" /> Back to task
           </Link>
         </Button>
@@ -170,14 +170,24 @@ export default function TaskAskAIPage() {
 
           <div className="space-y-5">
             {chat.map((item, index) => (
-              <ChatMessage key={index} item={item} name={newcomerName} />
+              <ChatMessage
+                key={index}
+                item={item}
+                name={newcomerName}
+                dataDemoId={
+                  index === chat.length - 1 && item.response
+                    ? "task-ask-latest-answer"
+                    : undefined
+                }
+              />
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="sticky bottom-4 z-10">
+          <form onSubmit={handleSubmit} className="sticky bottom-4 z-10" data-demo-id="task-ask-composer">
             <div className="rounded-2xl border border-[color:var(--color-border)] bg-white p-2 shadow-[var(--shadow-elevated)]">
               <div className="ai-border rounded-xl">
                 <Textarea
+                  data-demo-id="task-ask-input"
                   rows={2}
                   placeholder="Ask for help with this task..."
                   value={draft}
@@ -195,7 +205,13 @@ export default function TaskAskAIPage() {
                 <span className="text-[11px] text-[color:var(--color-fg-subtle)]">
                   Task context is included with every message.
                 </span>
-                <Button type="submit" variant="ai" size="sm" disabled={!draft.trim() || askMut.isPending}>
+                <Button
+                  type="submit"
+                  variant="ai"
+                  size="sm"
+                  disabled={!draft.trim() || askMut.isPending}
+                  data-demo-id="task-ask-submit"
+                >
                   <Send className="h-3.5 w-3.5" /> Send
                 </Button>
               </div>
@@ -314,7 +330,15 @@ function TaskContextCard({ data }: { data: TaskDetailResponse }) {
   );
 }
 
-function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
+function ChatMessage({
+  item,
+  name,
+  dataDemoId,
+}: {
+  item: ChatItem;
+  name: string;
+  dataDemoId?: string;
+}) {
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-3">
@@ -342,39 +366,41 @@ function ChatMessage({ item, name }: { item: ChatItem; name: string }) {
           ) : item.errored ? (
             <AIInsightCard title="Something went wrong" description={item.errored} tone="soft" />
           ) : item.response ? (
-            <AIInsightCard
-              title="Answer"
-              tone="soft"
-              actions={
-                <>
-                  <FeedbackButton questionId={item.response.question_id} positive />
-                  <FeedbackButton questionId={item.response.question_id} positive={false} />
-                </>
-              }
-            >
-              <Markdown>{item.response.answer}</Markdown>
-              {item.response.people_to_ask?.length ? (
-                <div className="mt-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
-                    <Users className="h-3 w-3" /> People to ask
+            <div data-demo-id={dataDemoId}>
+              <AIInsightCard
+                title="Answer"
+                tone="soft"
+                actions={
+                  <>
+                    <FeedbackButton questionId={item.response.question_id} positive />
+                    <FeedbackButton questionId={item.response.question_id} positive={false} />
+                  </>
+                }
+              >
+                <Markdown>{item.response.answer}</Markdown>
+                {item.response.people_to_ask?.length ? (
+                  <div className="mt-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                      <Users className="h-3 w-3" /> People to ask
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {item.response.people_to_ask.map((person, index) => (
+                        <div
+                          key={`${person.name}-${index}`}
+                          className="flex items-center gap-1.5 rounded-full border border-[color:var(--color-border)] bg-white px-2 py-0.5 text-xs"
+                        >
+                          <Avatar className="h-5 w-5">
+                            <AvatarFallback className="text-[9px]">{getInitials(person.name)}</AvatarFallback>
+                          </Avatar>
+                          {person.name}
+                          {person.role ? <span className="text-[color:var(--color-fg-subtle)]"> - {person.role}</span> : null}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {item.response.people_to_ask.map((person, index) => (
-                      <div
-                        key={`${person.name}-${index}`}
-                        className="flex items-center gap-1.5 rounded-full border border-[color:var(--color-border)] bg-white px-2 py-0.5 text-xs"
-                      >
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-[9px]">{getInitials(person.name)}</AvatarFallback>
-                        </Avatar>
-                        {person.name}
-                        {person.role ? <span className="text-[color:var(--color-fg-subtle)]"> - {person.role}</span> : null}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </AIInsightCard>
+                ) : null}
+              </AIInsightCard>
+            </div>
           ) : null}
         </div>
       </div>

@@ -4,6 +4,12 @@ import type { ID } from "@/types";
 export type NotificationType =
   | "task_returned_from_review"
   | "task_status_changed"
+  | "ai_signal_detected"
+  | "ai_signals_detected"
+  | "signal_comment"
+  | "signal_reaction"
+  | "signal_adjustment_requested"
+  | "meeting_scheduled"
   | string;
 
 export interface NotificationItem {
@@ -14,6 +20,8 @@ export interface NotificationItem {
   body: string;
   related_task_id: ID | null;
   related_comment_id: ID | null;
+  related_signal_id: ID | null;
+  related_signal_feedback_id: ID | null;
   read_at: string | null;
   created_at: string;
 }

@@ -37,16 +37,23 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge, PriorityBadge } from "@/components/shared/StatusBadge";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { BlockedTrigger } from "@/components/newcomer/BlockedDialog";
 import { InteractiveChecklist } from "@/components/newcomer/task/InteractiveChecklist";
 
 import { getTaskDetail, updateTaskStatus } from "@/services/tasks";
-import { listTaskComments } from "@/services/task-comments";
+import {
+  createTaskComment,
+  listTaskComments,
+} from "@/services/task-comments";
 import { toApiError } from "@/lib/api";
+import { fmtRelative } from "@/lib/format";
 import { cn, getInitials } from "@/lib/utils";
+import { useDemo } from "@/providers/demo-provider";
 import type { TaskExample, TaskLink } from "@/types";
+import type { TaskComment } from "@/services/task-comments";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -71,6 +78,8 @@ export default function TaskDetailPage() {
   const router = useRouter();
   const qc = useQueryClient();
   const reduce = useReducedMotion();
+  const { activePersona, mentorId, mentorName, newcomerName } = useDemo();
+  const [chatDraft, setChatDraft] = React.useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["task-detail", id],
@@ -109,6 +118,24 @@ export default function TaskDetailPage() {
       toast.error("Couldn't update", { description: toApiError(err).message }),
   });
 
+  const commentMut = useMutation({
+    mutationFn: (body: string) =>
+      createTaskComment(id, body, {
+        commentType: "general",
+        authorUserId: activePersona?.user_id ?? null,
+      }),
+    onSuccess: () => {
+      toast.success("Message sent");
+      setChatDraft("");
+      qc.invalidateQueries({ queryKey: ["task-comments", id] });
+      qc.invalidateQueries({ queryKey: ["mentor-kanban"] });
+    },
+    onError: (err) =>
+      toast.error("Couldn't send message", {
+        description: toApiError(err).message,
+      }),
+  });
+
   if (isLoading || !data) {
     return (
       <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-4">
@@ -128,6 +155,9 @@ export default function TaskDetailPage() {
   const latestReturn =
     (commentsQuery.data ?? []).find((c) => c.comment_type === "review_return") ??
     null;
+  const conversationComments = [...(commentsQuery.data ?? [])]
+    .filter((comment) => comment.comment_type !== "status_change")
+    .reverse();
 
   const allChecked =
     acceptanceItems.length > 0 && progressRatio >= 1 - 1e-6;
@@ -137,6 +167,7 @@ export default function TaskDetailPage() {
     <>
       <motion.div
         className="mx-auto max-w-5xl px-4 sm:px-6 py-8 space-y-6 pb-28 lg:pb-8"
+        data-demo-id="newcomer-task-detail"
         variants={stagger}
         initial={reduce ? false : "hidden"}
         animate="show"
@@ -173,8 +204,8 @@ export default function TaskDetailPage() {
               <>
                 <BlockedTrigger taskId={task.id} />
                 <Button asChild variant="outline">
-                  <Link href={`/newcomer/tasks/${task.id}/ask`}>
-                    <MessageCircle className="h-4 w-4" /> Chat
+                  <Link href={`/newcomer/tasks/${task.id}/ask`} data-demo-id="newcomer-task-chat">
+                    <MessageCircle className="h-4 w-4" /> Ask AI
                   </Link>
                 </Button>
                 <TaskReviewButton
@@ -305,7 +336,7 @@ export default function TaskDetailPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               {data.related_documents?.length ? (
-                data.related_documents.map((d) => (
+                data.related_documents.map((d, index) => (
                   <motion.div
                     key={d.id}
                     whileHover={reduce ? undefined : { x: 3 }}
@@ -313,6 +344,7 @@ export default function TaskDetailPage() {
                   >
                     <Link
                       href={`/newcomer/knowledge/${d.id}`}
+                      data-demo-id={index === 0 ? "newcomer-task-first-source" : undefined}
                       className="group flex items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-left transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]/30"
                       aria-label={`Open source ${d.title}`}
                     >
@@ -377,6 +409,22 @@ export default function TaskDetailPage() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+
+        <motion.div variants={fadeUp}>
+          <TaskConversation
+            comments={conversationComments}
+            draft={chatDraft}
+            mentorId={mentorId}
+            mentorName={mentorName}
+            newcomerName={newcomerName}
+            sending={commentMut.isPending}
+            onDraftChange={setChatDraft}
+            onSend={() => {
+              const clean = chatDraft.trim();
+              if (clean) commentMut.mutate(clean);
+            }}
+          />
         </motion.div>
       </motion.div>
 
@@ -615,6 +663,162 @@ function EmptyInline({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-dashed border-[color:var(--color-border)] px-4 py-5 text-center text-sm text-[color:var(--color-fg-muted)]">
       {children}
+    </div>
+  );
+}
+
+function TaskConversation({
+  comments,
+  draft,
+  mentorId,
+  mentorName,
+  newcomerName,
+  sending,
+  onDraftChange,
+  onSend,
+}: {
+  comments: TaskComment[];
+  draft: string;
+  mentorId: number | null;
+  mentorName: string;
+  newcomerName: string;
+  sending: boolean;
+  onDraftChange: (value: string) => void;
+  onSend: () => void;
+}) {
+  const canSend = draft.trim().length > 0 && !sending;
+
+  return (
+    <Card className="relative overflow-hidden">
+      <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] ai-gradient" />
+      <CardHeader className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface)]/95">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)]">
+                <MessageCircle className="h-4 w-4" />
+              </span>
+              Task conversation
+            </CardTitle>
+            <CardDescription className="mt-1">
+              Mentor feedback and task-level replies stay here.
+            </CardDescription>
+          </div>
+          <span className="inline-flex h-7 items-center rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)] px-2.5 text-xs font-semibold tabular-nums text-[color:var(--color-fg-muted)]">
+            {comments.length} message{comments.length === 1 ? "" : "s"}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="space-y-3 bg-[color:var(--color-surface-muted)]/25 p-4 sm:p-5">
+          {comments.length ? (
+            comments.map((comment) => (
+              <TaskConversationBubble
+                key={comment.id}
+                comment={comment}
+                mentorId={mentorId}
+                mentorName={mentorName}
+                newcomerName={newcomerName}
+              />
+            ))
+          ) : (
+            <div className="rounded-[14px] border border-dashed border-[color:var(--color-border)] bg-white p-6 text-center">
+              <div className="mx-auto grid h-10 w-10 place-items-center rounded-[12px] bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)]">
+                <MessageCircle className="h-5 w-5" />
+              </div>
+              <div className="mt-3 text-sm font-semibold text-[color:var(--color-fg)]">
+                No task messages yet
+              </div>
+              <p className="mx-auto mt-1 max-w-md text-sm text-[color:var(--color-fg-muted)]">
+                Use this thread for mentor feedback, blockers, evidence, and task-specific follow-up.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-[color:var(--color-border)] bg-white p-4 sm:p-5">
+          <Textarea
+            value={draft}
+            onChange={(event) => onDraftChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey && canSend) {
+                event.preventDefault();
+                onSend();
+              }
+            }}
+            placeholder="Reply to your mentor or explain what is blocking you..."
+            className="min-h-[92px] rounded-[12px] bg-[color:var(--color-surface-muted)]/30"
+          />
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-[color:var(--color-fg-muted)]">
+              Press Enter to send, Shift+Enter for a new line.
+            </p>
+            <Button
+              type="button"
+              variant="ai"
+              size="sm"
+              disabled={!canSend}
+              onClick={onSend}
+            >
+              {sending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Send className="h-3.5 w-3.5" />
+              )}
+              Send reply
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TaskConversationBubble({
+  comment,
+  mentorId,
+  mentorName,
+  newcomerName,
+}: {
+  comment: TaskComment;
+  mentorId: number | null;
+  mentorName: string;
+  newcomerName: string;
+}) {
+  const fromMentor =
+    comment.comment_type === "review_return" ||
+    (mentorId != null && comment.author_user_id === mentorId);
+  const label = fromMentor ? mentorName : newcomerName;
+  const isMine = !fromMentor;
+
+  return (
+    <div className={cn("flex gap-3", isMine && "justify-end")}>
+      {fromMentor ? (
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>{getInitials(label)}</AvatarFallback>
+        </Avatar>
+      ) : null}
+      <div
+        className={cn(
+          "max-w-[88%] rounded-[16px] border px-3 py-2 shadow-sm",
+          isMine
+            ? "rounded-br-md border-[color:var(--color-primary-ring)] bg-[color:var(--color-primary-soft)]"
+            : "rounded-bl-md border-[color:var(--color-border)] bg-white",
+        )}
+      >
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+          <span>{isMine ? "You" : "Mentor"}</span>
+          {comment.comment_type === "review_return" ? (
+            <span className="rounded-full bg-[color:var(--color-danger-soft)] px-1.5 py-0.5 text-[color:var(--color-danger-fg)]">
+              Review note
+            </span>
+          ) : null}
+          <span>{fmtRelative(comment.created_at)}</span>
+        </div>
+        <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-[color:var(--color-fg)]">
+          {comment.body}
+        </p>
+      </div>
     </div>
   );
 }

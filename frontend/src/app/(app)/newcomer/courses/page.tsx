@@ -247,12 +247,13 @@ export default function NewcomerCoursesPage() {
             <FilteredEmpty onClear={() => { setQuery(""); setSelectedRole(null); }} />
           ) : null
         }
-        cards={mineFiltered.map((c) => (
+        cards={mineFiltered.map((c, index) => (
           <CourseProgressCard
             key={c.id}
             course={c}
             completedCount={progressMap.get(c.id) ?? 0}
             highlighted
+            dataDemoId={index === 0 ? "newcomer-courses-first-course" : undefined}
           />
         ))}
       />
@@ -276,11 +277,16 @@ export default function NewcomerCoursesPage() {
                 />
               ) : null
             }
-            cards={othersFiltered.map((c) => (
+            cards={othersFiltered.map((c, index) => (
               <CourseProgressCard
                 key={c.id}
                 course={c}
                 completedCount={progressMap.get(c.id) ?? 0}
+                dataDemoId={
+                  mineFiltered.length === 0 && index === 0
+                    ? "newcomer-courses-first-course"
+                    : undefined
+                }
               />
             ))}
           />

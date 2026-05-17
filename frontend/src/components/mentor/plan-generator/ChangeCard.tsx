@@ -150,6 +150,7 @@ export function ChangeCard({
                 className="h-7 gap-1 px-2 text-xs"
                 onClick={() => onToggleEdit(true)}
                 disabled={!accepted}
+                data-demo-id={index === 0 ? "change-card-edit" : undefined}
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </Button>
@@ -299,6 +300,7 @@ function ChangeEditor({
           value={draft.title}
           onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
           placeholder={base.title ?? "Change title"}
+          data-demo-id="change-editor-title"
         />
       </div>
       <div className="space-y-1">
@@ -310,6 +312,7 @@ function ChangeEditor({
           value={draft.description}
           onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
           placeholder={base.description ?? "What should this change do?"}
+          data-demo-id="change-editor-description"
         />
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -322,6 +325,7 @@ function ChangeEditor({
             min={1}
             max={20}
             value={draft.week_number ?? ""}
+            data-demo-id="change-editor-week"
             onChange={(e) =>
               setDraft((d) => ({
                 ...d,
@@ -339,6 +343,7 @@ function ChangeEditor({
             min={1}
             max={7}
             value={draft.day_number ?? ""}
+            data-demo-id="change-editor-day"
             onChange={(e) =>
               setDraft((d) => ({
                 ...d,
@@ -357,13 +362,14 @@ function ChangeEditor({
           value={draft.reason}
           onChange={(e) => setDraft((d) => ({ ...d, reason: e.target.value }))}
           placeholder={base.reason ?? "Why this change?"}
+          data-demo-id="change-editor-reason"
         />
       </div>
       <div className="flex items-center justify-end gap-2 pt-1">
         <Button variant="ghost" size="sm" onClick={onCancel}>
           <X className="h-3.5 w-3.5" /> Cancel
         </Button>
-        <Button variant="ai" size="sm" onClick={commit}>
+        <Button variant="ai" size="sm" onClick={commit} data-demo-id="change-editor-save">
           <Check className="h-3.5 w-3.5" /> Save edits
         </Button>
       </div>

@@ -61,6 +61,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link
       href={item.href}
+      data-demo-id={navDemoId(item.href)}
       className={cn(
         "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
         active
@@ -82,6 +83,11 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       ) : null}
     </Link>
   );
+}
+
+function navDemoId(href: string): string {
+  if (href === "/demo") return "nav-demo";
+  return `nav-${href.replace(/^\//, "").replace(/\//g, "-")}`;
 }
 
 export function Sidebar() {

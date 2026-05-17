@@ -87,7 +87,10 @@ export function PlanJourneyTimeline({ tasks }: PlanJourneyTimelineProps) {
   const playheadPct = positionOf(currentWeek);
 
   return (
-    <section className="relative overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-white p-5 sm:p-7 shadow-[var(--shadow-card)]">
+    <section
+      className="relative overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-white p-5 sm:p-7 shadow-[var(--shadow-card)]"
+      data-demo-id="newcomer-plan-journey"
+    >
       <div className="relative flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-active)]">
@@ -222,8 +225,8 @@ export function PlanJourneyTimeline({ tasks }: PlanJourneyTimelineProps) {
               </div>
             </div>
             <ul className="mt-3 space-y-1.5">
-              {selected.tasks.map((t) => (
-                <JourneyTaskRow key={t.id} task={t} />
+              {selected.tasks.map((t, index) => (
+                <JourneyTaskRow key={t.id} task={t} index={index} />
               ))}
               {selected.tasks.length === 0 ? (
                 <li className="text-xs text-[color:var(--color-fg-muted)]">
@@ -238,7 +241,7 @@ export function PlanJourneyTimeline({ tasks }: PlanJourneyTimelineProps) {
   );
 }
 
-function JourneyTaskRow({ task }: { task: OnboardingTask }) {
+function JourneyTaskRow({ task, index }: { task: OnboardingTask; index: number }) {
   const Icon = task.status === "done" ? Check : task.status === "blocked" ? AlertTriangle : CircleDashed;
   const tone =
     task.status === "done"
@@ -250,6 +253,7 @@ function JourneyTaskRow({ task }: { task: OnboardingTask }) {
     <li>
       <Link
         href={`/newcomer/tasks/${task.id}`}
+        data-demo-id={index === 0 ? "newcomer-plan-first-task" : undefined}
         className="flex items-center gap-3 rounded-lg border border-transparent bg-white/60 px-3 py-2 hover:border-[color:var(--color-primary-ring)] hover:bg-white"
       >
         <Icon className={cn("h-4 w-4 shrink-0", tone)} />

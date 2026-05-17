@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, GraduationCap, Sparkles, Wand2, X } from "lucide-react";
+import { AlertTriangle, CalendarDays, CheckCircle2, MessageCircle, Sparkles, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SeverityBadge, StatusBadge } from "@/components/shared/StatusBadge";
@@ -15,6 +15,7 @@ interface SignalRowProps {
   onSchedule?: (s: AISignal) => void;
   onAdjustPlan?: (s: AISignal) => void;
   onMakeCourse?: (s: AISignal) => void;
+  onOpen?: (s: AISignal) => void;
   compact?: boolean;
 }
 
@@ -25,6 +26,7 @@ export function SignalRow({
   onSchedule,
   onAdjustPlan,
   onMakeCourse,
+  onOpen,
   compact,
 }: SignalRowProps) {
   const occurrenceCount = signal.occurrence_count ?? 0;
@@ -81,33 +83,44 @@ export function SignalRow({
             </div>
           ) : null}
 
-          {(onResolve || onIgnore || onSchedule || onAdjustPlan || onMakeCourse) && signal.status === "open" ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {onMakeCourse ? (
-                <Button size="sm" variant="ai" onClick={() => onMakeCourse(signal)}>
-                  <GraduationCap className="h-3.5 w-3.5" /> Make course
-                </Button>
-              ) : null}
-              {onAdjustPlan ? (
-                <Button size="sm" variant="outline" onClick={() => onAdjustPlan(signal)}>
-                  <Wand2 className="h-3.5 w-3.5" /> Adjust plan
-                </Button>
-              ) : null}
-              {onSchedule ? (
-                <Button size="sm" variant="default" onClick={() => onSchedule(signal)}>
-                  Schedule walkthrough
-                </Button>
-              ) : null}
-              {onResolve ? (
-                <Button size="sm" variant="soft" onClick={() => onResolve(signal)}>
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
-                </Button>
-              ) : null}
-              {onIgnore ? (
-                <Button size="sm" variant="ghost" onClick={() => onIgnore(signal)}>
-                  <X className="h-3.5 w-3.5" /> Ignore
-                </Button>
-              ) : null}
+          {onOpen || ((onResolve || onIgnore || onSchedule || onAdjustPlan || onMakeCourse) && signal.status === "open") ? (
+            <div className="mt-3 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/70 p-3">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                Actions
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {onOpen ? (
+                  <Button size="sm" variant="outline" onClick={() => onOpen(signal)}>
+                    <MessageCircle className="h-3.5 w-3.5" /> Open chat
+                  </Button>
+                ) : null}
+                {onMakeCourse && signal.status === "open" ? (
+                  <Button size="sm" variant="ai" onClick={() => onMakeCourse(signal)}>
+                    <Sparkles className="h-3.5 w-3.5" /> Make course
+                  </Button>
+                ) : null}
+                {onAdjustPlan && signal.status === "open" ? (
+                  <Button size="sm" variant="ai" onClick={() => onAdjustPlan(signal)}>
+                    <Sparkles className="h-3.5 w-3.5" /> Regenerate plan
+                  </Button>
+                ) : null}
+                {onSchedule && signal.status === "open" ? (
+                  <Button size="sm" variant="outline" onClick={() => onSchedule(signal)}>
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    Schedule walkthrough
+                  </Button>
+                ) : null}
+                {onResolve && signal.status === "open" ? (
+                  <Button size="sm" variant="ghost" onClick={() => onResolve(signal)}>
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
+                  </Button>
+                ) : null}
+                {onIgnore && signal.status === "open" ? (
+                  <Button size="sm" variant="ghost" onClick={() => onIgnore(signal)}>
+                    <X className="h-3.5 w-3.5" /> Ignore
+                  </Button>
+                ) : null}
+              </div>
             </div>
           ) : null}
         </div>

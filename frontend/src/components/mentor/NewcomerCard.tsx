@@ -28,6 +28,7 @@ export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerIt
     >
       <Link
         href={`/mentor/newcomers/${newcomer.newcomer_id}`}
+        data-demo-id={`mentor-newcomer-${slugify(newcomer.full_name)}`}
         className={cn(
           "group block rounded-[14px] glass-card p-5 transition-colors hover:border-[color:var(--color-primary-ring)]",
           accent,
@@ -87,4 +88,14 @@ export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerIt
       </Link>
     </motion.div>
   );
+}
+
+function slugify(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }

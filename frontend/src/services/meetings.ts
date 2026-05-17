@@ -28,6 +28,7 @@ export interface CreateMeetingInput {
   ends_at: string;
   newcomer_id?: ID | null;
   organizer_user_id?: ID | null;
+  created_by_user_id?: ID | null;
   plan_id?: ID | null;
   task_id?: ID | null;
   signal_id?: ID | null;

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BellRing, CheckCheck, Loader2 } from "lucide-react";
 
@@ -31,18 +32,34 @@ function formatTimeAgo(iso: string): string {
 }
 
 export function NotificationBell() {
-  const { activePersona } = useDemo();
-  const userId = activePersona?.user_id ?? null;
+  const router = useRouter();
+  const { activePersona, mentorId, newcomerId, personas, role } = useDemo();
+  const fallbackPersona =
+    role === "mentor"
+      ? personas.find((persona) => persona.role === "mentor" && persona.user_id === mentorId)
+      : personas.find(
+          (persona) =>
+            persona.role === "newcomer" &&
+            persona.newcomer_id === newcomerId,
+        );
+  const userId =
+    activePersona?.user_id ??
+    fallbackPersona?.user_id ??
+    (role === "mentor" ? mentorId : null);
   const qc = useQueryClient();
   const [open, setOpen] = React.useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["notifications", userId],
     queryFn: () =>
       listNotifications({ userId: userId!, limit: 12 }),
     enabled: !!userId,
     refetchInterval: open ? false : 30_000,
   });
+
+  React.useEffect(() => {
+    if (open && userId) void refetch();
+  }, [open, refetch, userId]);
 
   const unread = (data ?? []).filter((n) => !n.read_at);
 
@@ -52,25 +69,24 @@ export function NotificationBell() {
   });
 
   const readAllMut = useMutation({
-    mutationFn: () => markAllNotificationsRead(userId!),
+    mutationFn: () =>
+      userId
+        ? markAllNotificationsRead(userId)
+        : Promise.resolve({ updated: 0 }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const handleClickItem = (n: NotificationItem) => {
     if (!n.read_at) readMut.mutate(n.id);
     setOpen(false);
+    if (n.type.startsWith("meeting_")) {
+      router.push(role === "newcomer" ? "/newcomer/calendar" : "/mentor/meetings");
+    } else if (n.related_signal_id) {
+      router.push(role === "newcomer" ? "/newcomer/signals" : "/mentor/signals");
+    } else if (n.related_task_id) {
+      router.push(role === "newcomer" ? `/newcomer/tasks/${n.related_task_id}` : "/mentor/kanban");
+    }
   };
-
-  if (!userId) {
-    return (
-      <button
-        disabled
-        className="grid h-9 w-9 place-items-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-[color:var(--color-fg-subtle)]"
-      >
-        <BellRing className="h-4 w-4" />
-      </button>
-    );
-  }
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -92,7 +108,7 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[320px] max-h-[70vh] overflow-hidden p-0"
+        className="z-[80] w-[320px] max-h-[70vh] overflow-hidden bg-[color:var(--color-surface-elevated)] p-0 text-[color:var(--color-fg)]"
       >
         <div className="flex items-center justify-between border-b border-[color:var(--color-border)] px-3 py-2">
           <span className="text-sm font-semibold tracking-tight">
@@ -102,7 +118,7 @@ export function NotificationBell() {
             type="button"
             onClick={() => readAllMut.mutate()}
             disabled={
-              readAllMut.isPending || unread.length === 0
+              !userId || readAllMut.isPending || unread.length === 0
             }
             className="inline-flex items-center gap-1 text-xs text-[color:var(--color-fg-muted)] hover:text-[color:var(--color-fg)] disabled:opacity-50"
           >

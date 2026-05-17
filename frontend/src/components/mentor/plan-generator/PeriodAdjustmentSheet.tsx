@@ -41,7 +41,7 @@ interface PeriodAdjustmentSheetProps {
   newcomerId: ID | null;
   newcomerName?: string;
   period: JourneyPeriod | null;
-  /** When set, the sheet auto-generates a draft seeded from this signal instead of from period signals. */
+  /** When set, the sheet can generate a draft seeded from this signal instead of from period signals. */
   seedSignalId?: ID | null;
   /** Optional context to display in the header rail. */
   seedSignalContext?: AISignal | null;
@@ -108,14 +108,6 @@ function PeriodAdjustmentSheetInner({
     onError: (err) => toast.error("Draft unavailable", { description: toApiError(err).message }),
   });
 
-  // Auto-generate once on mount when seeded by a signal — bypass the manual CTA.
-  // Component remounts on each open thanks to the outer guard, so a mount-time effect is correct.
-  const generateMutate = generateMut.mutate;
-  React.useEffect(() => {
-    if (seedSignalId == null) return;
-    generateMutate();
-  }, [seedSignalId, generateMutate]);
-
   const applyMut = useMutation({
     mutationFn: async () => {
       if (!draft) throw new Error("No draft to apply");
@@ -153,11 +145,17 @@ function PeriodAdjustmentSheetInner({
   const counts = summarizeCuration(curation);
   const railSignals = seedSignalContext ? [seedSignalContext, ...signals.filter((s) => s.id !== seedSignalContext.id)] : signals;
   const seedingFromSignal = seedSignalId != null;
+  const canGenerateDraft = seedingFromSignal
+    ? seedSignalId != null
+    : !!planId && !signalsQ.isLoading && signals.length > 0;
 
   return (
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-stone-950/45 backdrop-blur-[3px]" onClick={onClose} />
-      <section className="absolute inset-x-0 bottom-0 top-5 mx-auto flex max-w-6xl flex-col overflow-hidden rounded-t-[24px] border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-elevated)] sm:inset-y-5 sm:rounded-[24px]">
+      <section
+        className="absolute inset-x-0 bottom-0 top-5 mx-auto flex max-w-6xl flex-col overflow-hidden rounded-t-[24px] border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-elevated)] sm:inset-y-5 sm:rounded-[24px]"
+        data-demo-id="period-adjustment-sheet"
+      >
         <header className="relative border-b border-[color:var(--color-border)] bg-gradient-to-b from-white to-[color:var(--color-bg)] px-5 py-4 sm:px-6">
           <div className="absolute inset-x-0 top-0 h-[2px] ai-gradient" />
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -184,7 +182,9 @@ function PeriodAdjustmentSheetInner({
               {planId ? (
                 <Button asChild variant="outline" size="sm">
                   <Link href={`/mentor/plan-generator/${planId}`}>
-                    Open period <ArrowRight className="h-3.5 w-3.5" />
+                    <span data-demo-id="period-adjustment-open-period" className="inline-flex items-center gap-1.5">
+                      Open period <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
                   </Link>
                 </Button>
               ) : null}
@@ -267,32 +267,36 @@ function PeriodAdjustmentSheetInner({
                     )}
                   </span>
                   <h3 className="mt-4 text-xl font-semibold text-[color:var(--color-fg)]">
-                    {seedingFromSignal
-                      ? "Drafting changes from the signal…"
-                      : "Generate an adjustment draft"}
+                    Generate an adjustment draft
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
                     {seedingFromSignal
-                      ? "The AI is proposing targeted changes — add, modify, rewrite, remove, or carry tasks forward."
+                      ? "Use the steering signal to propose targeted changes — add, modify, rewrite, remove, or carry tasks forward."
                       : "The draft can add tasks, modify unfinished tasks, remove redundant tasks, add a follow-up period, or rebalance the remaining period."}
                   </p>
-                  {!seedingFromSignal ? (
-                    <Button
-                      variant="ai"
-                      size="lg"
-                      className="mt-5 shadow-[var(--shadow-ai)]"
-                      disabled={!planId || !signals.length || generateMut.isPending || signalsQ.isLoading}
-                      onClick={() => generateMut.mutate()}
-                    >
-                      {generateMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                      {generateMut.isPending ? "Generating draft..." : "Generate from signals"}
-                    </Button>
-                  ) : null}
+                  <Button
+                    variant="ai"
+                    size="lg"
+                    className="mt-5 shadow-[var(--shadow-ai)]"
+                    disabled={!canGenerateDraft || generateMut.isPending}
+                    onClick={() => generateMut.mutate()}
+                    data-demo-id="period-adjustment-generate"
+                  >
+                    {generateMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                    {generateMut.isPending
+                      ? "Generating draft..."
+                      : seedingFromSignal
+                        ? "Generate from signal"
+                        : "Generate from signals"}
+                  </Button>
                 </div>
               </div>
             ) : (
               <div className="space-y-5">
-                <div className="rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-bg)] p-4">
+                <div
+                  className="rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-bg)] p-4"
+                  data-demo-id="period-adjustment-draft"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary)]">
@@ -407,6 +411,7 @@ function PeriodAdjustmentSheetInner({
                   disabled={applyMut.isPending || draft.status === "applied" || counts.accepted === 0}
                   onClick={() => applyMut.mutate()}
                   className="shadow-[var(--shadow-ai)]"
+                  data-demo-id="period-adjustment-apply"
                 >
                   {applyMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                   {applyMut.isPending
