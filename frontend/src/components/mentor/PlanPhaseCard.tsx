@@ -12,10 +12,13 @@ interface PlanPhaseCardProps {
   className?: string;
   /** When provided, each task title becomes a link to this href. */
   linkTo?: (taskId: ID) => string;
+  /** Optional demo-tour alt-id tagged on the first task row (used by GuidedDemoTour). */
+  firstTaskDemoAltId?: string;
 }
 
-export function PlanPhaseCard({ title, subtitle, tasks, className, linkTo }: PlanPhaseCardProps) {
+export function PlanPhaseCard({ title, subtitle, tasks, className, linkTo, firstTaskDemoAltId }: PlanPhaseCardProps) {
   const grouped = groupByWeek(tasks);
+  let rowIndex = 0;
   return (
     <section
       className={cn(
@@ -41,9 +44,18 @@ export function PlanPhaseCard({ title, subtitle, tasks, className, linkTo }: Pla
               {week === "0" ? "Unscheduled" : `Week ${week}`}
             </div>
             <ul className="space-y-1.5">
-              {ts.map((t) => (
-                <TaskRow key={t.id} task={t} linkTo={linkTo} />
-              ))}
+              {ts.map((t) => {
+                const isFirst = rowIndex === 0;
+                rowIndex += 1;
+                return (
+                  <TaskRow
+                    key={t.id}
+                    task={t}
+                    linkTo={linkTo}
+                    demoAltId={isFirst ? firstTaskDemoAltId : undefined}
+                  />
+                );
+              })}
             </ul>
           </div>
         ))}
@@ -52,7 +64,15 @@ export function PlanPhaseCard({ title, subtitle, tasks, className, linkTo }: Pla
   );
 }
 
-function TaskRow({ task, linkTo }: { task: OnboardingTask; linkTo?: (taskId: ID) => string }) {
+function TaskRow({
+  task,
+  linkTo,
+  demoAltId,
+}: {
+  task: OnboardingTask;
+  linkTo?: (taskId: ID) => string;
+  demoAltId?: string;
+}) {
   const Icon =
     task.status === "done"
       ? Check
@@ -98,13 +118,17 @@ function TaskRow({ task, linkTo }: { task: OnboardingTask; linkTo?: (taskId: ID)
   if (linkTo) {
     return (
       <li>
-        <Link href={linkTo(task.id)} className={cn("group", rowClass)}>
+        <Link
+          href={linkTo(task.id)}
+          data-demo-alt-id={demoAltId}
+          className={cn("group", rowClass)}
+        >
           {inner}
         </Link>
       </li>
     );
   }
-  return <li className={rowClass}>{inner}</li>;
+  return <li data-demo-alt-id={demoAltId} className={rowClass}>{inner}</li>;
 }
 
 function groupByWeek(tasks: OnboardingTask[]): Record<string, OnboardingTask[]> {

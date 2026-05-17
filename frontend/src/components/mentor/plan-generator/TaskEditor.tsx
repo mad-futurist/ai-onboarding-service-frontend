@@ -146,10 +146,11 @@ export function TaskEditor({ task, onSave, saving }: TaskEditorProps) {
           <CardDescription>Edit any field manually, or let the AI draft it for you.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5" data-demo-id="mentor-task-editor">
             <Label htmlFor="task-title">Title</Label>
             <Input
               id="task-title"
+              data-demo-id="mentor-task-editor-title"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />

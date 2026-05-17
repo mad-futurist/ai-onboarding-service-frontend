@@ -11,7 +11,13 @@ import { getInitials, cn } from "@/lib/utils";
 import { useLocale } from "@/providers/locale-provider";
 import type { MentorDashboardNewcomerItem } from "@/types";
 
-export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerItem }) {
+export function NewcomerCard({
+  newcomer,
+  isLatest,
+}: {
+  newcomer: MentorDashboardNewcomerItem;
+  isLatest?: boolean;
+}) {
   const { t } = useLocale();
   const pct = newcomer.progress_percent ?? 0;
   const status = newcomer.computed_status ?? newcomer.onboarding_status;
@@ -29,6 +35,7 @@ export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerIt
       <Link
         href={`/mentor/newcomers/${newcomer.newcomer_id}`}
         data-demo-id={`mentor-newcomer-${slugify(newcomer.full_name)}`}
+        data-demo-alt-id={isLatest ? "mentor-newcomer-card-latest" : undefined}
         className={cn(
           "group block rounded-[14px] glass-card p-5 transition-colors hover:border-[color:var(--color-primary-ring)]",
           accent,

@@ -46,6 +46,14 @@ interface TargetRect {
   bottom: number;
 }
 
+export interface DemoTourStepSummary {
+  index: number;
+  id: string;
+  title: string;
+  route: string;
+  role: Role;
+}
+
 const TOUR_STEPS: DemoTourStep[] = [
   {
     id: "welcome",
@@ -704,43 +712,65 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor",
     role: "mentor",
     target: "mentor-dashboard-newcomers",
-    title: "Plan generated",
-    body: "Back in the mentor dashboard, the new newcomer can appear with a generated draft plan after the assessment background job completes.",
+    title: "Plan generated for Noa",
+    body: "Back on the dashboard, the new newcomer appears with her freshly generated draft plan. The card is highlighted; the next step opens her workspace.",
+  },
+  {
+    id: "closing-mentor-open-noa-workspace",
+    route: "/mentor",
+    role: "mentor",
+    target: "mentor-newcomer-card-latest",
+    title: "Open Noa's workspace",
+    body: "Click Noa's card to open her workspace — the mentor's single view of one newcomer: plan, blocked items, signals, skills.",
+    waitForClickTarget: "mentor-newcomer-card-latest",
+  },
+  {
+    id: "closing-mentor-noa-plan",
+    route: "/mentor/newcomers/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "mentor-newcomer-plan-tabs",
+    title: "Noa's full plan",
+    body: "The AI generated a 30/60/90 plan from her profile, skill gaps, and the company knowledge base. Tabs split it by phase; weeks group the tasks.",
+  },
+  {
+    id: "closing-mentor-noa-first-task",
+    route: "/mentor/newcomers/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "mentor-newcomer-first-task",
+    title: "Every task is editable",
+    body: "Click the highlighted task to open the editor — the mentor can adjust title, description, type, priority, week, success and acceptance criteria for any task the AI proposed.",
+    waitForClickTarget: "mentor-newcomer-first-task",
+  },
+  {
+    id: "closing-mentor-task-editor",
+    route: "/mentor/plan-generator/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "mentor-task-editor",
+    title: "Task editor",
+    body: "Every field is editable. The mentor stays in charge of the content — the AI drafts, the mentor refines. Save changes propagates instantly to the newcomer's plan.",
   },
   {
     id: "closing-open-switcher-to-marina",
     route: "/mentor",
+    routeMatch: "prefix",
     role: "mentor",
     target: "role-switcher-trigger",
     title: "Step back into Marina",
-    body: "Setup is done. Now switch back to Marina to show her daily operating rhythm: notifications, progress, calendar, kanban — the surfaces she lives in.",
+    body: "Setup is done. Now switch back to Marina to show her daily operating rhythm: progress, calendar, kanban — the surfaces she lives in.",
     waitForClickTarget: "role-switcher-trigger",
   },
   {
     id: "closing-choose-marina",
     route: "/mentor",
+    routeMatch: "prefix",
     role: "mentor",
     target: "role-persona-marina-kovalenko",
     title: "Choose Marina again",
     body: "Re-enter Marina's workspace. The next beats show how a newcomer actually uses the product day after day.",
     waitForClickTarget: "role-persona-marina-kovalenko",
-  },
-  {
-    id: "closing-notifications-bell",
-    route: "/newcomer",
-    role: "newcomer",
-    target: "notification-bell",
-    title: "Notifications keep Marina in sync",
-    body: "The bell polls every 30 seconds. Mentor comments, plan changes, meeting invites, and signal updates all surface here so Marina never misses a step. Click it.",
-    waitForClickTarget: "notification-bell",
-  },
-  {
-    id: "closing-notifications-item",
-    route: "/newcomer",
-    role: "newcomer",
-    target: "notifications-first-item",
-    title: "Each notification is a shortcut",
-    body: "Clicking a notification routes straight to the related task, signal, or meeting — no hunting through tabs. Mentor and newcomer share the same notification spine.",
   },
   {
     id: "closing-nav-progress",
@@ -888,8 +918,25 @@ const TOUR_STEPS: DemoTourStep[] = [
     role: "newcomer",
     target: "role-persona-oleg-bondarenko",
     title: "Choose Oleg",
-    body: "Re-enter the mentor workspace.",
+    body: "Re-enter the mentor workspace. The mentor will now see real notifications from Marina's actions.",
     waitForClickTarget: "role-persona-oleg-bondarenko",
+  },
+  {
+    id: "closing-mentor-notification-bell",
+    route: "/mentor",
+    role: "mentor",
+    target: "notification-bell",
+    title: "Notifications fired",
+    body: "Marina scheduled a meeting and submitted a task — both fired notifications to the mentor. The bell shows unread items. Click it to open the inbox.",
+    waitForClickTarget: "notification-bell",
+  },
+  {
+    id: "closing-mentor-notification-item",
+    route: "/mentor",
+    role: "mentor",
+    target: "notifications-first-item",
+    title: "Each notification is a shortcut",
+    body: "Clicking a notification routes straight to the related task, signal, or meeting — no hunting through tabs. Mentor and newcomer share the same notification spine.",
   },
   {
     id: "closing-nav-mentor-kanban",
@@ -936,6 +983,16 @@ const TOUR_STEPS: DemoTourStep[] = [
     body: "Setup → plan → grounded knowledge → courses → signals → adjustments → new hire onboarded → daily rhythm → submit → approve. Mentor and newcomer always on the same surface, AI doing the heavy lifting, humans deciding.",
   },
 ];
+
+export function getDemoTourStepSummaries(): DemoTourStepSummary[] {
+  return TOUR_STEPS.map((step, index) => ({
+    index,
+    id: step.id,
+    title: step.title,
+    route: step.route,
+    role: step.role,
+  }));
+}
 
 export function GuidedDemoTour() {
   const router = useRouter();
@@ -1204,8 +1261,17 @@ export function GuidedDemoTour() {
             {waitingForClick ? (
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--color-primary-active)]">
-                  <MousePointerClick className="h-3.5 w-3.5" /> waiting for click
+                  <MousePointerClick className="h-3.5 w-3.5" /> click target
                 </span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => completeStep({ delay: 0 })}
+                  title="Skip without clicking the target"
+                >
+                  Skip
+                </Button>
                 <Button
                   type="button"
                   size="sm"
@@ -1219,12 +1285,12 @@ export function GuidedDemoTour() {
               <Button
                 type="button"
                 size="sm"
-                variant="ai"
-                disabled={!canAdvance}
+                variant={canAdvance ? "ai" : "outline"}
                 onClick={() => completeStep({ delay: 0 })}
+                title={!canAdvance ? "Skip ahead without waiting for the target" : undefined}
               >
                 {!canAdvance
-                  ? "Waiting..."
+                  ? "Skip step"
                   : guidedDemoStep >= TOUR_STEPS.length - 1
                     ? "Finish"
                     : "Next"}

@@ -311,11 +311,17 @@ export default function MentorOverviewPage() {
               animate="visible"
               className="grid gap-3 md:grid-cols-2"
             >
-              {filteredNewcomers.map((n) => (
-                <motion.div key={n.newcomer_id} variants={itemVariants}>
-                  <NewcomerCard newcomer={n} />
-                </motion.div>
-              ))}
+              {(() => {
+                const latestNewcomerId = filteredNewcomers.reduce<number | null>(
+                  (acc, n) => (acc === null || n.newcomer_id > acc ? n.newcomer_id : acc),
+                  null,
+                );
+                return filteredNewcomers.map((n) => (
+                  <motion.div key={n.newcomer_id} variants={itemVariants}>
+                    <NewcomerCard newcomer={n} isLatest={n.newcomer_id === latestNewcomerId} />
+                  </motion.div>
+                ));
+              })()}
             </motion.div>
           )}
         </section>

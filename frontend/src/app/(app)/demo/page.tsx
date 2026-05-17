@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
+  ChevronDown,
   GitBranch,
   GraduationCap,
+  ListOrdered,
   MessagesSquare,
   MousePointerClick,
   Network,
   PlayCircle,
+  Search,
   Sparkles,
   X,
 } from "lucide-react";
@@ -20,10 +23,12 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { AIInsightCard } from "@/components/ai/AIInsightCard";
 import { cn } from "@/lib/utils";
 
 import { useDemo } from "@/providers/demo-provider";
+import { getDemoTourStepSummaries } from "@/components/demo/GuidedDemoTour";
 
 interface Act {
   id: number;
@@ -117,6 +122,7 @@ export default function DemoPage() {
     guidedDemoActive,
     startGuidedDemo,
     stopGuidedDemo,
+    setGuidedDemoStep,
   } = useDemo();
 
   const go = (href: string, role: "mentor" | "newcomer") => {
@@ -126,6 +132,24 @@ export default function DemoPage() {
       target = `/mentor/newcomers/${newcomerId}`;
     }
     router.push(target);
+  };
+
+  const stepSummaries = React.useMemo(() => getDemoTourStepSummaries(), []);
+  const [stepQuery, setStepQuery] = React.useState("");
+  const filteredSteps = React.useMemo(() => {
+    const q = stepQuery.trim().toLowerCase();
+    if (!q) return stepSummaries;
+    return stepSummaries.filter(
+      (s) =>
+        s.title.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q) ||
+        s.route.toLowerCase().includes(q),
+    );
+  }, [stepSummaries, stepQuery]);
+
+  const jumpToStep = (index: number) => {
+    if (!guidedDemoActive) startGuidedDemo();
+    setGuidedDemoStep(index);
   };
 
   return (
@@ -212,6 +236,73 @@ export default function DemoPage() {
         description="ReadySet.AI is not only Ask AI. It creates the work, teaches through sources, detects friction, proposes interventions, and keeps the mentor in control."
         tone="soft"
       />
+
+      <details className="rounded-[16px] border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-card)]">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-sm font-semibold text-[color:var(--color-fg)] [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center gap-2">
+            <ListOrdered className="h-4 w-4 text-[color:var(--color-primary)]" />
+            Jump to any step ({stepSummaries.length} steps)
+          </span>
+          <ChevronDown className="h-4 w-4 text-[color:var(--color-fg-muted)] transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="border-t border-[color:var(--color-border)] p-4 space-y-3">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-fg-faint)]" />
+            <Input
+              value={stepQuery}
+              onChange={(e) => setStepQuery(e.target.value)}
+              placeholder="Search by title, id, or route…"
+              className="pl-9"
+              aria-label="Search demo tour steps"
+            />
+          </div>
+          <ol className="max-h-[420px] divide-y divide-[color:var(--color-border)] overflow-y-auto rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/30">
+            {filteredSteps.length === 0 ? (
+              <li className="px-3 py-6 text-center text-xs text-[color:var(--color-fg-subtle)]">
+                No step matches &ldquo;{stepQuery}&rdquo;.
+              </li>
+            ) : (
+              filteredSteps.map((s) => (
+                <li
+                  key={s.id}
+                  className="flex items-center justify-between gap-3 px-3 py-2 hover:bg-white"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
+                      <span className="tabular-nums text-[color:var(--color-primary)]">
+                        #{s.index + 1}
+                      </span>
+                      <Badge tone={s.role === "mentor" ? "brand" : "ai"} size="sm">
+                        {s.role}
+                      </Badge>
+                      <span className="truncate text-[color:var(--color-fg-muted)]">
+                        {s.route}
+                      </span>
+                    </div>
+                    <div className="mt-0.5 truncate text-sm font-medium text-[color:var(--color-fg)]">
+                      {s.title}
+                    </div>
+                    <div className="truncate text-[11px] text-[color:var(--color-fg-subtle)]">
+                      {s.id}
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => jumpToStep(s.index)}
+                  >
+                    Start here <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </li>
+              ))
+            )}
+          </ol>
+          <p className="text-[11px] text-[color:var(--color-fg-muted)]">
+            Tip: starting at a deep step assumes earlier setup already happened in the running demo (personas selected, plans generated, etc.). Use Regenerate database from settings first if you hit empty pages.
+          </p>
+        </div>
+      </details>
 
       <ol className="grid gap-4 lg:grid-cols-2">
         {ACTS.map((act) => {

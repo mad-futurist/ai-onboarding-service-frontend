@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -265,7 +266,7 @@ export default function NewcomerProfilePage() {
             </AIInsightCard>
           ) : null}
 
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs value={tab} onValueChange={setTab} data-demo-id="mentor-newcomer-plan-tabs">
             <TabsList>
               <TabsTrigger value="plan">Plan</TabsTrigger>
               <TabsTrigger value="blocked">Blocked ({newcomer.blocked_tasks})</TabsTrigger>
@@ -277,9 +278,22 @@ export default function NewcomerProfilePage() {
                 <Skeleton className="h-48" />
               ) : tasks.length ? (
                 <>
-                  <PlanPhaseCard title="First 30 days" tasks={phase1} />
-                  <PlanPhaseCard title="Days 31-60" tasks={phase2} />
-                  <PlanPhaseCard title="Days 61-90" tasks={phase3} />
+                  <PlanPhaseCard
+                    title="First 30 days"
+                    tasks={phase1}
+                    linkTo={plan.data?.id ? (taskId) => `/mentor/plan-generator/${plan.data?.id}/task/${taskId}` : undefined}
+                    firstTaskDemoAltId="mentor-newcomer-first-task"
+                  />
+                  <PlanPhaseCard
+                    title="Days 31-60"
+                    tasks={phase2}
+                    linkTo={plan.data?.id ? (taskId) => `/mentor/plan-generator/${plan.data?.id}/task/${taskId}` : undefined}
+                  />
+                  <PlanPhaseCard
+                    title="Days 61-90"
+                    tasks={phase3}
+                    linkTo={plan.data?.id ? (taskId) => `/mentor/plan-generator/${plan.data?.id}/task/${taskId}` : undefined}
+                  />
                 </>
               ) : (
                 <EmptyState
@@ -287,9 +301,9 @@ export default function NewcomerProfilePage() {
                   description="Generate an AI plan for this newcomer to see tasks here."
                   action={
                     <Button asChild variant="ai">
-                      <a href="/mentor/plan-generator">
+                      <Link href="/mentor/plan-generator">
                         <Sparkles className="h-4 w-4" /> Generate plan
-                      </a>
+                      </Link>
                     </Button>
                   }
                 />
