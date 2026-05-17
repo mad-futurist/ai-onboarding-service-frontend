@@ -127,11 +127,6 @@ export default function MentorOverviewPage() {
       <section className="relative overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-white px-6 py-7 sm:px-8 sm:py-9">
         <AuroraBackground intensity="hero" />
         <div className="relative">
-          <div className="pointer-events-none absolute right-4 top-0 hidden sm:block">
-            <span className="animate-float-y inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-primary-ring)] bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-active)] shadow-[var(--shadow-card)] backdrop-blur">
-              <Sparkles className="h-3 w-3" /> AI cockpit
-            </span>
-          </div>
           <PageHeader
             eyebrow={t("mentor.dash.hero.eyebrow")}
             title={

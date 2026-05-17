@@ -224,6 +224,13 @@ function normalizeUiText(value: string): string {
 function translateSharedTerms(value: string): string {
   return value
     .replace(/\bViewing as\b/g, "Перегляд як")
+    .replace(/\bSales Manager\b/g, "Менеджер з продажів")
+    .replace(/\bsales manager\b/g, "менеджер з продажів")
+    .replace(/\bHead of Sales\b/g, "Керівник продажів")
+    .replace(/\bSales\b/g, "Продажі")
+    .replace(/\bsales\b/g, "продажі")
+    .replace(/\bGuide\b/g, "Посібник")
+    .replace(/\bguide\b/g, "посібник")
     .replace(/\bDeployment\b/g, "Розгортання")
     .replace(/\bdeployment\b/g, "розгортання")
     .replace(/\bOnboarding\b/g, "Онбординг")

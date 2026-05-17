@@ -367,6 +367,134 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
     "AI відстежує 4 онбординги й покаже сигнали, щойно вони з'являться.",
   "Stuck on something? Ask AI - it knows your team's docs.":
     "Застрягли на чомусь? Запитайте AI - він знає документи вашої команди.",
+  "Show the full": "Показати повний",
+  "loop": "цикл",
+  "A richer demo path for the current product: mentor setup, grounded knowledge, plan generation, courses, signals, meetings, and the newcomer workspace.":
+    "Насиченіший демо-маршрут для поточного продукту: налаштування ментора, знання з джерел, генерація плану, курси, сигнали, зустрічі та робочий простір новачка.",
+  "Guided walkthrough": "Керований walkthrough",
+  "Demo mode points, fills, and waits for your click.":
+    "Демо-режим підсвічує, заповнює і чекає вашого кліку.",
+  "Use it during a pitch when you want the app to guide the room: spotlight overlays dim the rest of the UI, arrows pulse on the next control, and form fields fill with demo data. Every navigation and action still waits for a user click, with a Do it helper when you want the tour to perform the highlighted action.":
+    "Використовуйте під час pitch, коли хочете, щоб застосунок вів аудиторію: spotlight затемнює решту UI, стрілки пульсують на наступному елементі, а поля форми заповнюються демо-даними. Кожна навігація й дія все одно чекає кліку користувача, а помічник «Виконати» робить підсвічену дію, коли потрібно.",
+  "Source-grounded answers": "Відповіді на основі джерел",
+  "AI plan & adjustments": "AI-план і коригування",
+  "Course authoring": "Створення курсів",
+  "Signals with evidence": "Сигнали з доказами",
+  "Submit & approve loop": "Цикл надсилання й схвалення",
+  "Shared calendar & progress": "Спільний календар і прогрес",
+  "Demo mode is running": "Демо-режим запущено",
+  "Start the guided mode": "Запустити керований режим",
+  "The tour is deliberate: it never clicks by itself. You can click the target, or use the Do it helper in the tour panel to perform the highlighted action.":
+    "Тур навмисно не клікає сам. Ви можете клікнути ціль або використати помічник «Виконати» на панелі туру, щоб виконати підсвічену дію.",
+  "Stop demo mode": "Зупинити демо-режим",
+  "Start demo mode": "Запустити демо-режим",
+  "Manual path": "Ручний маршрут",
+  "The product story": "Історія продукту",
+  "ReadySet.AI is not only Ask AI. It creates the work, teaches through sources, detects friction, proposes interventions, and keeps the mentor in control.":
+    "ReadySet.AI - це не лише Ask AI. Він створює роботу, навчає через джерела, виявляє тертя, пропонує втручання й залишає контроль за ментором.",
+  "Jump to any step": "Перейти до будь-якого кроку",
+  "Search by title, id, or route...": "Шукати за назвою, id або маршрутом...",
+  "Search by title, id, or route…": "Шукати за назвою, id або маршрутом...",
+  "Search demo tour steps": "Шукати кроки демо-туру",
+  "No step matches": "Немає кроку, що відповідає",
+  "Start here": "Почати тут",
+  "Tip: starting at a deep step assumes earlier setup already happened in the running demo (personas selected, plans generated, etc.). Use Regenerate database from settings first if you hit empty pages.":
+    "Порада: старт із глибокого кроку передбачає, що попереднє налаштування вже виконане в поточному демо (персони вибрані, плани згенеровані тощо). Якщо бачите порожні сторінки, спочатку скористайтеся «Перегенерувати базу даних» у налаштуваннях.",
+  "Show:": "Показати:",
+  "Act": "Акт",
+  "Act 1 — Setup": "Акт 1 — Налаштування",
+  "Oleg opens the mentor cockpit, grounds it in the company knowledge base, and generates Marina's 30/60/90 plan with the AI Plan Generator. Period by period, sources selected, mentor approves.":
+    "Oleg відкриває панель ментора, спирається на базу знань компанії й генерує план Marina 30/60/90 через AI Plan Generator. Період за періодом, джерела вибрані, ментор схвалює.",
+  "The operating center and the journey are in place.":
+    "Операційний центр і шлях готові.",
+  "Act 2 — Marina's daily life": "Акт 2 — Щоденна робота Marina",
+  "Switch into Marina. She opens her plan, picks a task, chats with task-context AI, then reads a grounded HR document — with mind map and source-cited answers. The experience feels focused, not overwhelming.":
+    "Перемкніться на Marina. Вона відкриває свій план, вибирає завдання, спілкується з AI у контексті завдання, а потім читає HR-документ із джерел — з mind map і відповідями з посиланнями. Досвід сфокусований, не перевантажений.",
+  "Newcomer sees only what matters today, with grounded answers.":
+    "Новачок бачить лише те, що важливо сьогодні, з відповідями на основі джерел.",
+  "Act 3 — Signals & adjustments": "Акт 3 — Сигнали й коригування",
+  "Back to mentor. AI flags that Tanya needs attention with evidence — repeated questions, blocked tasks, review patterns. Oleg opens a signal, regenerates a targeted plan change, edits a precise task, and applies the adjustment.":
+    "Повернення до ментора. AI позначає, що Tanya потребує уваги, з доказами — повторні питання, заблоковані завдання, патерни review. Oleg відкриває сигнал, генерує цільову зміну плану, редагує точне завдання й застосовує коригування.",
+  "AI proposes, the mentor decides. Friction caught early.":
+    "AI пропонує, ментор вирішує. Тертя помічене завчасно.",
+  "Signals center": "Центр сигналів",
+  "Act 4 — Author courses & onboard a new hire": "Акт 4 — Створення курсів і онбординг нового найму",
+  "Mentor drafts a short HR/process course from selected sources, reviews it, and approves it. Then adds a brand-new hire (Noa Benali), generates a 2-question skill check, and Noa takes the test — triggering plan generation in the background.":
+    "Ментор створює короткий HR/process курс із вибраних джерел, переглядає і схвалює його. Потім додає нового найма (Noa Benali), генерує перевірку з 2 питань, а Noa проходить тест — це запускає генерацію плану у фоні.",
+  "The system scales: courses and new newcomers in minutes, not days.":
+    "Система масштабується: курси й нові новачки за хвилини, а не за дні.",
+  "Act 5 — Daily rhythm & closing the loop": "Акт 5 — Щоденний ритм і закриття циклу",
+  "Switch back to Marina. Notifications keep her in sync, the Progress page shows momentum, the Calendar lets her schedule a weekly sync (the dialog is bright, not in shadow), her Kanban submits a task for review. Then back to mentor — same task in his review queue, one click to approve. Loop closed.":
+    "Перемкніться назад на Marina. Сповіщення тримають її в синхроні, сторінка прогресу показує динаміку, календар дозволяє запланувати щотижневу синхронізацію, її Kanban надсилає завдання на review. Потім назад до ментора — те саме завдання в його черзі review, один клік для схвалення. Цикл закрито.",
+  "Both sides share the same surface, AI does the lifting, humans decide.":
+    "Обидві сторони працюють в одному просторі, AI бере на себе важке, люди вирішують.",
+  "Newcomer home": "Головна новачка",
+  "Newcomer Kanban": "Kanban новачка",
+  "Mentor Kanban": "Kanban ментора",
+  "Welcome to the ReadySet.AI walkthrough": "Ласкаво просимо до walkthrough ReadySet.AI",
+  "In about 5 minutes we'll cover the full loop: mentor cockpit, knowledge-grounded plan, Marina's daily work, AI signals & plan adjustments, course authoring, onboarding a new hire, then the daily rhythm — notifications, progress, calendar, submit & approve. Click Next to start by regenerating fresh demo data.":
+    "Приблизно за 5 хвилин пройдемо повний цикл: панель ментора, план на основі знань, щоденну роботу Marina, AI-сигнали й коригування плану, створення курсу, онбординг нового найма, а потім щоденний ритм — сповіщення, прогрес, календар, надсилання й схвалення. Натисніть «Далі», щоб почати з оновлення демо-даних.",
+  "Open Settings": "Відкрити налаштування",
+  "We'll start by resetting the demo database so the walkthrough runs from a clean, predictable state. The reset button lives at the bottom of Settings — open it from the sidebar.":
+    "Почнемо зі скидання демо-бази, щоб walkthrough ішов із чистого й передбачуваного стану. Кнопка reset унизу налаштувань — відкрийте їх із sidebar.",
+  "Regenerate the demo database": "Перегенерувати демо-базу даних",
+  "Click Regenerate database. Confirm in the browser prompt — this wipes the workspace and recreates Oleg, Marina, Tanya, their plans, documents, courses and signals. Takes a few seconds.":
+    "Натисніть «Перегенерувати базу даних». Підтвердьте в browser prompt — це очистить workspace і створить заново Oleg, Marina, Tanya, їхні плани, документи, курси й сигнали. Займе кілька секунд.",
+  "Overview is the cockpit": "Огляд — це панель керування",
+  "The mentor workspace opens on Overview. The sidebar confirms where we are before the dashboard content takes over.":
+    "Робочий простір ментора відкривається на огляді. Sidebar підтверджує, де ми знаходимося, перш ніж dashboard бере фокус.",
+  "Mentor dashboard": "Панель ментора",
+  "This is Oleg's operating dashboard: AI pulse, active onboarding metrics, today's focus, signals, and weekly rollup in one place.":
+    "Це операційний dashboard Oleg: AI-пульс, метрики активного онбордингу, фокус дня, сигнали й тижневий підсумок в одному місці.",
+  "Then focus on newcomers": "Потім фокус на новачках",
+  "Start in Oleg's cockpit. The seeded demo shows two active newcomers — Marina (Sales) and Tanya (Backend/Payments) — with live progress, attention signals, today's focus, and saved time, all in one place.":
+    "Почніть у панелі Oleg. Демо-дані показують двох активних новачків — Marina (продажі) і Tanya (Backend/Payments) — з live-прогресом, сигналами уваги, фокусом дня й заощадженим часом в одному місці.",
+  "Viewing as Marina": "Перегляд як Marina",
+  "Open the persona switcher. The tour will wait for your click before it moves.":
+    "Відкрийте перемикач персони. Тур чекатиме вашого кліку, перш ніж рухатися далі.",
+  "Choose Marina": "Вибрати Marina",
+  "Select Marina Kovalenko so the room sees the newcomer workspace from her point of view.":
+    "Виберіть Marina Kovalenko, щоб аудиторія побачила простір новачка з її точки зору.",
+  "Open Marina's plan": "Відкрити план Marina",
+  "Use the sidebar navigation to open My plan. Navigation clicks are manual too.":
+    "Використайте навігацію sidebar, щоб відкрити «Мій план». Навігаційні кліки також ручні.",
+  "Marina's onboarding journey": "Онбординг-шлях Marina",
+  "Her plan reads like a journey, not a wall of tickets — progress per week, day-level tasks, AI-recommended sources and people for each beat. Focused, not overwhelming.":
+    "Її план читається як шлях, а не стіна ticket — прогрес за тижнями, завдання за днями, рекомендовані AI джерела й люди для кожного етапу. Сфокусовано, без перевантаження.",
+  "Open a task": "Відкрити завдання",
+  "Click the highlighted task to drill into task context, acceptance criteria, sources, and help channels.":
+    "Клікніть підсвічене завдання, щоб перейти до контексту, критеріїв прийняття, джерел і каналів допомоги.",
+  "Task detail": "Деталі завдання",
+  "The task page keeps the work concrete: description, checklist, related sources, and people who can help.":
+    "Сторінка завдання робить роботу конкретною: опис, чекліст, пов'язані джерела й люди, які можуть допомогти.",
+  "Discuss the task": "Обговорити завдання",
+  "Open the task chat. The AI carries task context into the conversation.":
+    "Відкрийте чат завдання. AI переносить контекст завдання в розмову.",
+  "Task chat with a prepared prompt": "Чат завдання з підготовленим prompt",
+  "The prompt is filled in. Click Send when you want the AI response.":
+    "Prompt уже заповнений. Натисніть «Надіслати», коли хочете отримати відповідь AI.",
+  "Help me understand the expected output and the first step for this task.":
+    "Допоможи зрозуміти очікуваний результат і перший крок для цього завдання.",
+  "Read the task chat answer": "Прочитати відповідь у чаті завдання",
+  "Wait for the AI answer to appear. The tour keeps the response highlighted; click Next only after the answer is visible.":
+    "Дочекайтеся відповіді AI. Тур тримає відповідь підсвіченою; натискайте «Далі» лише після її появи.",
+  "Back to the task": "Назад до завдання",
+  "Return to the task detail so you can open the source document attached to the work.":
+    "Поверніться до деталей завдання, щоб відкрити документ-джерело, прив'язаний до роботи.",
+  "Open the document": "Відкрити документ",
+  "Open the first related source to show how tasks stay grounded in company knowledge.":
+    "Відкрийте перше пов'язане джерело, щоб показати, як завдання спираються на знання компанії.",
+  "Demo mode": "Демо-режим",
+  "Resume": "Продовжити",
+  "Pause": "Пауза",
+  "click target": "клікніть ціль",
+  "Skip": "Пропустити",
+  "Do it": "Виконати",
+  "Skip step": "Пропустити крок",
+  "Finish": "Завершити",
+  "Next": "Далі",
+  "Skip without clicking the target": "Пропустити без кліку по цілі",
+  "Skip ahead without waiting for the target": "Перейти далі без очікування цілі",
 
   "Workspace": "Робочий простір",
   "Demo-only settings for the hackathon build.": "Демо-налаштування для хакатонної збірки.",
@@ -694,11 +822,11 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Medium": "Середній",
   "High": "Високий",
   "General": "Загальне",
-  "Junior": "Junior",
-  "Middle": "Middle",
-  "Senior": "Senior",
-  "Staff": "Staff",
-  "Principal": "Principal",
+  "Junior": "Молодший",
+  "Middle": "Середній",
+  "Senior": "Старший",
+  "Staff": "Провідний",
+  "Principal": "Головний",
 
   "People to ask": "До кого звернутися",
   "People to know": "З ким познайомитися",

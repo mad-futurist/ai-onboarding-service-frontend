@@ -52,7 +52,7 @@ export function NotificationBell() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["notifications", userId],
     queryFn: () =>
-      listNotifications({ userId: userId!, limit: 12 }),
+      listNotifications({ userId: userId!, unreadOnly: true, limit: 12 }),
     enabled: !!userId,
     refetchInterval: open ? false : 30_000,
   });
@@ -61,11 +61,27 @@ export function NotificationBell() {
     if (open && userId) void refetch();
   }, [open, refetch, userId]);
 
-  const unread = (data ?? []).filter((n) => !n.read_at);
+  const notifications = data ?? [];
+  const unreadCount = notifications.length;
 
   const readMut = useMutation({
     mutationFn: (id: number) => markNotificationRead(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+    onMutate: async (id) => {
+      if (!userId) return;
+      const queryKey = ["notifications", userId] as const;
+      await qc.cancelQueries({ queryKey });
+      const previous = qc.getQueryData<NotificationItem[]>(queryKey);
+      qc.setQueryData<NotificationItem[]>(queryKey, (current) =>
+        (current ?? []).filter((notification) => notification.id !== id),
+      );
+      return { previous, queryKey };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previous) {
+        qc.setQueryData(context.queryKey, context.previous);
+      }
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const readAllMut = useMutation({
@@ -73,7 +89,12 @@ export function NotificationBell() {
       userId
         ? markAllNotificationsRead(userId)
         : Promise.resolve({ updated: 0 }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () => {
+      if (userId) {
+        qc.setQueryData<NotificationItem[]>(["notifications", userId], []);
+      }
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
+    },
   });
 
   const handleClickItem = (n: NotificationItem) => {
@@ -94,15 +115,15 @@ export function NotificationBell() {
         <button
           className={cn(
             "relative grid h-9 w-9 place-items-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-[color:var(--color-fg-muted)] hover:bg-[color:var(--color-surface-muted)] transition-colors",
-            unread.length > 0 && "text-[color:var(--color-fg)]",
+            unreadCount > 0 && "text-[color:var(--color-fg)]",
           )}
           aria-label="Notifications"
           data-demo-id="notification-bell"
         >
           <BellRing className="h-4 w-4" />
-          {unread.length > 0 ? (
+          {unreadCount > 0 ? (
             <span className="absolute -top-1 -right-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[color:var(--color-danger)] px-1 text-[10px] font-semibold text-white">
-              {unread.length > 9 ? "9+" : unread.length}
+              {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           ) : null}
         </button>
@@ -119,7 +140,7 @@ export function NotificationBell() {
             type="button"
             onClick={() => readAllMut.mutate()}
             disabled={
-              !userId || readAllMut.isPending || unread.length === 0
+              !userId || readAllMut.isPending || unreadCount === 0
             }
             className="inline-flex items-center gap-1 text-xs text-[color:var(--color-fg-muted)] hover:text-[color:var(--color-fg)] disabled:opacity-50"
           >
@@ -136,13 +157,13 @@ export function NotificationBell() {
             <div className="px-3 py-6 text-center text-xs text-[color:var(--color-fg-subtle)]">
               Loading...
             </div>
-          ) : !data || data.length === 0 ? (
+          ) : notifications.length === 0 ? (
             <div className="px-3 py-8 text-center text-xs text-[color:var(--color-fg-subtle)]">
-              No notifications yet.
+              No unread notifications.
             </div>
           ) : (
             <ul className="divide-y divide-[color:var(--color-border)]">
-              {data.map((n, index) => (
+              {notifications.map((n, index) => (
                 <li key={n.id}>
                   <button
                     type="button"
