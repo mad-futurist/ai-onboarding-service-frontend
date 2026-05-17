@@ -13,7 +13,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME_ID: ThemeId = "current";
+export const DEFAULT_THEME_ID: ThemeId = "coral-marketing";
 
 export const FONT_IDS = [
   "theme",
