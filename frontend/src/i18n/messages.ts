@@ -52,6 +52,122 @@ export const MESSAGES: Record<Locale, Record<string, string>> = {
     "settings.language.description":
       "Choose English or Ukrainian for the full interface. AI and ReadySet.AI stay unchanged.",
     "settings.language.active": "Active",
+
+    // Mentor dashboard — hero
+    "mentor.dash.hero.eyebrow": "Mentor cockpit",
+    "mentor.dash.hero.descActive":
+      "AI is watching {count} onboardings. {attention} need a look from you.",
+    "mentor.dash.hero.descActiveOne":
+      "AI is watching {count} onboarding. {attention} needs a look from you.",
+    "mentor.dash.hero.descCalm":
+      "AI is watching {count} onboardings. Everything's on track — enjoy the quiet.",
+    "mentor.dash.hero.descCalmOne":
+      "AI is watching {count} onboarding. Everything's on track — enjoy the quiet.",
+    "mentor.dash.hero.descEmpty":
+      "Start by adding your first newcomer — AI will draft a personalized 30/60/90 plan in minutes.",
+    "mentor.dash.hero.actionKnowledge": "Open knowledge base",
+    "mentor.dash.hero.actionAdd": "Add newcomer",
+
+    // Mentor dashboard — AI pulse strip
+    "mentor.dash.pulse.template":
+      "AI flagged {sigCount} signals · drafted {draftCount} answers · saved you {hours}h this week",
+    "mentor.dash.pulse.fallback":
+      "AI is warming up. Add a newcomer to start the feed.",
+
+    // Mentor dashboard — KPI cards
+    "mentor.dash.kpi.active.label": "Active newcomers",
+    "mentor.dash.kpi.active.hintLoaded": "Across {teamCount} teams",
+    "mentor.dash.kpi.active.hintOneTeam": "One team",
+    "mentor.dash.kpi.active.hintEmpty": "No active newcomers yet",
+    "mentor.dash.kpi.attention.label": "Needs your eyes",
+    "mentor.dash.kpi.attention.hintLoaded": "{flagged} flagged · {blocked} blocked",
+    "mentor.dash.kpi.attention.hintEmpty": "Nothing flagged",
+    "mentor.dash.kpi.progress.label": "Average progress",
+    "mentor.dash.kpi.progress.hintLoaded": "Across {active} active plans",
+    "mentor.dash.kpi.progress.hintEmpty": "No plans active yet",
+    "mentor.dash.kpi.timeSaved.label": "Hours AI saved you",
+    "mentor.dash.kpi.timeSaved.hintLoaded": "This week, vs. doing it manually",
+    "mentor.dash.kpi.timeSaved.hintEmpty": "Add a newcomer to start counting",
+
+    // Mentor dashboard — Today's focus
+    "mentor.dash.today.needsTitle": "What needs you today",
+    "mentor.dash.today.needsEmpty":
+      "All clear. The AI didn't find anything that needs you right now — go shape your week.",
+    "mentor.dash.today.handledTitle": "What AI handled overnight",
+    "mentor.dash.today.handledEmpty":
+      "AI hasn't touched anything yet — give it a few hours after onboarding starts.",
+    "mentor.dash.today.rowBlocked":
+      "{count} blocked tasks — a 15-min call usually unblocks the week",
+    "mentor.dash.today.rowSignal": "AI noticed: {signalTitle}",
+    "mentor.dash.today.rowSlow":
+      "Started {days} days ago, still under 25% — worth a check-in",
+    "mentor.dash.today.handledDrafted": "Drafted onboarding reply for {firstName}",
+    "mentor.dash.today.handledSummarized": "Summarized week 1 progress for {firstName}",
+    "mentor.dash.today.handledResolved": "Auto-resolved low-severity signal for {firstName}",
+    "mentor.dash.today.handledLink": "View",
+
+    // Mentor dashboard — Newcomers section
+    "mentor.dash.ncs.heading": "Your newcomers",
+    "mentor.dash.ncs.add": "Add newcomer",
+    "mentor.dash.ncs.filterAll": "All ({n})",
+    "mentor.dash.ncs.filterEyes": "Needs eyes ({n})",
+    "mentor.dash.ncs.filterOk": "On track ({n})",
+    "mentor.dash.ncs.filterEmptyEyes":
+      "Nothing flagged. Switch back to All to see your cohort.",
+    "mentor.dash.ncs.filterEmptyOk":
+      "No one's fully on track yet — give it a day.",
+    "mentor.dash.ncs.emptyTitle": "No newcomers yet",
+    "mentor.dash.ncs.emptyDesc":
+      "Add your first newcomer and the AI will draft a personalized 30/60/90 plan in minutes.",
+    "mentor.dash.ncs.cardSignal": "What AI noticed",
+
+    // Mentor dashboard — AI signals rail
+    "mentor.dash.sig.heading": "AI signals",
+    "mentor.dash.sig.lastScan": "Last scan {relativeTime}.",
+    "mentor.dash.sig.openCenter": "Open signals center",
+    "mentor.dash.sig.openShort": "Open",
+    "mentor.dash.sig.emptyTitle": "No signals yet",
+    "mentor.dash.sig.emptyDesc":
+      "AI is scanning engagement, blocked tasks and Q&A patterns. Signals appear here the moment something looks off.",
+
+    // Mentor dashboard — Cohort heartbeat
+    "mentor.dash.cohort.title": "Cohort heartbeat",
+    "mentor.dash.cohort.subhead":
+      "Each column is a newcomer. Taller bars mean more shipped. Colored caps mean AI noticed something.",
+    "mentor.dash.cohort.empty":
+      "No cohort yet — your heartbeat shows up once you have an active newcomer.",
+    "mentor.dash.cohort.tooltip": "{firstName} · {percent}% complete",
+    "mentor.dash.cohort.tooltipSignal": "AI noticed: {signalTitle}",
+    "mentor.dash.cohort.view": "View",
+
+    // Mentor dashboard — Mentor moves
+    "mentor.dash.moves.title": "Mentor moves",
+    "mentor.dash.moves.subhead": "Three things you could do in one click right now.",
+    "mentor.dash.moves.checkIn.title": "Check in with {firstName}",
+    "mentor.dash.moves.checkIn.body":
+      "They have {n} blocked tasks. A 15-min call usually unblocks the week.",
+    "mentor.dash.moves.checkIn.cta": "Schedule 15 min",
+    "mentor.dash.moves.adjust.title": "Adjust {firstName}'s plan",
+    "mentor.dash.moves.adjust.body":
+      "AI noticed {signalTitle}. Want to reshape the next two weeks around it?",
+    "mentor.dash.moves.adjust.cta": "Open plan generator",
+    "mentor.dash.moves.course.title": "Turn \"{topic}\" into a course",
+    "mentor.dash.moves.course.body":
+      "Seen {count}× across newcomers. AI can draft a short course you can ship today.",
+    "mentor.dash.moves.course.cta": "Draft course",
+    "mentor.dash.moves.empty.title": "Add a newcomer to unlock moves",
+    "mentor.dash.moves.empty.body":
+      "Once someone's onboarding, AI will surface three one-click moves you can take.",
+    "mentor.dash.moves.empty.cta": "Add newcomer",
+
+    // Mentor dashboard — Week rollup
+    "mentor.dash.week.title": "This week in numbers",
+    "mentor.dash.week.subhead": "What the AI and you shipped together since Monday.",
+    "mentor.dash.week.tasks": "tasks shipped",
+    "mentor.dash.week.signals": "signals resolved",
+    "mentor.dash.week.drafts": "AI drafts you approved",
+    "mentor.dash.week.hours": "mentor work absorbed",
+    "mentor.dash.week.celebrate": "Mark as done 🎉",
   },
   uk: {
     "assessment.cta.eyebrow": "Калібрування першого дня",
@@ -99,6 +215,122 @@ export const MESSAGES: Record<Locale, Record<string, string>> = {
     "settings.language.description":
       "Виберіть англійську або українську для всього інтерфейсу. AI та ReadySet.AI залишаються без змін.",
     "settings.language.active": "Активна",
+
+    // Mentor dashboard — hero
+    "mentor.dash.hero.eyebrow": "Кабіна ментора",
+    "mentor.dash.hero.descActive":
+      "AI наглядає за {count} онбордингами. {attention} потребують вашого ока.",
+    "mentor.dash.hero.descActiveOne":
+      "AI наглядає за {count} онбордингом. {attention} потребує вашого ока.",
+    "mentor.dash.hero.descCalm":
+      "AI наглядає за {count} онбордингами. Усе за планом — насолоджуйтесь тишею.",
+    "mentor.dash.hero.descCalmOne":
+      "AI наглядає за {count} онбордингом. Усе за планом — насолоджуйтесь тишею.",
+    "mentor.dash.hero.descEmpty":
+      "Почніть із першого новачка — AI накидає персональний план 30/60/90 за хвилини.",
+    "mentor.dash.hero.actionKnowledge": "База знань",
+    "mentor.dash.hero.actionAdd": "Додати новачка",
+
+    // Mentor dashboard — AI pulse strip
+    "mentor.dash.pulse.template":
+      "AI позначив {sigCount} сигналів · підготував {draftCount} відповідей · заощадив вам {hours}г цього тижня",
+    "mentor.dash.pulse.fallback":
+      "AI прогрівається. Додайте новачка, щоб запустити стрічку.",
+
+    // Mentor dashboard — KPI cards
+    "mentor.dash.kpi.active.label": "Активні новачки",
+    "mentor.dash.kpi.active.hintLoaded": "У {teamCount} командах",
+    "mentor.dash.kpi.active.hintOneTeam": "Одна команда",
+    "mentor.dash.kpi.active.hintEmpty": "Поки немає активних новачків",
+    "mentor.dash.kpi.attention.label": "Потребує вашого ока",
+    "mentor.dash.kpi.attention.hintLoaded": "{flagged} позначено · {blocked} заблоковано",
+    "mentor.dash.kpi.attention.hintEmpty": "Нічого не позначено",
+    "mentor.dash.kpi.progress.label": "Середній прогрес",
+    "mentor.dash.kpi.progress.hintLoaded": "У {active} активних планах",
+    "mentor.dash.kpi.progress.hintEmpty": "Поки немає активних планів",
+    "mentor.dash.kpi.timeSaved.label": "Годин, які AI заощадив",
+    "mentor.dash.kpi.timeSaved.hintLoaded": "Цього тижня, проти ручної роботи",
+    "mentor.dash.kpi.timeSaved.hintEmpty": "Додайте новачка, щоб почати рахувати",
+
+    // Mentor dashboard — Today's focus
+    "mentor.dash.today.needsTitle": "Що потребує вас сьогодні",
+    "mentor.dash.today.needsEmpty":
+      "Усе чисто. AI не знайшов нічого термінового — використайте час, щоб спланувати тиждень.",
+    "mentor.dash.today.handledTitle": "Що AI зробив за ніч",
+    "mentor.dash.today.handledEmpty":
+      "AI ще нічого не торкався — дайте кілька годин після старту онбордингу.",
+    "mentor.dash.today.rowBlocked":
+      "{count} заблокованих завдань — 15-хвилинний дзвінок зазвичай розблоковує тиждень",
+    "mentor.dash.today.rowSignal": "AI помітив: {signalTitle}",
+    "mentor.dash.today.rowSlow":
+      "Стартували {days} днів тому, прогрес досі менше 25% — варто звіритись",
+    "mentor.dash.today.handledDrafted": "Накидав чернетку відповіді для {firstName}",
+    "mentor.dash.today.handledSummarized": "Підсумував прогрес тижня 1 для {firstName}",
+    "mentor.dash.today.handledResolved": "Автоматично закрив легкий сигнал для {firstName}",
+    "mentor.dash.today.handledLink": "Відкрити",
+
+    // Mentor dashboard — Newcomers section
+    "mentor.dash.ncs.heading": "Ваші новачки",
+    "mentor.dash.ncs.add": "Додати новачка",
+    "mentor.dash.ncs.filterAll": "Усі ({n})",
+    "mentor.dash.ncs.filterEyes": "Потребує ока ({n})",
+    "mentor.dash.ncs.filterOk": "За планом ({n})",
+    "mentor.dash.ncs.filterEmptyEyes":
+      "Нічого не позначено. Поверніться до «Усі», щоб побачити когорту.",
+    "mentor.dash.ncs.filterEmptyOk":
+      "Поки ніхто не йде ідеально за планом — дайте день.",
+    "mentor.dash.ncs.emptyTitle": "Поки немає новачків",
+    "mentor.dash.ncs.emptyDesc":
+      "Додайте першого новачка — AI накидає персональний план 30/60/90 за хвилини.",
+    "mentor.dash.ncs.cardSignal": "Що помітив AI",
+
+    // Mentor dashboard — AI signals rail
+    "mentor.dash.sig.heading": "AI-сигнали",
+    "mentor.dash.sig.lastScan": "Останнє сканування {relativeTime}.",
+    "mentor.dash.sig.openCenter": "Центр сигналів",
+    "mentor.dash.sig.openShort": "Відкрити",
+    "mentor.dash.sig.emptyTitle": "Поки немає сигналів",
+    "mentor.dash.sig.emptyDesc":
+      "AI сканує активність, заблоковані завдання та питання. Сигнали з'являться, щойно щось піде не так.",
+
+    // Mentor dashboard — Cohort heartbeat
+    "mentor.dash.cohort.title": "Пульс когорти",
+    "mentor.dash.cohort.subhead":
+      "Кожна колонка — новачок. Вищі стовпчики означають більше зробленого. Кольорові «шапки» — AI щось помітив.",
+    "mentor.dash.cohort.empty":
+      "Поки немає когорти — пульс з'явиться, щойно матимете активного новачка.",
+    "mentor.dash.cohort.tooltip": "{firstName} · {percent}% готово",
+    "mentor.dash.cohort.tooltipSignal": "AI помітив: {signalTitle}",
+    "mentor.dash.cohort.view": "Відкрити",
+
+    // Mentor dashboard — Mentor moves
+    "mentor.dash.moves.title": "Кроки ментора",
+    "mentor.dash.moves.subhead": "Три речі, які ви можете зробити в один клік просто зараз.",
+    "mentor.dash.moves.checkIn.title": "Звіртеся з {firstName}",
+    "mentor.dash.moves.checkIn.body":
+      "У них {n} заблокованих завдань. 15-хвилинний дзвінок зазвичай розблоковує тиждень.",
+    "mentor.dash.moves.checkIn.cta": "Запланувати 15 хв",
+    "mentor.dash.moves.adjust.title": "Скоригуйте план {firstName}",
+    "mentor.dash.moves.adjust.body":
+      "AI помітив {signalTitle}. Хочете перебудувати наступні два тижні навколо цього?",
+    "mentor.dash.moves.adjust.cta": "Відкрити генератор плану",
+    "mentor.dash.moves.course.title": "Перетворіть «{topic}» на курс",
+    "mentor.dash.moves.course.body":
+      "Зустрічалося {count}× у різних новачків. AI може накидати короткий курс, який ви випустите сьогодні.",
+    "mentor.dash.moves.course.cta": "Накидати курс",
+    "mentor.dash.moves.empty.title": "Додайте новачка, щоб розблокувати кроки",
+    "mentor.dash.moves.empty.body":
+      "Щойно стартує онбординг, AI підкаже три кроки в один клік.",
+    "mentor.dash.moves.empty.cta": "Додати новачка",
+
+    // Mentor dashboard — Week rollup
+    "mentor.dash.week.title": "Цей тиждень у цифрах",
+    "mentor.dash.week.subhead": "Що ви з AI зробили разом від понеділка.",
+    "mentor.dash.week.tasks": "завдань завершено",
+    "mentor.dash.week.signals": "сигналів закрито",
+    "mentor.dash.week.drafts": "AI-чернеток ви схвалили",
+    "mentor.dash.week.hours": "роботи ментора AI забрав на себе",
+    "mentor.dash.week.celebrate": "Готово 🎉",
   },
 };
 
@@ -131,12 +363,8 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "AI ready": "AI готовий",
   "Search newcomers, signals, docs...": "Шукати новачків, сигнали, документи...",
   "Search your plan, docs, people...": "Шукати у плані, документах, людях...",
-  "Search newcomers, signals, docsâ€¦": "Шукати новачків, сигнали, документи...",
-  "Search your plan, docs, peopleâ€¦": "Шукати у плані, документах, людях...",
   "AI is watching 4 onboardings and will surface signals as they appear.":
     "AI відстежує 4 онбординги й покаже сигнали, щойно вони з'являться.",
-  "Stuck on something? Ask AI â€” it knows your team's docs.":
-    "Застрягли на чомусь? Запитайте AI - він знає документи вашої команди.",
   "Stuck on something? Ask AI - it knows your team's docs.":
     "Застрягли на чомусь? Запитайте AI - він знає документи вашої команди.",
 
@@ -166,7 +394,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Refresh demo data": "Оновити демо-дані",
   "Reset database": "Скинути базу даних",
   "Resetting...": "Скидання...",
-  "Resettingâ€¦": "Скидання...",
   "Demo data reset": "Демо-дані скинуто",
   "Reset failed": "Не вдалося скинути",
   "Recreated 1 mentor, 1 newcomer, 4 documents, a plan, tasks and blockers.":
@@ -177,8 +404,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Current (default)": "Поточна (типова)",
   "The original app palette - warm stone surfaces with orange-500 accent.":
     "Оригінальна палітра програми - теплі кам'яні поверхні з акцентом orange-500.",
-  "The original app palette â€” warm stone surfaces with orange-500 accent.":
-    "Оригінальна палітра програми - теплі кам'яні поверхні з акцентом orange-500.",
   "Sunset Orange": "Помаранчевий захід",
   "Warm white workspace with a vibrant blaze-orange accent inspired by the brand HTML.":
     "Теплий білий робочий простір із яскравим помаранчевим акцентом, натхненним HTML бренду.",
@@ -188,17 +413,11 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Cyber Tech": "Кібер-технологічна",
   "Deep navy surfaces with electric cyan and violet - for tech-forward sales.":
     "Глибокі темно-сині поверхні з електричним ціаном і фіолетовим - для технологічних продажів.",
-  "Deep navy surfaces with electric cyan and violet â€” for tech-forward sales.":
-    "Глибокі темно-сині поверхні з електричним ціаном і фіолетовим - для технологічних продажів.",
   "Velvet Premium": "Оксамитова преміальна",
   "Deep velvet purple with a luxurious gold accent - premium feel for top accounts.":
     "Глибокий оксамитовий фіолетовий із розкішним золотим акцентом - преміальне відчуття для ключових клієнтів.",
-  "Deep velvet purple with a luxurious gold accent â€” premium feel for top accounts.":
-    "Глибокий оксамитовий фіолетовий із розкішним золотим акцентом - преміальне відчуття для ключових клієнтів.",
   "Coral Marketing": "Кораловий маркетинг",
   "Bright coral and teal energy - onboarding marketing storytelling for new reps.":
-    "Яскрава коралова й бірюзова енергія - маркетингова історія онбордингу для нових представників.",
-  "Bright coral and teal energy â€” onboarding marketing storytelling for new reps.":
     "Яскрава коралова й бірюзова енергія - маркетингова історія онбордингу для нових представників.",
   "Theme default": "Типовий для теми",
   "Use the font designed for the selected palette.": "Використати шрифт, створений для вибраної палітри.",
@@ -268,14 +487,11 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Generate (fast)": "Згенерувати швидко",
   "Generate live": "Генерувати наживо",
   "Generating...": "Генерація...",
-  "Generatingâ€¦": "Генерація...",
   "Streaming...": "Потокова генерація...",
-  "Streamingâ€¦": "Потокова генерація...",
   "Back": "Назад",
   "Next": "Далі",
   "Submit": "Надіслати",
   "Submitting...": "Надсилання...",
-  "Submittingâ€¦": "Надсилання...",
   "All done!": "Готово!",
   "Back to dashboard": "Назад до панелі",
 
@@ -306,7 +522,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Regenerate": "Згенерувати повторно",
   "Regenerate with AI": "Згенерувати повторно з AI",
   "Regenerating...": "Повторна генерація...",
-  "Regeneratingâ€¦": "Повторна генерація...",
   "Generate": "Згенерувати",
   "Generate plan": "Згенерувати план",
   "Generate with AI": "Згенерувати з AI",
@@ -374,8 +589,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
     "Завдань немає. Згенеруйте план повторно, щоб створити структуру завдань.",
   "No tasks scheduled yet - your mentor is still preparing the journey.":
     "Завдань ще не заплановано - ваш ментор ще готує шлях.",
-  "No tasks scheduled yet â€” your mentor is still preparing the journey.":
-    "Завдань ще не заплановано - ваш ментор ще готує шлях.",
   "All tasks": "Усі завдання",
   "Add task": "Додати завдання",
   "Add manual task": "Додати завдання вручну",
@@ -400,7 +613,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Weeks": "Тижні",
   "No weeks yet": "Тижнів ще немає",
   "Loading weeks...": "Завантаження тижнів...",
-  "Loading weeksâ€¦": "Завантаження тижнів...",
   "Days": "Дні",
 
   "Course": "Курс",
@@ -418,8 +630,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "No lessons yet.": "Уроків ще немає.",
   "No lessons yet. Add one below.": "Уроків ще немає. Додайте один нижче.",
   "No body content yet - your mentor is still drafting this lesson.":
-    "Вмісту ще немає - ваш ментор ще готує цей урок.",
-  "No body content yet â€” your mentor is still drafting this lesson.":
     "Вмісту ще немає - ваш ментор ще готує цей урок.",
   "Learn at your own pace": "Навчайтеся у своєму темпі",
   "Pick up where you left off": "Продовжити з місця зупинки",
@@ -503,7 +713,6 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "About this doc": "Про цей документ",
   "Mind map": "Мапа думок",
   "Building your mind map...": "Будуємо мапу думок...",
-  "Building your mind mapâ€¦": "Будуємо мапу думок...",
   "Central topic:": "Центральна тема:",
   "Detected topics": "Виявлені теми",
   "Chat": "Чат",
@@ -522,11 +731,8 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Show full AI rationale": "Показати повне обґрунтування AI",
 
   "Loading...": "Завантаження...",
-  "Loadingâ€¦": "Завантаження...",
   "Loading your workspace...": "Завантаження вашого простору...",
-  "Loading your workspaceâ€¦": "Завантаження вашого простору...",
   "Spinning up your demo workspace...": "Запускаємо демо-простір...",
-  "Spinning up your demo workspaceâ€¦": "Запускаємо демо-простір...",
   "Connecting to the AI onboarding service and seeding your demo data.":
     "Підключаємося до сервісу AI-онбордингу й створюємо демо-дані.",
   "Cannot reach the backend": "Не вдається підключитися до бекенду",
@@ -536,11 +742,8 @@ export const UI_TRANSLATIONS_UK: Record<string, string> = {
   "Ready to generate?": "Готові генерувати?",
   "Nothing to preview yet - write something in Edit mode.":
     "Поки немає що переглядати - напишіть щось у режимі редагування.",
-  "Nothing to preview yet â€” write something in Edit mode.":
-    "Поки немає що переглядати - напишіть щось у режимі редагування.",
   "No answer.": "Немає відповіді.",
   "No note yet - waiting on": "Нотатки ще немає - очікуємо",
-  "No note yet â€” waiting on": "Нотатки ще немає - очікуємо",
   "No description yet.": "Опису ще немає.",
   "No examples yet.": "Прикладів ще немає.",
   "No links yet.": "Посилань ще немає.",

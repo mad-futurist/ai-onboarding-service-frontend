@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BookOpen, FileText } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -10,16 +11,12 @@ interface SourceCitationProps {
   className?: string;
 }
 
+const baseClass =
+  "group flex w-full items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-left transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]";
+
 export function SourceCitation({ source, index, onClick, className }: SourceCitationProps) {
-  const Comp = onClick ? "button" : "div";
-  return (
-    <Comp
-      onClick={onClick}
-      className={cn(
-        "group flex w-full items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-left transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]",
-        className,
-      )}
-    >
+  const body = (
+    <>
       <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)] text-xs font-semibold">
         {typeof index === "number" ? index + 1 : <FileText className="h-4 w-4" />}
       </div>
@@ -40,6 +37,24 @@ export function SourceCitation({ source, index, onClick, className }: SourceCita
           ) : null}
         </div>
       </div>
-    </Comp>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cn(baseClass, className)}>
+        {body}
+      </button>
+    );
+  }
+
+  if (source.document_id != null) {
+    return (
+      <Link href={`/newcomer/knowledge/${source.document_id}`} className={cn(baseClass, className)}>
+        {body}
+      </Link>
+    );
+  }
+
+  return <div className={cn(baseClass, className)}>{body}</div>;
 }

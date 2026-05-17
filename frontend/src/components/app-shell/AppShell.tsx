@@ -8,7 +8,7 @@ import { useDemo } from "@/providers/demo-provider";
 import { Sparkles } from "lucide-react";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
-const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
+const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? backendUrl;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { ready, seeding, error } = useDemo();
@@ -63,11 +63,7 @@ function BackendError({ message }: { message: string }) {
           <code className="rounded bg-[color:var(--color-surface-muted)] px-1.5 py-0.5 font-mono text-[11px]">
             {apiBase}/*
           </code>
-          ; when using{" "}
-          <code className="rounded bg-[color:var(--color-surface-muted)] px-1.5 py-0.5 font-mono text-[11px]">/api</code>,
-          Next proxies it to the backend without adding an extra{" "}
-          <code className="rounded bg-[color:var(--color-surface-muted)] px-1.5 py-0.5 font-mono text-[11px]">/api</code>{" "}
-          prefix.
+          . Make sure FastAPI allows this frontend origin in CORS.
         </p>
       </div>
     </div>

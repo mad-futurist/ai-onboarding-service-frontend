@@ -7,20 +7,14 @@ import { toast } from "sonner";
 import {
   ArrowRight,
   CheckCircle2,
-  FileDiff,
-  GitBranchPlus,
   Loader2,
-  Pencil,
-  Plus,
   Sparkles,
-  Trash2,
   Wand2,
   X,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { toApiError } from "@/lib/api";
 import { humanizeSignalType, inferSignalTone } from "@/lib/constants";
 import { fmtDate } from "@/lib/format";
@@ -28,8 +22,11 @@ import {
   applyAdjustment,
   approveAdjustment,
   generateAdjustmentForPeriod,
+  generateAdjustmentFromSignal,
+  updateAdjustmentChanges,
 } from "@/services/plan-adjustments";
 import { listSignalsForNewcomer } from "@/services/signals";
+import { ChangeCard } from "@/components/mentor/plan-generator/ChangeCard";
 import type {
   AISignal,
   ID,
@@ -44,80 +41,118 @@ interface PeriodAdjustmentSheetProps {
   newcomerId: ID | null;
   newcomerName?: string;
   period: JourneyPeriod | null;
+  /** When set, the sheet auto-generates a draft seeded from this signal instead of from period signals. */
+  seedSignalId?: ID | null;
+  /** Optional context to display in the header rail. */
+  seedSignalContext?: AISignal | null;
+  /** When provided, mentor can defer add_task / replace_task changes to this next period's plan_id. */
+  nextPeriodPlanId?: ID | null;
+  /** Optional label for the next period — surfaced in the defer tooltip. */
+  nextPeriodLabel?: string | null;
 }
 
-const ACTION_META: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; tone: string }> = {
-  add_task: { label: "Add task", icon: Plus, tone: "text-emerald-700 bg-emerald-500/10" },
-  add: { label: "Add task", icon: Plus, tone: "text-emerald-700 bg-emerald-500/10" },
-  update_task_field: { label: "Modify task", icon: Pencil, tone: "text-sky-700 bg-sky-500/10" },
-  replace_task: { label: "Rewrite task", icon: FileDiff, tone: "text-violet-700 bg-violet-500/10" },
-  delete_task: { label: "Remove task", icon: Trash2, tone: "text-rose-700 bg-rose-500/10" },
-  add_period: { label: "Add period", icon: GitBranchPlus, tone: "text-orange-700 bg-orange-500/10" },
-  adjust_remaining_period: { label: "Adjust remaining", icon: Wand2, tone: "text-amber-700 bg-amber-500/10" },
+type CurationEntry = {
+  accepted: boolean;
+  editing: boolean;
+  overrides: Partial<PlanAdjustmentSuggestedChange>;
+  deferredToPlanId?: ID;
 };
 
-export function PeriodAdjustmentSheet({
-  open,
+export function PeriodAdjustmentSheet(props: PeriodAdjustmentSheetProps) {
+  if (!props.open || !props.period) return null;
+  return <PeriodAdjustmentSheetInner {...props} period={props.period} />;
+}
+
+interface PeriodAdjustmentSheetInnerProps extends Omit<PeriodAdjustmentSheetProps, "period"> {
+  period: JourneyPeriod;
+}
+
+function PeriodAdjustmentSheetInner({
   onClose,
   newcomerId,
   newcomerName,
   period,
-}: PeriodAdjustmentSheetProps) {
+  seedSignalId,
+  seedSignalContext,
+  nextPeriodPlanId,
+  nextPeriodLabel,
+}: PeriodAdjustmentSheetInnerProps) {
   const qc = useQueryClient();
   const [draft, setDraft] = React.useState<PlanAdjustment | null>(null);
-  const planId = period?.plan_id ?? null;
-
-  React.useEffect(() => {
-    if (!open) setDraft(null);
-  }, [open]);
+  const [curation, setCuration] = React.useState<Record<string, CurationEntry>>({});
+  const planId = period.plan_id;
 
   const signalsQ = useQuery({
     queryKey: ["signals", "period-adjustment", newcomerId],
     queryFn: () => listSignalsForNewcomer(newcomerId!, "open"),
-    enabled: open && newcomerId != null,
+    enabled: newcomerId != null,
   });
 
   const generateMut = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<PlanAdjustment> => {
+      if (seedSignalId != null) {
+        return generateAdjustmentFromSignal(seedSignalId);
+      }
       if (!planId) throw new Error("No generated period to adjust");
       return generateAdjustmentForPeriod(planId);
     },
     onSuccess: (resp) => {
-      setDraft(resp);
+      const seeded = seedChangeIds(resp);
+      setDraft(seeded);
+      setCuration(initCuration(seeded.suggested_changes ?? []));
       toast.success("Adjustment draft ready", {
-        description: `${resp.suggested_changes?.length ?? 0} proposed change${(resp.suggested_changes?.length ?? 0) === 1 ? "" : "s"}.`,
+        description: `${seeded.suggested_changes?.length ?? 0} proposed change${(seeded.suggested_changes?.length ?? 0) === 1 ? "" : "s"}.`,
       });
       qc.invalidateQueries({ queryKey: ["plan-adjustments"] });
     },
     onError: (err) => toast.error("Draft unavailable", { description: toApiError(err).message }),
   });
 
+  // Auto-generate once on mount when seeded by a signal — bypass the manual CTA.
+  // Component remounts on each open thanks to the outer guard, so a mount-time effect is correct.
+  const generateMutate = generateMut.mutate;
+  React.useEffect(() => {
+    if (seedSignalId == null) return;
+    generateMutate();
+  }, [seedSignalId, generateMutate]);
+
   const applyMut = useMutation({
     mutationFn: async () => {
       if (!draft) throw new Error("No draft to apply");
+      const curated = buildCuratedChanges(draft.suggested_changes ?? [], curation);
+      if (curated.length === 0) {
+        throw new Error("Pick at least one change to apply");
+      }
+      // PATCH the draft with the curated/edited subset so apply only ever runs the kept changes.
+      await updateAdjustmentChanges(draft.id, curated);
       if (draft.status === "pending") {
         await approveAdjustment(draft.id);
       }
       return applyAdjustment(draft.id);
     },
     onSuccess: async () => {
+      const counts = summarizeCuration(curation);
       toast.success("Period adjusted", {
-        description: "The draft changes were applied to unfinished tasks.",
+        description: `${counts.accepted} change${counts.accepted === 1 ? "" : "s"} applied${
+          counts.deferred ? ` · ${counts.deferred} deferred` : ""
+        }.`,
       });
       await Promise.all([
         qc.invalidateQueries({ queryKey: ["journey", newcomerId] }),
         qc.invalidateQueries({ queryKey: ["plan", planId] }),
         qc.invalidateQueries({ queryKey: ["onboarding-plans", newcomerId] }),
+        qc.invalidateQueries({ queryKey: ["signals", newcomerId] }),
       ]);
       onClose();
     },
     onError: (err) => toast.error("Could not apply draft", { description: toApiError(err).message }),
   });
 
-  if (!open || !period) return null;
-
   const changes = draft?.suggested_changes ?? [];
   const signals = signalsQ.data ?? [];
+  const counts = summarizeCuration(curation);
+  const railSignals = seedSignalContext ? [seedSignalContext, ...signals.filter((s) => s.id !== seedSignalContext.id)] : signals;
+  const seedingFromSignal = seedSignalId != null;
 
   return (
     <div className="fixed inset-0 z-50">
@@ -132,13 +167,16 @@ export function PeriodAdjustmentSheet({
               </span>
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary)]">
-                  Signal-aware adjustment
+                  {seedingFromSignal ? "Signal-seeded adjustment" : "Signal-aware adjustment"}
                 </div>
                 <h2 className="mt-0.5 text-lg font-semibold tracking-tight text-[color:var(--color-fg)]">
                   Adjust {period.label}
                 </h2>
                 <p className="mt-1 max-w-2xl text-sm text-[color:var(--color-fg-muted)]">
-                  Draft changes from all open signals for {newcomerName ?? "this newcomer"}. Done tasks stay untouched.
+                  {seedingFromSignal && seedSignalContext
+                    ? `Steered by "${seedSignalContext.title}". `
+                    : ""}
+                  {newcomerName ? `${newcomerName} — d` : "D"}one tasks stay untouched; only unfinished work changes.
                 </p>
               </div>
             </div>
@@ -162,10 +200,29 @@ export function PeriodAdjustmentSheet({
           </div>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-4">
-            <Metric label="Window" value={period.start_date && period.end_date ? `${fmtDate(period.start_date)} - ${fmtDate(period.end_date)}` : `D${period.start_day} - D${period.end_day}`} />
+            <Metric
+              label="Window"
+              value={
+                period.start_date && period.end_date
+                  ? `${fmtDate(period.start_date)} - ${fmtDate(period.end_date)}`
+                  : `D${period.start_day} - D${period.end_day}`
+              }
+            />
             <Metric label="Progress" value={`${period.tasks_done}/${period.tasks_total} done`} />
-            <Metric label="Signals" value={signalsQ.isLoading ? "Loading" : `${signals.length} open`} />
-            <Metric label="Draft" value={draft ? `${changes.length} changes` : "Not generated"} />
+            <Metric
+              label="Signals"
+              value={signalsQ.isLoading ? "Loading" : `${signals.length} open`}
+            />
+            <Metric
+              label="Draft"
+              value={
+                draft
+                  ? `${counts.accepted}/${changes.length} selected`
+                  : seedingFromSignal && generateMut.isPending
+                    ? "Generating"
+                    : "Not generated"
+              }
+            />
           </div>
         </header>
 
@@ -173,15 +230,23 @@ export function PeriodAdjustmentSheet({
           <aside className="border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)] p-5 lg:overflow-y-auto lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between gap-2">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
-                Signals considered
+                {seedingFromSignal ? "Steering signal" : "Signals considered"}
               </div>
-              <Badge tone="neutral" size="sm">{signals.length}</Badge>
+              <Badge tone="neutral" size="sm">
+                {railSignals.length}
+              </Badge>
             </div>
             <div className="mt-3 space-y-2">
-              {signalsQ.isLoading ? (
+              {signalsQ.isLoading && railSignals.length === 0 ? (
                 <SignalSkeleton />
-              ) : signals.length ? (
-                signals.map((signal) => <SignalChip key={signal.id} signal={signal} />)
+              ) : railSignals.length ? (
+                railSignals.map((signal) => (
+                  <SignalChip
+                    key={signal.id}
+                    signal={signal}
+                    highlighted={seedSignalContext?.id === signal.id}
+                  />
+                ))
               ) : (
                 <div className="rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-sm text-[color:var(--color-fg-muted)]">
                   No open signal yet. Run signal detection from the Signals screen, then come back here.
@@ -195,24 +260,34 @@ export function PeriodAdjustmentSheet({
               <div className="grid min-h-[420px] place-items-center">
                 <div className="max-w-xl text-center">
                   <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl ai-gradient text-white shadow-[var(--shadow-ai)]">
-                    <Sparkles className="h-6 w-6" />
+                    {generateMut.isPending ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-6 w-6" />
+                    )}
                   </span>
                   <h3 className="mt-4 text-xl font-semibold text-[color:var(--color-fg)]">
-                    Generate an adjustment draft
+                    {seedingFromSignal
+                      ? "Drafting changes from the signal…"
+                      : "Generate an adjustment draft"}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
-                    The draft can add tasks, modify unfinished tasks, remove redundant tasks, add a follow-up period, or rebalance the remaining period.
+                    {seedingFromSignal
+                      ? "The AI is proposing targeted changes — add, modify, rewrite, remove, or carry tasks forward."
+                      : "The draft can add tasks, modify unfinished tasks, remove redundant tasks, add a follow-up period, or rebalance the remaining period."}
                   </p>
-                  <Button
-                    variant="ai"
-                    size="lg"
-                    className="mt-5 shadow-[var(--shadow-ai)]"
-                    disabled={!planId || !signals.length || generateMut.isPending || signalsQ.isLoading}
-                    onClick={() => generateMut.mutate()}
-                  >
-                    {generateMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                    {generateMut.isPending ? "Generating draft..." : "Generate from signals"}
-                  </Button>
+                  {!seedingFromSignal ? (
+                    <Button
+                      variant="ai"
+                      size="lg"
+                      className="mt-5 shadow-[var(--shadow-ai)]"
+                      disabled={!planId || !signals.length || generateMut.isPending || signalsQ.isLoading}
+                      onClick={() => generateMut.mutate()}
+                    >
+                      {generateMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                      {generateMut.isPending ? "Generating draft..." : "Generate from signals"}
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             ) : (
@@ -223,7 +298,9 @@ export function PeriodAdjustmentSheet({
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-primary)]">
                         Draft proposal
                       </div>
-                      <h3 className="mt-0.5 text-base font-semibold text-[color:var(--color-fg)]">{draft.title}</h3>
+                      <h3 className="mt-0.5 text-base font-semibold text-[color:var(--color-fg)]">
+                        {draft.title}
+                      </h3>
                     </div>
                     <Badge tone={draft.status === "applied" ? "success" : "ai"} size="lg">
                       {draft.status}
@@ -237,9 +314,59 @@ export function PeriodAdjustmentSheet({
                 </div>
 
                 <div className="grid gap-3">
-                  {changes.map((change, idx) => (
-                    <ChangeCard key={`${change.action}-${change.task_id ?? idx}-${idx}`} change={change} index={idx} />
-                  ))}
+                  {changes.map((change, idx) => {
+                    const key = changeKey(change, idx);
+                    const entry = curation[key] ?? defaultEntry();
+                    return (
+                      <ChangeCard
+                        key={key}
+                        change={change}
+                        index={idx}
+                        accepted={entry.accepted}
+                        editing={entry.editing}
+                        overrides={entry.overrides}
+                        deferredToPlanId={entry.deferredToPlanId}
+                        nextPeriodLabel={nextPeriodLabel}
+                        nextPeriodPlanId={nextPeriodPlanId}
+                        onToggleAccept={(accepted) =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: { ...defaultEntry(), ...c[key], accepted },
+                          }))
+                        }
+                        onToggleEdit={(editing) =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: { ...defaultEntry(), ...c[key], editing },
+                          }))
+                        }
+                        onChangeOverrides={(overrides) =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: { ...defaultEntry(), ...c[key], overrides },
+                          }))
+                        }
+                        onDefer={(planId) =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: { ...defaultEntry(), ...c[key], deferredToPlanId: planId as ID },
+                          }))
+                        }
+                        onUndefer={() =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: { ...defaultEntry(), ...c[key], deferredToPlanId: undefined },
+                          }))
+                        }
+                        onReset={() =>
+                          setCuration((c) => ({
+                            ...c,
+                            [key]: defaultEntry(),
+                          }))
+                        }
+                      />
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -248,20 +375,45 @@ export function PeriodAdjustmentSheet({
 
         <footer className="border-t border-[color:var(--color-border)] bg-white px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-[color:var(--color-fg-muted)]">
-              Applies only to unfinished tasks. Done work stays as evidence of progress.
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs text-[color:var(--color-fg-muted)]">
+                Applies only to unfinished tasks. Done work stays as evidence of progress.
+              </p>
+              {draft ? (
+                <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-[color:var(--color-fg-subtle)]">
+                  <Badge tone="neutral" size="sm">
+                    {counts.accepted} selected
+                  </Badge>
+                  {counts.edited > 0 ? (
+                    <Badge tone="ai" size="sm">
+                      {counts.edited} edited
+                    </Badge>
+                  ) : null}
+                  {counts.deferred > 0 ? (
+                    <Badge tone="warning" size="sm">
+                      {counts.deferred} deferred
+                    </Badge>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={onClose}>Cancel</Button>
+              <Button variant="ghost" onClick={onClose}>
+                Cancel
+              </Button>
               {draft ? (
                 <Button
                   variant="ai"
-                  disabled={applyMut.isPending || draft.status === "applied"}
+                  disabled={applyMut.isPending || draft.status === "applied" || counts.accepted === 0}
                   onClick={() => applyMut.mutate()}
                   className="shadow-[var(--shadow-ai)]"
                 >
                   {applyMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                  {applyMut.isPending ? "Applying..." : "Apply draft"}
+                  {applyMut.isPending
+                    ? "Applying..."
+                    : counts.accepted === 0
+                      ? "Pick at least one"
+                      : `Apply ${counts.accepted} change${counts.accepted === 1 ? "" : "s"}`}
                 </Button>
               ) : null}
             </div>
@@ -281,19 +433,32 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SignalChip({ signal }: { signal: AISignal }) {
+function SignalChip({ signal, highlighted }: { signal: AISignal; highlighted?: boolean }) {
   const tone = inferSignalTone(signal);
   return (
-    <div className="rounded-lg border border-[color:var(--color-border)] bg-white p-3">
+    <div
+      className={
+        highlighted
+          ? "rounded-lg border-2 border-[color:var(--color-primary-ring)] bg-white p-3 shadow-[var(--shadow-ai)]"
+          : "rounded-lg border border-[color:var(--color-border)] bg-white p-3"
+      }
+    >
       <div className="flex items-center justify-between gap-2">
-        <Badge tone={tone === "critical" ? "danger" : tone === "positive" ? "success" : "warning"} size="sm">
+        <Badge
+          tone={tone === "critical" ? "danger" : tone === "positive" ? "success" : "warning"}
+          size="sm"
+        >
           {humanizeSignalType(signal.signal_type)}
         </Badge>
-        <span className="text-[10px] font-semibold uppercase text-[color:var(--color-fg-subtle)]">{signal.severity}</span>
+        <span className="text-[10px] font-semibold uppercase text-[color:var(--color-fg-subtle)]">
+          {signal.severity}
+        </span>
       </div>
       <div className="mt-2 text-sm font-medium leading-snug text-[color:var(--color-fg)]">{signal.title}</div>
       {signal.suggested_action ? (
-        <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-[color:var(--color-fg-muted)]">{signal.suggested_action}</p>
+        <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-[color:var(--color-fg-muted)]">
+          {signal.suggested_action}
+        </p>
       ) : null}
     </div>
   );
@@ -303,44 +468,75 @@ function SignalSkeleton() {
   return (
     <>
       {[0, 1, 2].map((idx) => (
-        <div key={idx} className="h-24 animate-pulse rounded-lg border border-[color:var(--color-border)] bg-white" />
+        <div
+          key={idx}
+          className="h-24 animate-pulse rounded-lg border border-[color:var(--color-border)] bg-white"
+        />
       ))}
     </>
   );
 }
 
-function ChangeCard({ change, index }: { change: PlanAdjustmentSuggestedChange; index: number }) {
-  const meta = ACTION_META[change.action] ?? ACTION_META.update_task_field;
-  const Icon = meta.icon;
-  return (
-    <article className="rounded-xl border border-[color:var(--color-border)] bg-white p-4 shadow-sm">
-      <div className="flex items-start gap-3">
-        <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-lg", meta.tone)}>
-          <Icon className="h-4 w-4" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
-              Change {index + 1}
-            </span>
-            <Badge tone="neutral" size="sm">{meta.label}</Badge>
-            {change.task_id ? <Badge tone="ai" size="sm">task #{change.task_id}</Badge> : null}
-          </div>
-          <h4 className="mt-1 text-sm font-semibold text-[color:var(--color-fg)]">
-            {change.title || meta.label}
-          </h4>
-          {change.description ? (
-            <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
-              {change.description}
-            </p>
-          ) : null}
-          {change.reason ? (
-            <div className="mt-3 rounded-lg bg-[color:var(--color-surface-muted)] px-3 py-2 text-xs text-[color:var(--color-fg-muted)]">
-              {change.reason}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </article>
-  );
+function changeKey(change: PlanAdjustmentSuggestedChange, idx: number): string {
+  return change.id || `${change.action}-${change.task_id ?? "x"}-${idx}`;
+}
+
+function seedChangeIds(draft: PlanAdjustment): PlanAdjustment {
+  if (!draft.suggested_changes) return draft;
+  return {
+    ...draft,
+    suggested_changes: draft.suggested_changes.map((c, idx) => ({
+      ...c,
+      id: c.id || `${c.action}-${c.task_id ?? "x"}-${idx}-${Math.random().toString(36).slice(2, 8)}`,
+    })),
+  };
+}
+
+function initCuration(changes: PlanAdjustmentSuggestedChange[]): Record<string, CurationEntry> {
+  const out: Record<string, CurationEntry> = {};
+  changes.forEach((c, idx) => {
+    out[changeKey(c, idx)] = defaultEntry();
+  });
+  return out;
+}
+
+function defaultEntry(): CurationEntry {
+  return { accepted: true, editing: false, overrides: {} };
+}
+
+function buildCuratedChanges(
+  changes: PlanAdjustmentSuggestedChange[],
+  curation: Record<string, CurationEntry>,
+): PlanAdjustmentSuggestedChange[] {
+  return changes
+    .map((c, idx) => {
+      const entry = curation[changeKey(c, idx)] ?? defaultEntry();
+      if (!entry.accepted) return null;
+      const merged: PlanAdjustmentSuggestedChange = { ...c, ...entry.overrides };
+      if (entry.deferredToPlanId != null) {
+        // Defer = rewrite as an add_task pointed at the next period's plan.
+        // Drop the original task_id so backend doesn't try to mutate a task on the wrong plan.
+        merged.action = "add_task";
+        merged.target_plan_id = entry.deferredToPlanId;
+        merged.task_id = null;
+      }
+      return merged;
+    })
+    .filter((c): c is PlanAdjustmentSuggestedChange => c !== null);
+}
+
+function summarizeCuration(curation: Record<string, CurationEntry>): {
+  accepted: number;
+  edited: number;
+  deferred: number;
+} {
+  let accepted = 0;
+  let edited = 0;
+  let deferred = 0;
+  for (const entry of Object.values(curation)) {
+    if (entry.accepted) accepted += 1;
+    if (Object.keys(entry.overrides).length > 0) edited += 1;
+    if (entry.deferredToPlanId != null) deferred += 1;
+  }
+  return { accepted, edited, deferred };
 }

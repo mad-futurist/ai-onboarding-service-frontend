@@ -219,7 +219,7 @@ export default function AddNewcomerPage() {
       <PageHeader
         eyebrow="Onboarding setup"
         title="Add a newcomer"
-        description="Tell AI who's joining the team — it personalizes the plan and crafts a calibration skill check."
+        description="Tell AI who's joining the team - it personalizes the plan and crafts a calibration skill check."
         actions={
           <Button asChild variant="ghost">
             <a href="/mentor">
@@ -370,15 +370,15 @@ export default function AddNewcomerPage() {
             {step === 4 ? (
               <div className="space-y-4">
                 <ReviewSection title="Profile" onEdit={() => setStep(1)}>
-                  <ReviewRow label="Name" value={form.watch("full_name") || "—"} />
-                  <ReviewRow label="Email" value={form.watch("email") || "—"} />
+                  <ReviewRow label="Name" value={form.watch("full_name") || "-"} />
+                  <ReviewRow label="Email" value={form.watch("email") || "-"} />
                 </ReviewSection>
                 <ReviewSection title="Role context" onEdit={() => setStep(2)}>
-                  <ReviewRow label="Role" value={form.watch("job_title") || "—"} />
-                  <ReviewRow label="Seniority" value={form.watch("seniority") || "—"} />
-                  <ReviewRow label="Team" value={form.watch("team") || "—"} />
-                  <ReviewRow label="Start date" value={form.watch("start_date") || "—"} />
-                  <ReviewRow label="Goal" value={form.watch("main_goal") || "—"} />
+                  <ReviewRow label="Role" value={form.watch("job_title") || "-"} />
+                  <ReviewRow label="Seniority" value={form.watch("seniority") || "-"} />
+                  <ReviewRow label="Team" value={form.watch("team") || "-"} />
+                  <ReviewRow label="Start date" value={form.watch("start_date") || "-"} />
+                  <ReviewRow label="Goal" value={form.watch("main_goal") || "-"} />
                 </ReviewSection>
                 <ReviewSection title="Skills & gaps" onEdit={() => setStep(3)}>
                   <ReviewRow
@@ -418,7 +418,7 @@ export default function AddNewcomerPage() {
                   variant="ai"
                 >
                   <Sparkles className="h-4 w-4" />
-                  {createMut.isPending ? "Adding…" : "Add newcomer"}
+                  {createMut.isPending ? "Adding..." : "Add newcomer"}
                 </Button>
               )}
             </div>
@@ -472,7 +472,7 @@ function Stepper({ step }: { step: number }) {
                 <Icon className="h-3.5 w-3.5" />
               )}
               <span>
-                Step {s.id} · {s.label}
+                Step {s.id} / {s.label}
               </span>
             </div>
             {idx < STEPS.length - 1 ? (
@@ -603,7 +603,7 @@ function AssessmentReviewSection({
           label="Mix"
           value={Object.entries(counts)
             .map(([k, v]) => `${v} ${k.replace("_", " ")}`)
-            .join(" · ")}
+            .join(" / ")}
         />
         {assessment.mentor_notes ? (
           <ReviewRow label="Notes" value={assessment.mentor_notes} />

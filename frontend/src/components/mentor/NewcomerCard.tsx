@@ -8,9 +8,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { StatusBadge, SeverityBadge } from "@/components/shared/StatusBadge";
 import { ProgressBar } from "@/components/charts/ProgressBar";
 import { getInitials, cn } from "@/lib/utils";
+import { useLocale } from "@/providers/locale-provider";
 import type { MentorDashboardNewcomerItem } from "@/types";
 
 export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerItem }) {
+  const { t } = useLocale();
   const pct = newcomer.progress_percent ?? 0;
   const status = newcomer.computed_status ?? newcomer.onboarding_status;
   const isFlagged = status === "needs_attention" || status === "blocked";
@@ -72,7 +74,7 @@ export function NewcomerCard({ newcomer }: { newcomer: MentorDashboardNewcomerIt
         {newcomer.latest_signal ? (
           <div className="mt-3 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/50 p-3">
             <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-primary)]">
-              <Sparkles className="h-3 w-3" /> Latest AI signal
+              <Sparkles className="h-3 w-3" /> {t("mentor.dash.ncs.cardSignal")}
             </div>
             <div className="mt-1 flex items-center gap-2">
               <p className="text-sm text-[color:var(--color-fg)] line-clamp-1 flex-1">

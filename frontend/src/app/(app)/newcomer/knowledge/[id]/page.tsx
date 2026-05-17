@@ -14,6 +14,7 @@ import { getNewcomerDocument } from "@/services/newcomer-kb";
 import { DocumentPreviewPremium } from "@/components/newcomer/knowledge/DocumentPreviewPremium";
 import { DocumentChatPanel } from "@/components/newcomer/knowledge/DocumentChatPanel";
 import { DocumentMindMap } from "@/components/newcomer/knowledge/DocumentMindMap";
+import { PriorConversations } from "@/components/newcomer/ask/PriorConversations";
 
 export default function NewcomerKnowledgeDetailPage() {
   const params = useParams<{ id: string }>();
@@ -85,6 +86,7 @@ export default function NewcomerKnowledgeDetailPage() {
                     </div>
                   </div>
                 </div>
+                <PriorConversations contextType="document" contextId={data.id} />
               </aside>
             </div>
           </TabsContent>

@@ -89,24 +89,19 @@ export function PeriodFlowSheet({
 
     const nextOffset = inferNextOffset(journey);
     const preset = PRESETS.find((p) => p.offset === nextOffset) ?? PRESETS[0];
+    const startAnchor = newcomer?.start_date ?? new Date().toISOString().slice(0, 10);
     setLabel(preset.label);
-    if (newcomer?.start_date) {
-      setStart(addDays(newcomer.start_date, preset.offset));
-      setEnd(addDays(newcomer.start_date, preset.offset + preset.length - 1));
-    } else {
-      setStart("");
-      setEnd("");
-    }
+    setStart(addDays(startAnchor, preset.offset));
+    setEnd(addDays(startAnchor, preset.offset + preset.length - 1));
     setGoal(newcomer?.main_goal ?? "");
     setMode("fast");
   }, [open, journey, newcomer, initialNotes, initialSources]);
 
   const applyPreset = (preset: (typeof PRESETS)[number]) => {
+    const startAnchor = newcomer?.start_date ?? new Date().toISOString().slice(0, 10);
     setLabel(preset.label);
-    if (newcomer?.start_date) {
-      setStart(addDays(newcomer.start_date, preset.offset));
-      setEnd(addDays(newcomer.start_date, preset.offset + preset.length - 1));
-    }
+    setStart(addDays(startAnchor, preset.offset));
+    setEnd(addDays(startAnchor, preset.offset + preset.length - 1));
   };
 
   const canNext =

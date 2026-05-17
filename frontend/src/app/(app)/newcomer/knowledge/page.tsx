@@ -54,6 +54,15 @@ export default function NewcomerKnowledgePage() {
     });
   }, [data, search, domain]);
 
+  const recommended = React.useMemo(
+    () => filtered.filter((doc) => doc.is_recommended),
+    [filtered],
+  );
+  const otherDocs = React.useMemo(
+    () => filtered.filter((doc) => !doc.is_recommended),
+    [filtered],
+  );
+
   const easing: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
   return (
@@ -90,10 +99,13 @@ export default function NewcomerKnowledgePage() {
               <div className="text-2xl font-semibold leading-tight">
                 {data?.length ?? 0} documents
               </div>
+              <div className="text-xs text-white/80">
+                {recommended.length} recommended for your role
+              </div>
             </div>
           </div>
           <p className="max-w-md text-sm text-white/90">
-            Filtered by your role and team. Click any document to preview it, ask focused questions, or visualize it as a mind map.
+            AI highlights the most useful sources for your role first. You can still browse every document in the company knowledge base.
           </p>
         </div>
       </motion.div>
@@ -158,10 +170,40 @@ export default function NewcomerKnowledgePage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((doc, idx) => (
-            <DocumentCard key={doc.id} doc={doc} index={idx} reduced={!!reduced} />
-          ))}
+        <div className="space-y-6">
+          {recommended.length ? (
+            <section className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-[color:var(--color-primary)]" />
+                <h2 className="text-sm font-semibold text-[color:var(--color-fg)]">
+                  Recommended for your role
+                </h2>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {recommended.map((doc, idx) => (
+                  <DocumentCard key={doc.id} doc={doc} index={idx} reduced={!!reduced} />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {otherDocs.length ? (
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-[color:var(--color-fg)]">
+                All other documents
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {otherDocs.map((doc, idx) => (
+                  <DocumentCard
+                    key={doc.id}
+                    doc={doc}
+                    index={idx + recommended.length}
+                    reduced={!!reduced}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       )}
     </div>
@@ -222,7 +264,17 @@ function DocumentCard({
                     {doc.scope}
                   </Badge>
                 ) : null}
+                {doc.is_recommended ? (
+                  <Badge tone="brand">
+                    Recommended
+                  </Badge>
+                ) : null}
               </div>
+              {doc.recommendation_reason ? (
+                <p className="text-[11px] leading-relaxed text-[color:var(--color-primary)]">
+                  {doc.recommendation_reason}
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         </div>

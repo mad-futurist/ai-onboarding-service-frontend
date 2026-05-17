@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { ID, PlanAdjustment } from "@/types";
+import type { ID, PlanAdjustment, PlanAdjustmentSuggestedChange } from "@/types";
 
 export interface PlanAdjustmentStatusResponse {
   id: ID;
@@ -23,6 +23,23 @@ export async function generateAdjustmentForPeriod(planId: ID): Promise<PlanAdjus
   const { data } = await api.post<PlanAdjustment>(
     `/plan-adjustments/generate/for-period/${planId}`,
   );
+  return data;
+}
+
+export async function generateAdjustmentFromSignal(signalId: ID): Promise<PlanAdjustment> {
+  const { data } = await api.post<PlanAdjustment>(
+    `/plan-adjustments/generate/from-signal/${signalId}`,
+  );
+  return data;
+}
+
+export async function updateAdjustmentChanges(
+  id: ID,
+  changes: PlanAdjustmentSuggestedChange[],
+): Promise<PlanAdjustment> {
+  const { data } = await api.patch<PlanAdjustment>(`/plan-adjustments/${id}`, {
+    suggested_changes: changes,
+  });
   return data;
 }
 

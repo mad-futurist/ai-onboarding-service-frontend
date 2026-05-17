@@ -26,7 +26,7 @@ import { detectSignals, ignoreSignal, listSignalsForNewcomer, resolveSignal } fr
 import { listNewcomers, getNewcomerPlan } from "@/services/newcomers";
 import { useDemo } from "@/providers/demo-provider";
 import { toApiError } from "@/lib/api";
-import { AdjustPlanDialog } from "@/components/mentor/plan-generator/AdjustPlanDialog";
+import { AdjustEntryDialog } from "@/components/mentor/plan-generator/AdjustEntryDialog";
 import type { AISignal, ID } from "@/types";
 
 type View = "tree" | "story" | "list";
@@ -311,11 +311,12 @@ export default function SignalsCenterPage() {
         newcomerId={activeNewcomer?.id}
       />
 
-      <AdjustPlanDialog
+      <AdjustEntryDialog
         open={adjustOpen}
         onOpenChange={setAdjustOpen}
         signal={adjustSignal}
         planId={activePlan.data?.id ?? null}
+        newcomerId={activeNewcomer?.id ?? null}
         newcomerName={activeNewcomer?.full_name ?? undefined}
       />
     </div>

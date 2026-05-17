@@ -70,7 +70,7 @@ export default function SettingsPage() {
     mutationFn: resetDemo,
     onSuccess: async (seed) => {
       toast.success("Demo database regenerated", {
-        description: `Recreated ${seed.personas?.length ?? 3} personas, ${seed.documents_created ?? 0} documents, ${seed.tasks_created ?? 0} tasks and ${seed.meetings_created ?? 0} meetings.`,
+        description: `Recreated ${seed.personas?.length ?? 3} personas, ${seed.documents_created ?? 0} documents, ${seed.courses_created ?? 0} courses, ${seed.tasks_created ?? 0} tasks and ${seed.meetings_created ?? 0} meetings.`,
       });
       qc.clear();
       sessionStorage.removeItem("onbord.seeded.v1");

@@ -216,9 +216,7 @@ function translateUiString(value: string): string {
 function normalizeUiText(value: string): string {
   return value
     .replaceAll("…", "...")
-    .replaceAll("â€¦", "...")
     .replaceAll("—", "-")
-    .replaceAll("â€”", "-")
     .replace(/\s+/g, " ")
     .trim();
 }

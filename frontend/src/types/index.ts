@@ -474,6 +474,7 @@ export interface AIQuestion {
   id: ID;
   newcomer_id: ID | null;
   user_id: ID | null;
+  conversation_id?: ID | null;
   question: string;
   answer: string;
   sources?: AIQuestionSource[];
@@ -487,6 +488,24 @@ export interface AIAskResponse {
   sources: AIQuestionSource[];
   people_to_ask?: { name: string; role?: string }[];
   follow_up_questions?: string[];
+  conversation_id?: ID | null;
+}
+
+export type AIConversationContextType = "document" | "task";
+
+export interface AIConversation {
+  id: ID;
+  user_id: ID | null;
+  newcomer_id: ID | null;
+  title: string;
+  context_type: AIConversationContextType | null;
+  context_id: ID | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AIConversationDetail extends AIConversation {
+  questions: AIQuestion[];
 }
 
 export interface DocumentItem {
@@ -500,6 +519,8 @@ export interface DocumentItem {
   scope: string;
   source_type?: string | null;
   external_url?: string | null;
+  is_recommended?: boolean;
+  recommendation_reason?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -523,8 +544,8 @@ export interface ScheduledMeeting {
 }
 
 export interface KnowledgeGroup {
-  domain: string;
-  count: number;
+  domain: string | null;
+  scope: string | null;
   documents: DocumentItem[];
 }
 
@@ -630,6 +651,7 @@ export interface PlanAdjustment {
 }
 
 export interface PlanAdjustmentSuggestedChange {
+  id?: string;
   action: string;
   task_id?: ID | null;
   task_ids?: ID[];
@@ -645,6 +667,7 @@ export interface PlanAdjustmentSuggestedChange {
   success_criteria?: string | null;
   period_label?: string | null;
   goal?: string | null;
+  target_plan_id?: ID | null;
 }
 
 export interface BlockedReport {
@@ -670,6 +693,7 @@ export interface DemoSeedResponse {
   plan_id?: ID;
   signal_id?: ID;
   documents_created?: number;
+  courses_created?: number;
   tasks_created?: number;
   questions_created?: number;
   meetings_created?: number;

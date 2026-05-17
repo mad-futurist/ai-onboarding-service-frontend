@@ -28,11 +28,11 @@ export async function askAboutDocument(
   newcomerId: ID,
   documentId: ID,
   question: string,
-  userId?: ID,
+  options: { userId?: ID; conversationId?: ID } = {},
 ): Promise<AIAskResponse> {
   const { data } = await api.post<AIAskResponse>(
     `/newcomer-kb/${newcomerId}/documents/${documentId}/ask`,
-    { question, user_id: userId },
+    { question, user_id: options.userId, conversation_id: options.conversationId },
   );
   return data;
 }

@@ -117,7 +117,12 @@ export default function KnowledgeBasePage() {
               ) : (
                 <div className="space-y-5">
                   {filteredGroups.map((group) => (
-                    <DocumentGroup key={group.domain} domain={group.domain} documents={group.documents} />
+                    <DocumentGroup
+                      key={`${group.domain ?? "uncategorized"}:${group.scope ?? "unscoped"}`}
+                      domain={group.domain}
+                      scope={group.scope}
+                      documents={group.documents}
+                    />
                   ))}
                 </div>
               )}
@@ -233,13 +238,28 @@ export default function KnowledgeBasePage() {
   );
 }
 
-function DocumentGroup({ domain, documents }: { domain: string; documents: DocumentItem[] }) {
+function DocumentGroup({
+  domain,
+  scope,
+  documents,
+}: {
+  domain: string | null;
+  scope: string | null;
+  documents: DocumentItem[];
+}) {
+  const groupLabel = domain ? domain.replace(/_/g, " ") : "uncategorized";
+
   return (
     <div>
       <div className="mb-2 flex items-baseline gap-2">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
-          {domain.replace(/_/g, " ")}
+          {groupLabel}
         </h3>
+        {scope ? (
+          <Badge tone="neutral" size="sm">
+            {scope}
+          </Badge>
+        ) : null}
         <span className="text-xs text-[color:var(--color-fg-faint)]">
           {documents.length} doc{documents.length > 1 ? "s" : ""}
         </span>

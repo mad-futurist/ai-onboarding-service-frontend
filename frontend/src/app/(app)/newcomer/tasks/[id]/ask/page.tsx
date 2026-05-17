@@ -31,6 +31,7 @@ import { getTaskDetail } from "@/services/tasks";
 import { toApiError } from "@/lib/api";
 import { cn, getInitials } from "@/lib/utils";
 import { useDemo } from "@/providers/demo-provider";
+import { PriorConversations } from "@/components/newcomer/ask/PriorConversations";
 import type { AIAskResponse, TaskDetailResponse } from "@/types";
 
 interface ChatItem {
@@ -53,6 +54,8 @@ export default function TaskAskAIPage() {
     enabled: Number.isFinite(taskId),
   });
 
+  const [conversationId, setConversationId] = React.useState<number | null>(null);
+
   const askMut = useMutation({
     mutationFn: (question: string) => {
       if (!data) throw new Error("Task context is not ready yet.");
@@ -60,7 +63,15 @@ export default function TaskAskAIPage() {
         question: buildContextualQuestion(question, data),
         newcomer_id: newcomerId ?? undefined,
         top_k: 5,
+        conversation_id: conversationId ?? undefined,
+        context_type: "task",
+        context_id: taskId,
       });
+    },
+    onSuccess: (resp) => {
+      if (resp.conversation_id != null && resp.conversation_id !== conversationId) {
+        setConversationId(resp.conversation_id);
+      }
     },
   });
 
@@ -194,6 +205,8 @@ export default function TaskAskAIPage() {
 
         <aside className="space-y-4">
           <TaskContextCard data={data} />
+
+          <PriorConversations contextType="task" contextId={taskId} />
 
           <Card>
             <CardHeader>
