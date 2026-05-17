@@ -96,7 +96,7 @@ export function WorkspaceTabs({
   };
 
   return (
-    <Tabs defaultValue="weeks">
+    <Tabs defaultValue="weeks" data-demo-id="plan-workspace-tabs">
       <TabsList className="bg-white border border-[color:var(--color-border)]">
         <TabsTrigger value="weeks" className="gap-2">
           <CalendarDays className="h-3.5 w-3.5" /> Weeks

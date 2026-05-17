@@ -29,6 +29,7 @@ interface DemoTourStep {
   routeMatch?: "exact" | "prefix";
   role: Role;
   target: string;
+  spotlightTarget?: string;
   title: string;
   body: string;
   fill?: FillAction[];
@@ -87,8 +88,24 @@ const TOUR_STEPS: DemoTourStep[] = [
     id: "mentor-dashboard",
     route: "/mentor",
     role: "mentor",
+    target: "nav-mentor",
+    title: "Overview is the cockpit",
+    body: "The mentor workspace opens on Overview. The sidebar confirms where we are before the dashboard content takes over.",
+  },
+  {
+    id: "mentor-dashboard-overview",
+    route: "/mentor",
+    role: "mentor",
+    target: "mentor-dashboard-overview",
+    title: "Mentor dashboard",
+    body: "This is Oleg's operating dashboard: AI pulse, active onboarding metrics, today's focus, signals, and weekly rollup in one place.",
+  },
+  {
+    id: "mentor-dashboard-newcomers",
+    route: "/mentor",
+    role: "mentor",
     target: "mentor-dashboard-newcomers",
-    title: "Mentor cockpit first",
+    title: "Then focus on newcomers",
     body: "Start in Oleg's cockpit. The seeded demo shows two active newcomers — Marina (Sales) and Tanya (Backend/Payments) — with live progress, attention signals, today's focus, and saved time, all in one place.",
   },
   {
@@ -711,6 +728,14 @@ const TOUR_STEPS: DemoTourStep[] = [
     id: "mentor-sees-plan",
     route: "/mentor",
     role: "mentor",
+    target: "mentor-dashboard-overview",
+    title: "Back to Overview",
+    body: "After the assessment, return to the mentor Overview first so the navigation and dashboard context are clear.",
+  },
+  {
+    id: "mentor-sees-plan-newcomers",
+    route: "/mentor",
+    role: "mentor",
     target: "mentor-dashboard-newcomers",
     title: "Plan generated for Noa",
     body: "Back on the dashboard, the new newcomer appears with her freshly generated draft plan. The card is highlighted; the next step opens her workspace.",
@@ -737,6 +762,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "plan-generator-new-period",
+    spotlightTarget: "plan-generator-journey",
     title: "Add a new period",
     body: "Click New period — the flow opens as a multi-step sheet: period info, generation mode, then review.",
     waitForClickTarget: "plan-generator-new-period",
@@ -746,6 +772,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "period-flow-next",
+    spotlightTarget: "period-flow-sheet",
     title: "Period info",
     body: "Label, dates, and a goal — the AI uses these to scope the period. Fields are pre-filled. Click Next.",
     fill: [
@@ -759,6 +786,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "period-flow-live-mode",
+    spotlightTarget: "period-flow-sheet",
     title: "Choose Live collaboration",
     body: "Live mode streams the AI's reasoning, sources, and tasks as they are generated — the mentor watches and steers, instead of waiting for a black-box draft.",
     waitForClickTarget: "period-flow-live-mode",
@@ -768,6 +796,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "period-flow-next",
+    spotlightTarget: "period-flow-sheet",
     title: "Review the choice",
     body: "Click Next to confirm the mode and move to the review step.",
     waitForClickTarget: "period-flow-next",
@@ -777,6 +806,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "period-flow-generate",
+    spotlightTarget: "period-flow-sheet",
     title: "Open live mode",
     body: "Click Open live mode — the sheet closes and the live workspace takes over. The AI starts generating the period in real time.",
     waitForClickTarget: "period-flow-generate",
@@ -787,6 +817,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     route: "/mentor/plan-generator",
     role: "mentor",
     target: "live-mode-commit",
+    spotlightTarget: "live-mode-workspace",
     title: "View the draft, then commit",
     body: "Reasoning streams on the left, the draft plan builds on the right. When it's ready (or hit Skip step to jump ahead), click Commit draft to persist this period.",
     waitForClickTarget: "live-mode-commit",
@@ -798,6 +829,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "plan-workspace-all-tasks-tab",
+    spotlightTarget: "plan-workspace-tabs",
     title: "Switch to All tasks",
     body: "The new period landed on the workspace. Switch to the All tasks view to see the flat list and pick one to refine.",
     waitForClickTarget: "plan-workspace-all-tasks-tab",
@@ -808,6 +840,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "plan-workspace-first-task",
+    spotlightTarget: "plan-workspace-tabs",
     title: "Click a task to edit it",
     body: "Every task is editable. Click the highlighted task to open the editor.",
     waitForClickTarget: "plan-workspace-first-task",
@@ -818,6 +851,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "mentor-task-editor-title",
+    spotlightTarget: "mentor-task-editor",
     title: "Edit the task content",
     body: "Title, description, priority, success and acceptance criteria — every field is editable. The mentor refines what the AI drafted. We've sharpened the title for you.",
     fill: [
@@ -830,6 +864,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "mentor-task-editor-save",
+    spotlightTarget: "mentor-task-editor",
     title: "Save changes",
     body: "Click Save changes — the task title updates instantly. The newcomer sees the new wording on her plan next time she loads it.",
     waitForClickTarget: "mentor-task-editor-save",
@@ -851,6 +886,7 @@ const TOUR_STEPS: DemoTourStep[] = [
     routeMatch: "prefix",
     role: "mentor",
     target: "plan-workspace-approve",
+    spotlightTarget: "plan-workspace-period-header",
     title: "Publish the period",
     body: "Click Approve period — the draft becomes live for the newcomer. Generated by AI, refined by the mentor, owned by the mentor. That's the loop.",
     waitForClickTarget: "plan-workspace-approve",
@@ -1110,6 +1146,7 @@ export function GuidedDemoTour() {
     setRole,
   } = useDemo();
   const [targetRect, setTargetRect] = React.useState<TargetRect | null>(null);
+  const [spotlightRect, setSpotlightRect] = React.useState<TargetRect | null>(null);
   const [targetReady, setTargetReady] = React.useState(false);
   const [paused, setPaused] = React.useState(false);
   const scrolledStepRef = React.useRef<string | null>(null);
@@ -1176,6 +1213,7 @@ export function GuidedDemoTour() {
     if (!guidedDemoActive || !step || !onTargetRoute) {
       queueMicrotask(() => {
         setTargetRect(null);
+        setSpotlightRect(null);
         setTargetReady(false);
       });
       return;
@@ -1187,17 +1225,20 @@ export function GuidedDemoTour() {
 
     const update = () => {
       const element = findDemoElement(step.target);
+      const spotlightElement = step.spotlightTarget ? findDemoElement(step.spotlightTarget) : element;
       if (!active) return;
-      if (!element) {
+      if (!element || !spotlightElement) {
         setTargetRect(null);
+        setSpotlightRect(null);
         setTargetReady(false);
         return;
       }
       if (scrolledStepRef.current !== step.id) {
         scrolledStepRef.current = step.id;
-        element.scrollIntoView({ block: "center", inline: "center", behavior: reduceMotion ? "auto" : "smooth" });
+        spotlightElement.scrollIntoView({ block: "center", inline: "center", behavior: reduceMotion ? "auto" : "smooth" });
       }
       const rect = element.getBoundingClientRect();
+      const spotlight = spotlightElement.getBoundingClientRect();
       setTargetRect({
         top: rect.top,
         left: rect.left,
@@ -1205,6 +1246,14 @@ export function GuidedDemoTour() {
         height: rect.height,
         right: rect.right,
         bottom: rect.bottom,
+      });
+      setSpotlightRect({
+        top: spotlight.top,
+        left: spotlight.left,
+        width: spotlight.width,
+        height: spotlight.height,
+        right: spotlight.right,
+        bottom: spotlight.bottom,
       });
       setTargetReady(true);
     };
@@ -1267,6 +1316,7 @@ export function GuidedDemoTour() {
 
   const panel = getPanelPosition(targetRect);
   const arrow = getArrowPosition(targetRect);
+  const stageRect = spotlightRect ?? targetRect;
   const current = guidedDemoStep + 1;
   const total = TOUR_STEPS.length;
   const waitingForClick = !!step.waitForClickTarget;
@@ -1275,7 +1325,7 @@ export function GuidedDemoTour() {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[80] pointer-events-none">
-        {targetRect ? (
+        {stageRect && targetRect ? (
           <>
             <motion.div
               key={`${step.id}-spotlight`}
@@ -1285,16 +1335,16 @@ export function GuidedDemoTour() {
               transition={{ duration: 0.18 }}
               className="fixed rounded-[18px] border-2 border-[color:var(--color-primary)] bg-transparent shadow-[0_0_0_9999px_rgba(12,10,9,0.56),0_0_0_8px_rgba(249,115,22,0.18),0_16px_44px_-18px_rgba(249,115,22,0.65)]"
               style={{
-                top: Math.max(8, targetRect.top - 8),
-                left: Math.max(8, targetRect.left - 8),
-                width: targetRect.width + 16,
-                height: targetRect.height + 16,
+                top: Math.max(8, stageRect.top - 8),
+                left: Math.max(8, stageRect.left - 8),
+                width: stageRect.width + 16,
+                height: stageRect.height + 16,
               }}
             />
             <motion.div
               key={`${step.id}-pulse`}
               aria-hidden
-              className="fixed rounded-[20px] border border-white/80"
+              className="fixed z-[82] rounded-[20px] border-2 border-white/90 shadow-[0_0_0_3px_rgba(249,115,22,0.28),0_14px_32px_-16px_rgba(249,115,22,0.75)]"
               style={{
                 top: Math.max(6, targetRect.top - 12),
                 left: Math.max(6, targetRect.left - 12),

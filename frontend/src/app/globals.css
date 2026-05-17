@@ -623,8 +623,6 @@ body.demo-active [data-radix-dialog-content],
 body.demo-active [data-radix-dropdown-menu-content],
 body.demo-active [data-radix-popover-content],
 body.demo-active [data-radix-select-content],
-body.demo-active [data-sonner-toaster],
-body.demo-active [data-demo-id="period-flow-sheet"],
-body.demo-active [data-demo-id="live-mode-workspace"] {
+body.demo-active [data-sonner-toaster] {
   z-index: 90 !important;
 }

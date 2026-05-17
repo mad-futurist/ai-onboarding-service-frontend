@@ -120,7 +120,10 @@ export default function MentorOverviewPage() {
   })();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-8">
+    <div
+      className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-8"
+      data-demo-id="mentor-dashboard-overview"
+    >
       <section className="relative overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-white px-6 py-7 sm:px-8 sm:py-9">
         <AuroraBackground intensity="hero" />
         <div className="relative">

@@ -138,7 +138,10 @@ export default function PlanWorkspacePage() {
   const versionsCount = versions.length;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
+    <div
+      className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6"
+      data-demo-id="plan-workspace-page"
+    >
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs text-[color:var(--color-fg-muted)]">
         <Button asChild variant="ghost" size="sm" className="-ml-2">
@@ -164,6 +167,7 @@ export default function PlanWorkspacePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="relative overflow-hidden rounded-[18px] border border-[color:var(--color-border)] bg-white shadow-[var(--shadow-card)]"
+        data-demo-id="plan-workspace-period-header"
       >
         <div className="absolute inset-0 ai-gradient-soft opacity-60" />
         <div className="absolute inset-x-0 top-0 h-[3px] ai-gradient" />
