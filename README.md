@@ -221,6 +221,7 @@ Better onboarding path
 **The product principle is:**
 
 AI proposes. Mentor decides. Newcomer progresses with context.
+
 ---
 
 ## 💼 Why ReadySet.AI matters for Oleg
