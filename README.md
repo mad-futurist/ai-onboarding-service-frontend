@@ -26,7 +26,7 @@ This repository contains the **Next.js frontend**. The FastAPI backend lives in 
 
 ## 🎬 Run the demo first
 
-> **Do this first** — most screens look empty otherwise. Open the **Demo** page in the sidebar and click **"Start demo mode"**.
+> **Do this first** — Open the **Demo** page in the sidebar and click **"Start demo mode"**.
 
 The guided demo:
 
