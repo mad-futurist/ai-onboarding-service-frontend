@@ -31,7 +31,7 @@ This repository contains the **Next.js frontend**. The FastAPI backend lives in 
 
 ## 🎬 Run the demo first
 
-> **Do this first** — Open the **Demo** page in the sidebar(bottom) and click **"Start demo mode"**.
+> **Do this first** — go to ai-onboarding-service-frontend.vercel.app -> Open the **Demo** page in the sidebar(bottom) and click **"Start demo mode"**.
 
 The guided demo:
 
