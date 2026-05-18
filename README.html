@@ -1,3 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReadySet.AI — README</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #24292f;
+      background: #ffffff;
+    }
+
+    .lang-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #f6f8fa;
+      border-bottom: 1px solid #d0d7de;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-bar span {
+      font-size: 13px;
+      color: #57606a;
+      margin-right: 4px;
+    }
+
+    .lang-btn {
+      padding: 5px 16px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #24292f;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .lang-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .lang-btn.active {
+      background: #CC5500;
+      border-color: #CC5500;
+      color: #ffffff;
+    }
+
+    .markdown-body {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .markdown-body h1 { font-size: 2em; border-bottom: 1px solid #d0d7de; padding-bottom: .3em; margin: 1.5em 0 .5em; }
+    .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #d0d7de; padding-bottom: .3em; margin: 1.5em 0 .5em; }
+    .markdown-body h3 { font-size: 1.25em; margin: 1.25em 0 .5em; }
+    .markdown-body h4 { font-size: 1em; margin: 1em 0 .5em; }
+
+    .markdown-body p { margin: .75em 0; }
+
+    .markdown-body ul, .markdown-body ol {
+      padding-left: 2em;
+      margin: .75em 0;
+    }
+
+    .markdown-body li { margin: .25em 0; }
+
+    .markdown-body a { color: #0969da; text-decoration: none; }
+    .markdown-body a:hover { text-decoration: underline; }
+
+    .markdown-body blockquote {
+      border-left: 4px solid #d0d7de;
+      padding: .5em 1em;
+      color: #57606a;
+      margin: 1em 0;
+      background: #f6f8fa;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .markdown-body code {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: .15em .4em;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .875em;
+    }
+
+    .markdown-body pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 1em;
+      overflow: auto;
+      margin: 1em 0;
+    }
+
+    .markdown-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: .875em;
+    }
+
+    .markdown-body table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+
+    .markdown-body th {
+      background: #f6f8fa;
+      font-weight: 600;
+      border: 1px solid #d0d7de;
+      padding: 8px 13px;
+      text-align: left;
+    }
+
+    .markdown-body td {
+      border: 1px solid #d0d7de;
+      padding: 8px 13px;
+    }
+
+    .markdown-body tr:nth-child(even) td { background: #f6f8fa; }
+
+    .markdown-body hr {
+      border: none;
+      border-top: 1px solid #d0d7de;
+      margin: 2em 0;
+    }
+
+    .markdown-body img { max-width: 100%; }
+
+    .markdown-body kbd {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: .85em;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    p[align="center"] { text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <span>Language / Мова:</span>
+  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" id="btn-uk" onclick="setLang('uk')">UK</button>
+</div>
+
+<div class="markdown-body" id="readme-content"></div>
+
+<!-- ═══════════════════ ENGLISH CONTENT ═══════════════════ -->
+<textarea id="en-content" style="display:none">
 <p align="center">
   <img src="docs/logo.svg" alt="ReadySet.AI" width="320" />
 </p>
@@ -45,7 +213,7 @@ ReadySet.AI is an AI onboarding cockpit for role-specific employee onboarding.
 
 The product helps mentors, team leads, sales managers, and technical leads onboard new hires faster by turning company knowledge, HR processes, sales playbooks, technical documentation, product documentation, and internal workflows into a guided onboarding journey.
 
-ReadySet.AI is not limited to one department. It adapts the onboarding path to the newcomer’s role.
+ReadySet.AI is not limited to one department. It adapts the onboarding path to the newcomer's role.
 
 In the demo, the main story focuses on **Oleg onboarding Marina into the sales team**, while the product also supports technical onboarding for profiles such as **Backend Developers**.
 
@@ -188,7 +356,7 @@ AI is the operating layer of the product.
 
 It drives the full onboarding loop:
 
-```text
+```
 Company knowledge + newcomer profile
         ↓
 AI-generated 30/60/90 plan
@@ -210,17 +378,28 @@ Better onboarding path
 
 **AI is used to:**
 
-* generate personalized onboarding plans;
-* transform internal knowledge into actionable tasks;
-* answer newcomer questions with source citations;
-* detect onboarding friction from behavioral signals;
-* suggest mentor interventions;
-* generate short courses from company documents;
-* adapt the plan when the newcomer gets blocked or progresses faster than expected.
+- generate personalized onboarding plans;
+- transform internal knowledge into actionable tasks;
+- answer newcomer questions with source citations;
+- detect onboarding friction from behavioral signals;
+- suggest mentor interventions;
+- generate short courses from company documents;
+- adapt the plan when the newcomer gets blocked or progresses faster than expected.
+
+AI also adapts the onboarding journey to the role.
+
+The same onboarding engine can generate different paths depending on the newcomer profile and selected sources:
+
+- **Sales onboarding:** CRM, sales scripts, lead qualification, HR processes, product pitch, pipeline rituals.
+- **Backend onboarding:** local setup, architecture, APIs, database, deployment, testing, code review.
+- **Manager onboarding:** team rituals, reporting, dashboards, stakeholder map, decision workflows.
+
+This makes ReadySet.AI reusable across teams, not a hardcoded tool for one function.
 
 **The product principle is:**
 
-AI proposes. Mentor decides. Newcomer progresses with context.
+> AI proposes. Mentor decides. Newcomer progresses with context.
+
 ---
 
 ## 💼 Why ReadySet.AI matters for Oleg
@@ -246,7 +425,9 @@ Most importantly, ReadySet.AI helps Oleg detect the invisible onboarding problem
 > Some newcomers do not ask questions because they do not want to look weak, or because they do not know what they do not know.
 
 AI signals help Oleg intervene earlier, with context.
+
 ---
+
 ## 👤 Why ReadySet.AI matters for Marina
 
 For Marina, ReadySet.AI makes onboarding focused, guided, and less stressful.
@@ -263,7 +444,7 @@ Instead of receiving too much information at once, Marina gets:
 - visible progress and momentum;
 - notifications and calendar support to stay aligned with Oleg.
 
-ReadySet.AI also helps with the “I don’t know what I don’t know” problem.
+ReadySet.AI also helps with the "I don't know what I don't know" problem.
 
 Marina may not always realize that she is missing context. The system can detect repeated questions, blocked tasks, or friction patterns and surface them to the mentor as signals.
 
@@ -315,16 +496,16 @@ This makes onboarding safer:
 
 ## 🛠 Technical solutions
 
-| Layer         | Tech |
-| ------------- | ---- |
-| Framework     | **Next.js 16** (App Router, route groups) + **React 19** |
-| UI            | **Tailwind v4**, **Radix UI**, **Framer Motion**, sonner, lucide-react |
-| State / data  | **TanStack Query**, **axios**, **zod**, **react-hook-form** |
+| Layer | Tech |
+| --- | --- |
+| Framework | **Next.js 16** (App Router, route groups) + **React 19** |
+| UI | **Tailwind v4**, **Radix UI**, **Framer Motion**, sonner, lucide-react |
+| State / data | **TanStack Query**, **axios**, **zod**, **react-hook-form** |
 | Visualization | **`@xyflow/react`** + **dagre** for plan graphs and mind maps |
-| DnD           | `@dnd-kit/core` + `@dnd-kit/sortable` for Kanban |
-| Auth/proxy    | Browser → Next.js → FastAPI (`/api` proxy) |
-| Demo runtime  | Custom `GuidedDemoTour` with spotlight overlays, wait-for-click, deterministic `data-demo-id` selectors |
-| i18n          | `src/i18n/messages.ts` — EN / UK |
+| DnD | `@dnd-kit/core` + `@dnd-kit/sortable` for Kanban |
+| Auth/proxy | Browser → Next.js → FastAPI (`/api` proxy) |
+| Demo runtime | Custom `GuidedDemoTour` with spotlight overlays, wait-for-click, deterministic `data-demo-id` selectors |
+| i18n | `src/i18n/messages.ts` — EN / UK |
 
 **Architecture:** browser calls `/api/*` on the Next.js host, which proxies to the FastAPI backend. The frontend never holds the OpenAI key — every AI call goes through the backend's RAG pipeline (chunk retrieval → prompt assembly → LLM → structured output validated by zod on the client).
 
@@ -334,15 +515,15 @@ This makes onboarding safer:
 
 | Token | Hex | Usage |
 |---|---|---|
-| <kbd>&nbsp;Blaze Orange&nbsp;</kbd> | `#CC5500` | Primary CTA, "Ready" wordmark, checkmark |
-| <kbd>&nbsp;Dark Orange&nbsp;</kbd> | `#FF8C00` | "Set" wordmark, progress bars, active states |
-| <kbd>&nbsp;Sandy Orange&nbsp;</kbd> | `#FFAA55` | Hover states, badges, second-level icons |
-| <kbd>&nbsp;Peach&nbsp;</kbd> | `#FFD199` | Highlighted block backgrounds, low-priority notifications |
-| <kbd>&nbsp;Cream&nbsp;</kbd> | `#FFF0E0` | Card backgrounds, onboarding sections |
-| <kbd>&nbsp;Warm White&nbsp;</kbd> | `#FFF7F0` | Page background |
-| <kbd>&nbsp;Warm Brown&nbsp;</kbd> | `#7A5030` | Body text, captions |
-| <kbd>&nbsp;Deep Brown&nbsp;</kbd> | `#3D2000` | Headings, card borders |
-| <kbd>&nbsp;Obsidian&nbsp;</kbd> | `#1A0E00` | Dark-mode navbar, premium UI |
+| <kbd>Blaze Orange</kbd> | `#CC5500` | Primary CTA, "Ready" wordmark, checkmark |
+| <kbd>Dark Orange</kbd> | `#FF8C00` | "Set" wordmark, progress bars, active states |
+| <kbd>Sandy Orange</kbd> | `#FFAA55` | Hover states, badges, second-level icons |
+| <kbd>Peach</kbd> | `#FFD199` | Highlighted block backgrounds, low-priority notifications |
+| <kbd>Cream</kbd> | `#FFF0E0` | Card backgrounds, onboarding sections |
+| <kbd>Warm White</kbd> | `#FFF7F0` | Page background |
+| <kbd>Warm Brown</kbd> | `#7A5030` | Body text, captions |
+| <kbd>Deep Brown</kbd> | `#3D2000` | Headings, card borders |
+| <kbd>Obsidian</kbd> | `#1A0E00` | Dark-mode navbar, premium UI |
 
 ---
 
@@ -382,11 +563,11 @@ Open [http://localhost:3000/demo](http://localhost:3000/demo) and click **Start 
 1. Import the repo into Vercel, root directory `frontend`.
 2. Build command: `next build`.
 3. Env vars:
-   ```
-   NEXT_PUBLIC_API_BASE=/api
-   BACKEND_URL=https://ai-onboarding-service.onrender.com
-   NEXT_PUBLIC_BACKEND_URL=https://ai-onboarding-service.onrender.com
-   ```
+```
+NEXT_PUBLIC_API_BASE=/api
+BACKEND_URL=https://ai-onboarding-service.onrender.com
+NEXT_PUBLIC_BACKEND_URL=https://ai-onboarding-service.onrender.com
+```
 4. Live URL: [ai-onboarding-service-frontend.vercel.app](https://ai-onboarding-service-frontend.vercel.app).
 
 ### Backend → **Render**
@@ -420,10 +601,10 @@ npm run build    # prod build
 npm run start    # serve prod build
 npm run lint     # eslint
 ```
+</textarea>
 
----
----
-
+<!-- ═══════════════════ UKRAINIAN CONTENT ═══════════════════ -->
+<textarea id="uk-content" style="display:none">
 <p align="center">
   <img src="docs/logo.svg" alt="ReadySet.AI" width="320" />
 </p>
@@ -492,7 +673,7 @@ Marina нова в команді. Їй потрібно зрозуміти ко
 
 Oleg використовує ReadySet.AI, щоб:
 
-- прив’язати onboarding до company knowledge base;
+- прив'язати onboarding до company knowledge base;
 - згенерувати Marina's 30/60/90-day onboarding plan;
 - затвердити AI-generated tasks період за періодом;
 - відстежувати Marina's progress і AI signals;
@@ -592,7 +773,7 @@ Oleg генерує короткий HR/process course з вибраних дж�
 
 Notifications допомагають їй залишатися в синхроні. Progress page показує momentum. Calendar дозволяє запланувати weekly sync. Kanban дозволяє відправити задачу на review.
 
-Потім демо повертається до Oleg. Та сама задача з’являється в mentor review queue, і він затверджує її в один клік.
+Потім демо повертається до Oleg. Та сама задача з'являється в mentor review queue, і він затверджує її в один клік.
 
 **Екрани:**
 
@@ -616,7 +797,7 @@ AI є operating layer продукту.
 
 Він керує повним onboarding loop:
 
-```text
+```
 Company knowledge + newcomer profile
         ↓
 AI-generated 30/60/90 plan
@@ -633,7 +814,7 @@ AI-generated plan adjustments and course suggestions
         ↓
 Mentor validates
         ↓
-Better onboarding path 
+Better onboarding path
 ```
 
 **AI використовується для того, щоб:**
@@ -863,3 +1044,25 @@ npm run build    # prod build
 npm run start    # serve prod build
 npm run lint     # eslint
 ```
+</textarea>
+
+<script>
+  marked.setOptions({ breaks: true, gfm: true });
+
+  function setLang(lang) {
+    const content = document.getElementById(lang + '-content').value;
+    document.getElementById('readme-content').innerHTML = marked.parse(content);
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-uk').classList.toggle('active', lang === 'uk');
+    try { localStorage.setItem('readme-lang', lang); } catch(e) {}
+    window.scrollTo({ top: 0 });
+  }
+
+  (function init() {
+    let lang = 'en';
+    try { lang = localStorage.getItem('readme-lang') || 'en'; } catch(e) {}
+    setLang(lang);
+  })();
+</script>
+</body>
+</html>
