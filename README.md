@@ -18,15 +18,20 @@
 
 ---
 
-> **ReadySet.AI** is a web application that turns new-hire onboarding into a guided journey grounded in the company's real documentation. The mentor cockpit generates, tracks, and adjusts plans. The newcomer workspace shows only what matters today, with source-cited answers.
+> **ReadySet.AI** is a web application that turns new-hire onboarding into a guided journey grounded in the company's real documentation. The mentor cockpit generates, tracks, and adjusts plans. The newcomer workspace shows only what matters today, with source-cited answers. ReadySet.AI reduces onboarding from a static checklist into an adaptive AI-guided workflow where mentors approve, newcomers execute, and AI detects friction before it becomes a blocker.
 
 This repository contains the **Next.js frontend**. The FastAPI backend lives in [`ai-onboarding-service`](https://github.com/mad-futurist/ai-onboarding-service).
+
+---
+## 🌍 Languages
+
+- [Українська версія](README.uk.md)
 
 ---
 
 ## 🎬 Run the demo first
 
-> **Do this first** — most screens look empty otherwise. Open the **Demo** page in the sidebar and click **"Start demo mode"**.
+> **Do this first** — go to ai-onboarding-service-frontend.vercel.app -> Open the **Demo** page in the sidebar(bottom) and click **"Start demo mode"**.
 
 The guided demo:
 
@@ -39,17 +44,256 @@ If a page looks empty after a deep jump, go to *Settings → Regenerate database
 
 ---
 
-## ⚡ Killer features
+## 🎯 Product / Use Case
+
+ReadySet.AI is an AI onboarding cockpit for role-specific employee onboarding.
+
+The product helps mentors, team leads, sales managers, and technical leads onboard new hires faster by turning company knowledge, HR processes, sales playbooks, technical documentation, product documentation, and internal workflows into a guided onboarding journey.
+
+ReadySet.AI is not limited to one department. It adapts the onboarding path to the newcomer’s role.
+
+In the demo, the main story focuses on **Oleg onboarding Marina into the sales team**, while the product also supports technical onboarding for profiles such as **Backend Developers**.
+
+For example:
+
+- a **Sales newcomer** gets sales process tasks, CRM guidance, HR/process courses, product knowledge, customer-facing playbooks, and sales workflow support;
+- a **Backend Developer** gets environment setup, architecture documentation, codebase walkthroughs, deployment guides, PR/review workflows, testing practices, and technical Ask AI support.
+
+Instead of giving newcomers a static checklist or a folder full of documents, ReadySet.AI creates a role-specific 30/60/90-day plan, answers questions with sources, detects onboarding friction, generates short courses, and keeps the mentor in control.
+
+### Main demo use case
+
+Oleg, a Sales Team Lead, needs to onboard Marina into the sales team.
+
+Marina is new. She needs to understand the company, the sales process, HR basics, internal tools, product knowledge, and what she should do every day without being overwhelmed.
+
+Oleg uses ReadySet.AI to:
+
+- ground the onboarding in the company knowledge base;
+- generate Marina's 30/60/90-day onboarding plan;
+- approve AI-generated tasks period by period;
+- monitor Marina's progress and AI signals;
+- detect blockers even when the newcomer does not explicitly ask for help;
+- create short HR/process courses from selected sources;
+- onboard an additional newcomer, Noa Benali, in minutes;
+- review submitted tasks from the shared Kanban surface.
+
+The core principle is:
+
+> AI does the heavy lifting. Humans stay in control.
+
+---
+
+## 🧭 Demo Flow
+
+The demo follows one realistic sales onboarding story: **Oleg onboards Marina into the sales team**.
+
+### Act 1 — Setup
+
+Oleg opens the mentor cockpit, connects the onboarding workspace to the company knowledge base, and generates Marina's 30/60/90-day plan with the AI Plan Generator.
+
+The plan is generated period by period, based on selected sources, and requires mentor approval.
+
+**Screens shown:**
+
+- Mentor Cockpit
+- Knowledge Base
+- AI Plan Generator
+
+**What this proves:**
+
+The operating center and the onboarding journey are in place.
+
+---
+
+### Act 2 — Marina's daily life
+
+The demo switches into Marina's newcomer workspace.
+
+Marina opens her plan, picks a task, chats with task-context AI, then reads a grounded HR/process document with a mind map and source-cited answers.
+
+She does not receive a generic course or a huge document dump. She sees what matters today.
+
+**Screens shown:**
+
+- Newcomer Home
+- My Plan
+- Ask AI
+
+**What this proves:**
+
+The newcomer gets a personalized daily path with grounded AI help.
+
+---
+
+### Act 3 — Signals & adjustments
+
+The demo switches back to Oleg.
+
+AI flags that another newcomer, Tanya, needs attention with evidence: repeated questions, blocked tasks, and review patterns. Oleg opens the signal, regenerates a targeted plan change, edits a precise task, and applies the adjustment.
+
+**Screens shown:**
+
+- Signals Center
+- Signal Detail
+- Plan Adjustment
+
+**What this proves:**
+
+AI proposes, the mentor decides. Friction is caught early, even when a newcomer is too shy or too unsure to ask directly.
+
+---
+
+### Act 4 — Author courses & onboard a new hire
+
+Oleg drafts a short HR/process course from selected sources. He reviews and approves it.
+
+Then he adds a brand-new hire, Noa Benali, generates a two-question skill check, and Noa takes the test. The result triggers plan generation in the background.
+
+**Screens shown:**
+
+- Courses
+- Add Newcomer
+- Skill Check
+- AI Plan Generation
+
+**What this proves:**
+
+The system scales onboarding. Courses and newcomer journeys can be prepared in minutes, not days.
+
+---
+
+### Act 5 — Daily rhythm & closing the loop
+
+The demo switches back to Marina.
+
+Notifications keep her in sync. The Progress page shows momentum. The Calendar lets her schedule a weekly sync. Her Kanban lets her submit a task for review.
+
+Then the demo switches back to Oleg. The same task appears in his mentor review queue, and he approves it in one click.
+
+**Screens shown:**
+
+- Notifications
+- Progress
+- Calendar
+- Newcomer Kanban
+- Mentor Kanban
+
+**What this proves:**
+
+Both sides share the same onboarding surface. AI accelerates the workflow, but humans validate important decisions.
+
+---
+
+## 🧠 Why AI is central
+
+ReadySet.AI is not a classic onboarding checklist with a chatbot added on top.
+
+AI is the operating layer of the product.
+
+It drives the full onboarding loop:
+
+```text
+Company knowledge + newcomer profile
+        ↓
+AI-generated 30/60/90 plan
+        ↓
+Mentor review and approval
+        ↓
+Newcomer daily execution
+        ↓
+Grounded AI answers with sources
+        ↓
+Signals from questions, blocked tasks, and review patterns
+        ↓
+AI-generated plan adjustments and course suggestions
+        ↓
+Mentor validates
+        ↓
+Better onboarding path
+```
+
+**AI is used to:**
+
+* generate personalized onboarding plans;
+* transform internal knowledge into actionable tasks;
+* answer newcomer questions with source citations;
+* detect onboarding friction from behavioral signals;
+* suggest mentor interventions;
+* generate short courses from company documents;
+* adapt the plan when the newcomer gets blocked or progresses faster than expected.
+
+**The product principle is:**
+
+AI proposes. Mentor decides. Newcomer progresses with context.
+
+---
+
+## 💼 Why ReadySet.AI matters for Oleg
+
+For Oleg, ReadySet.AI reduces the operational load of onboarding.
+
+Without ReadySet.AI, Oleg has to manually explain processes, collect documents, create onboarding tasks, repeat the same answers, monitor progress informally, and notice blockers too late.
+
+With ReadySet.AI, Oleg gets:
+
+- faster onboarding plan generation;
+- less manual preparation of courses and documents;
+- AI-generated 30/60/90 plans grounded in company knowledge;
+- mentor approval before AI output affects the newcomer;
+- visibility into progress, blocked tasks, and submitted work;
+- AI signals when a newcomer may be struggling;
+- evidence behind every signal, not black-box scoring;
+- a shared Kanban surface for task submission and review;
+- reusable onboarding flows for future hires.
+
+Most importantly, ReadySet.AI helps Oleg detect the invisible onboarding problem:
+
+> Some newcomers do not ask questions because they do not want to look weak, or because they do not know what they do not know.
+
+AI signals help Oleg intervene earlier, with context.
+---
+## 👤 Why ReadySet.AI matters for Marina
+
+For Marina, ReadySet.AI makes onboarding focused, guided, and less stressful.
+
+Instead of receiving too much information at once, Marina gets:
+
+- a personalized onboarding plan;
+- daily tasks that match her role and current stage;
+- clear explanations of what to do next;
+- AI answers grounded in company documents;
+- source citations, so she can trust and verify the answer;
+- task-context AI help when she is working on something specific;
+- HR/process guidance without needing to ask basic questions publicly;
+- visible progress and momentum;
+- notifications and calendar support to stay aligned with Oleg.
+
+ReadySet.AI also helps with the “I don’t know what I don’t know” problem.
+
+Marina may not always realize that she is missing context. The system can detect repeated questions, blocked tasks, or friction patterns and surface them to the mentor as signals.
+
+This makes onboarding safer:
+
+- Marina is not left alone with uncertainty;
+- Oleg gets evidence before the problem becomes serious;
+- the plan can be adjusted instead of staying static.
+
+---
+
+## ⚡ Killer Features
 
 | # | Feature | Why it matters |
 |---|---|---|
-| 1 | **AI Copilot under human control** | Every AI output (plan, course, signal, adjustment) is an editable artifact that requires explicit mentor approval. *AI proposes — mentor decides.* No silent auto-apply, no hallucination shipped to the newcomer. |
-| 2 | **AI live** | Streaming AI surfaces — plan generation, Ask AI answers, signal explanations all stream live with token-by-token feedback. |
-| 3 | **Plan generation for role & documents** | The plan is built phase by phase from the newcomer's role + the selected knowledge-base documents. Targeted, not generic. |
-| 4 | **Listening signals → role + questioning first** | The system listens: it starts from the role profile, then from the newcomer's own questions, blocked tasks and review patterns. Signals are evidence-backed (3 repeated questions, 2 tasks blocked 4 days), not opaque scores. |
-| 5 | **AI signals with proof** | Every alert shows *why* it fired — the mentor can judge instead of trusting a black box. |
-| 6 | **Course generation with control** | Mentor picks the sources, AI drafts a short course, mentor reviews and approves before publish. |
-| 7 | **RAG Ask AI** | Every answer is grounded on document chunks (pgvector + OpenAI embeddings) with inline source citations. An answer without a source is not shown. |
+| 1 | **AI Plan Generator** | Generates Marina's personalized 30/60/90-day onboarding plan from selected company sources. |
+| 2 | **Human-in-the-loop approval** | Oleg reviews and approves plans, courses, signals, and adjustments before they affect the newcomer. |
+| 3 | **Grounded Ask AI** | Marina can ask questions about HR, sales processes, tools, or tasks and receive source-cited answers. |
+| 4 | **Task-context AI** | AI help is connected to the task Marina is currently working on. |
+| 5 | **AI Signals Center** | Oleg sees evidence-backed alerts when a newcomer shows friction through questions, blocked tasks, or review patterns. |
+| 6 | **Adaptive plan adjustments** | AI proposes targeted changes to the onboarding plan, but Oleg can edit and approve them. |
+| 7 | **AI Course Authoring** | Oleg can generate short HR/process courses from selected sources and approve them before publishing. |
+| 8 | **Skill check → plan generation** | Noa takes a short skill check, and the system uses the result to generate a better onboarding path. |
+| 9 | **Shared Kanban review loop** | Marina submits a task from her Kanban; Oleg sees the same task in his review queue and approves it. |
 
 ---
 
@@ -184,115 +428,3 @@ npm run lint     # eslint
 ```
 
 ---
----
-
-<p align="center">
-  <img src="docs/logo.svg" alt="ReadySet.AI" width="320" />
-</p>
-
-<h1 align="center" style="color:#CC5500">ReadySet.AI — Сервіс онбордингу · Frontend</h1>
-
-<p align="center">
-  <b>Frontend репо:</b> <a href="https://github.com/mad-futurist/ai-onboarding-service-frontend">github.com/mad-futurist/ai-onboarding-service-frontend</a><br/>
-  <b>Backend репо:</b> <a href="https://github.com/mad-futurist/ai-onboarding-service">github.com/mad-futurist/ai-onboarding-service</a><br/>
-  <b>Live:</b> <a href="https://ai-onboarding-service-frontend.vercel.app">ai-onboarding-service-frontend.vercel.app</a>
-</p>
-
----
-
-> **ReadySet.AI** — це вебдодаток, що перетворює онбординг нового співробітника на керовану подорож, яка ґрунтується на реальній документації компанії. Кокпіт ментора генерує, відстежує та коригує плани. Простір новачка показує лише те, що важливо сьогодні, з відповідями, підкріпленими джерелами.
-
-Цей репозиторій містить **frontend на Next.js**. Бекенд на FastAPI — [`ai-onboarding-service`](https://github.com/mad-futurist/ai-onboarding-service).
-
----
-
-## 🎬 Спочатку запустіть демо
-
-> **Зробіть це першим** — інакше більшість екранів виглядатимуть порожньо. Відкрийте **Demo** у бічній панелі та натисніть **«Start demo mode»**.
-
-Керований демо-режим:
-
-- накладає **spotlight-оверлеї**, підсвічує наступний елемент і заповнює форми реалістичними даними;
-- **ніколи не клікає за вас** — кнопка *Do it* виконує підсвічену дію за бажанням;
-- покриває **5 актів** продукту (налаштування ментора → щоденне життя новачка → сигнали → курси та новий найм → щоденний ритм і цикл рев'ю);
-- дозволяє **перейти до будь-якого кроку** з `/demo`.
-
-Якщо після глибокого переходу сторінка порожня — *Settings → Regenerate database*.
-
----
-
-## ⚡ Killer-функції
-
-| # | Функція | Чому це важливо |
-|---|---|---|
-| 1 | **AI-копілот під контролем людини** | Кожен вихід ШІ (план, курс, сигнал, коригування) — це редагований артефакт, який вимагає явного схвалення ментора. *ШІ пропонує — ментор вирішує.* |
-| 2 | **AI live** | Стрімінгові AI-поверхні — генерація планів, відповіді Ask AI та пояснення сигналів стрімляться токен за токеном. |
-| 3 | **Генерація плану під роль і документи** | План будується фаза за фазою з ролі новачка + обраних документів бази знань. |
-| 4 | **Сигнали слухають: спочатку роль, потім запитання** | Система слухає: стартує з профілю ролі, далі — з власних запитань новачка, заблокованих задач, патернів рев'ю. Сигнали з доказами, не з непрозорими балами. |
-| 5 | **AI-сигнали з доказами** | Кожен алерт показує *чому* він спрацював. |
-| 6 | **Генерація курсів із контролем** | Ментор обирає джерела, ШІ пише короткий курс, ментор перевіряє та публікує. |
-| 7 | **RAG Ask AI** | Кожна відповідь ґрунтується на чанках документів (pgvector + OpenAI embeddings) з цитуванням джерел. Відповідь без джерела не показується. |
-
----
-
-## 🧩 Класичні функції
-
-- **Kanban-дошка** — ментор і новачок працюють з одними задачами через дві адаптовані поверхні.
-- **Відстеження прогресу** — momentum, виконання фаз, тижневі снапшоти, звіт у кінці.
-- **Document service** — інжест, chunking, embeddings, семантичний пошук.
-- **Нотифікації** — bell, статуси, події в межах ролі.
-- **Управління планом і задачами** — фази, критерії успіху, submit → review.
-
----
-
-## ✨ Додаткові функції
-
-- **Календар** — заплановані 1:1 і щотижневі сесії, спільні mentor ↔ newcomer.
-- **Інтеграція відео у курси** — вбудовування відеоуроків.
-- **Інтеграція Teams / Slack** *(roadmap)*.
-- **Генерація mind map** — кожна відповідь Ask AI рендерить мейнд-карту через `@xyflow/react`.
-- **Зміна палітри** — світла, кремова, темна — на основі бренд-токенів.
-- **Live-демо** — first-class керований тур, перехід до будь-якого з 60+ кроків.
-
----
-
-## 🛠 Технічні рішення
-
-| Шар           | Технології |
-| ------------- | ---------- |
-| Framework     | **Next.js 16** (App Router) + **React 19** |
-| UI            | **Tailwind v4**, **Radix UI**, **Framer Motion**, sonner, lucide-react |
-| Дані          | **TanStack Query**, **axios**, **zod**, **react-hook-form** |
-| Візуалізація  | **`@xyflow/react`** + **dagre** для графів плану та мейнд-карт |
-| DnD           | `@dnd-kit/core` + `@dnd-kit/sortable` для Kanban |
-| Auth/proxy    | Browser → Next.js → FastAPI (`/api` proxy) |
-| Демо-рантайм  | Власний `GuidedDemoTour` зі spotlight-оверлеями та `data-demo-id` |
-| i18n          | `src/i18n/messages.ts` — EN / UK |
-
-**Архітектура:** браузер викликає `/api/*` на Next.js-хості, який проксує до FastAPI-бекенду. Frontend ніколи не тримає OpenAI-ключ — усі AI-виклики йдуть через RAG-пайплайн бекенду.
-
----
-
-## 🎨 Бренд-палітра
-
-| Токен | Hex | Використання |
-|---|---|---|
-| <kbd>&nbsp;Blaze Orange&nbsp;</kbd> | `#CC5500` | Основний CTA, "Ready", чекмарк |
-| <kbd>&nbsp;Dark Orange&nbsp;</kbd> | `#FF8C00` | "Set", прогрес-бари, активні стани |
-| <kbd>&nbsp;Sandy Orange&nbsp;</kbd> | `#FFAA55` | Hover, бейджі, іконки 2-го рівня |
-| <kbd>&nbsp;Peach&nbsp;</kbd> | `#FFD199` | Фон виділених блоків |
-| <kbd>&nbsp;Cream&nbsp;</kbd> | `#FFF0E0` | Фон карток |
-| <kbd>&nbsp;Warm White&nbsp;</kbd> | `#FFF7F0` | Фон сторінки |
-| <kbd>&nbsp;Warm Brown&nbsp;</kbd> | `#7A5030` | Основний текст |
-| <kbd>&nbsp;Deep Brown&nbsp;</kbd> | `#3D2000` | Заголовки, межі карток |
-| <kbd>&nbsp;Obsidian&nbsp;</kbd> | `#1A0E00` | Dark navbar, преміальний UI |
-
----
-
-## 🚀 Локальний запуск
-
-Див. розділ **Run locally** вище — команди ідентичні.
-
-## 🌍 Продакшен
-
-Vercel (frontend) + Render (backend). Див. розділ **Run in production** вище та [README бекенду](https://github.com/mad-futurist/ai-onboarding-service#run-in-production).
