@@ -18,11 +18,11 @@ import { ConversationHistoryDrawer } from "@/components/newcomer/ask/Conversatio
 import { HistoryToggle } from "@/components/newcomer/ask/HistoryToggle";
 
 const SUGGESTED = [
-  "Where is the deployment guide?",
-  "Who reviews my PR?",
-  "How does pointage work?",
-  "What does our code review process look like?",
-  "How do I run the project locally?",
+  "What price should I quote for the Growth package?",
+  "Can I discount the price if a lead says it is too expensive?",
+  "What does Orynt do in one sentence?",
+  "Which proof points should I use for a Head of Sales?",
+  "What belongs in a discovery call brief?",
 ];
 
 const HISTORY_VISIBLE_KEY = "onbord.ask.historyVisible";
@@ -88,8 +88,12 @@ function AskAIPageInner() {
     }
     if (hydratedConvRef.current === activeConversationId) return;
     if (activeConversationQuery.data) {
-      setDraftMessages(activeConversationQuery.data.questions.map(questionToMessage));
-      hydratedConvRef.current = activeConversationId;
+      const messages = activeConversationQuery.data.questions.map(questionToMessage);
+      const timer = window.setTimeout(() => {
+        setDraftMessages(messages);
+        hydratedConvRef.current = activeConversationId;
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
   }, [activeConversationId, activeConversationQuery.data]);
 

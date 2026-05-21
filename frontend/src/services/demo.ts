@@ -10,3 +10,8 @@ export async function resetDemo(): Promise<DemoSeedResponse> {
   const { data } = await api.post<DemoSeedResponse>("/demo/reset");
   return data;
 }
+
+export async function resetSalesDemo(): Promise<DemoSeedResponse> {
+  const { data } = await api.post<DemoSeedResponse>("/demo/reset-sales");
+  return data;
+}

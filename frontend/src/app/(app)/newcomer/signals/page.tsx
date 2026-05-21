@@ -17,6 +17,7 @@ import { SignalDetailDrawer } from "@/components/ai/signals-tree/SignalDetailDra
 import { SignalRow } from "@/components/ai/SignalRow";
 import { fireConfetti } from "@/components/ai/signals-tree/confetti";
 import { toneOf } from "@/components/ai/signals-tree/toneClasses";
+import { ArenaSignalsBanner } from "@/components/arena/ArenaSignalsBanner";
 
 import { listSignalsForMe } from "@/services/signals";
 import { useDemo } from "@/providers/demo-provider";
@@ -70,6 +71,8 @@ export default function NewcomerSignalsPage() {
           </Button>
         }
       />
+
+      <ArenaSignalsBanner newcomerId={newcomerId} />
 
       <div className="flex justify-end">
         <Tabs value={view} onValueChange={(v) => setView(v as View)}>

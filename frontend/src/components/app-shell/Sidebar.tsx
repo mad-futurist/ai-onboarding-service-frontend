@@ -16,6 +16,7 @@ import {
   GraduationCap,
   CalendarDays,
   KanbanSquare,
+  Swords,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ const MENTOR_NAV: NavItem[] = [
   { href: "/mentor/courses", label: "Courses", icon: GraduationCap, badge: "AI" },
   { href: "/mentor/meetings", label: "Calendar", icon: CalendarDays },
   { href: "/mentor/signals", label: "Signals", icon: AlertTriangle },
+  { href: "/mentor/arena", label: "Arena", icon: Swords, badge: "AI" },
   { href: "/mentor/settings", label: "Settings", icon: Settings },
 ];
 
@@ -50,6 +52,7 @@ const NEWCOMER_NAV: NavItem[] = [
   { href: "/newcomer/knowledge", label: "Knowledge", icon: BookOpen, badge: "AI" },
   { href: "/newcomer/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/newcomer/ask", label: "Ask AI", icon: Sparkles, badge: "AI" },
+  { href: "/newcomer/arena", label: "Arena", icon: Swords, badge: "AI" },
   { href: "/newcomer/signals", label: "Signals", icon: AlertTriangle, badge: "AI" },
   { href: "/newcomer/progress", label: "Progress", icon: LineChart },
 ];
@@ -102,8 +105,8 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="hidden lg:flex w-[260px] shrink-0 flex-col border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
-      <div className="flex h-16 items-center gap-2.5 px-5 border-b border-[color:var(--color-border)]">
+    <aside className="sticky top-0 hidden h-screen min-h-0 w-[260px] shrink-0 flex-col border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)] lg:flex">
+      <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-[color:var(--color-border)] px-5">
         <ReadySetLogo size={32} variant="light" title="ReadySet.AI" className="shrink-0" />
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold tracking-tight">{APP_NAME}</span>
@@ -112,7 +115,7 @@ export function Sidebar() {
           </span>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
         <div className="px-2 mb-2 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-subtle)]">
           {role === "mentor" ? "Mentor cockpit" : "Your workspace"}
         </div>
@@ -120,7 +123,7 @@ export function Sidebar() {
           <NavLink key={item.href} item={item} active={matchesActive(item.href)} />
         ))}
       </nav>
-      <div className="border-t border-[color:var(--color-border)] px-3 py-3 space-y-1">
+      <div className="shrink-0 space-y-1 border-t border-[color:var(--color-border)] px-3 py-3">
         {SHARED_BOTTOM.map((item) => (
           <NavLink key={item.href} item={item} active={matchesActive(item.href)} />
         ))}

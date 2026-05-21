@@ -19,11 +19,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { ready, seeding, error } = useDemo();
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex h-screen w-full overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="flex-1 min-w-0">
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
           {seeding && !ready ? (
             <BootstrapState />
           ) : error ? (

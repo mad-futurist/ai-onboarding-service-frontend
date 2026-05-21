@@ -15,6 +15,9 @@ const baseClass =
   "group flex w-full items-start gap-3 rounded-lg border border-[color:var(--color-border)] bg-white p-3 text-left transition-colors hover:border-[color:var(--color-primary-ring)] hover:bg-[color:var(--color-primary-soft)]";
 
 export function SourceCitation({ source, index, onClick, className }: SourceCitationProps) {
+  const excerpt = source.excerpt ?? source.content_preview;
+  const score = source.score ?? source.similarity;
+
   const body = (
     <>
       <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary-active)] text-xs font-semibold">
@@ -24,15 +27,15 @@ export function SourceCitation({ source, index, onClick, className }: SourceCita
         <div className="text-sm font-medium text-[color:var(--color-fg)] truncate">
           {source.title ?? source.source ?? "Source"}
         </div>
-        {source.excerpt ? (
-          <p className="mt-0.5 line-clamp-2 text-xs text-[color:var(--color-fg-muted)]">{source.excerpt}</p>
+        {excerpt ? (
+          <p className="mt-0.5 line-clamp-2 text-xs text-[color:var(--color-fg-muted)]">{excerpt}</p>
         ) : null}
         <div className="mt-1 flex items-center gap-2 text-[11px] text-[color:var(--color-fg-subtle)]">
           <BookOpen className="h-3 w-3" />
           {source.source ?? "Knowledge base"}
-          {typeof source.score === "number" ? (
+          {typeof score === "number" ? (
             <span className="rounded-full border border-[color:var(--color-border)] px-1.5 py-0 text-[10px]">
-              relevance {Math.round((source.score ?? 0) * 100)}%
+              relevance {Math.round(score * 100)}%
             </span>
           ) : null}
         </div>

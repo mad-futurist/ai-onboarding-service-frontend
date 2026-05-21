@@ -465,8 +465,10 @@ export interface AIQuestionSource {
   document_id?: ID;
   title?: string;
   excerpt?: string;
+  content_preview?: string;
   source?: string;
   score?: number;
+  similarity?: number;
   url?: string | null;
 }
 
@@ -818,4 +820,263 @@ export interface AssessmentSubmissionInput {
   duration_seconds?: number | null;
   answers: AssessmentSubmissionAnswerInput[];
 }
+
+// ---------------------------------------------------------------------------
+// Customer Training Arena
+// ---------------------------------------------------------------------------
+
+export type ArenaRadarDimension =
+  | "opening"
+  | "discovery"
+  | "objections"
+  | "closing"
+  | "product_knowledge";
+
+export type ArenaConversationType =
+  | "discovery"
+  | "objection_handling"
+  | "closing"
+  | "technical";
+
+export type ArenaMessageColor = "green" | "yellow" | "red" | "neutral";
+
+export interface ArenaPersonaDefinition {
+  name: string;
+  role?: string | null;
+  company?: string | null;
+  traits?: string[];
+  hidden_agenda?: string | null;
+  emotional_state?: string | null;
+  voice_notes?: string | null;
+  pet_peeves?: string[];
+}
+
+export interface ArenaScenario {
+  id: ID;
+  mentor_id: ID | null;
+  audience_newcomer_id: ID | null;
+  title: string;
+  conversation_type: ArenaConversationType;
+  difficulty: number;
+  persona: ArenaPersonaDefinition;
+  goal_text: string | null;
+  success_criteria: string[] | null;
+  kb_source_ids: ID[] | null;
+  allow_live_coaching: boolean;
+  is_personal_bot: boolean;
+  description: string | null;
+  cover_emoji: string | null;
+  created_at: string;
+  locked?: boolean;
+  attempts?: number;
+  last_score?: number | null;
+}
+
+export interface ArenaScenarioCreateInput {
+  mentor_id?: ID | null;
+  audience_newcomer_id?: ID | null;
+  title: string;
+  conversation_type: ArenaConversationType;
+  difficulty: number;
+  persona: ArenaPersonaDefinition;
+  goal_text?: string | null;
+  success_criteria?: string[];
+  kb_source_ids?: ID[];
+  allow_live_coaching?: boolean;
+  description?: string | null;
+  cover_emoji?: string | null;
+}
+
+export interface ArenaSession {
+  id: ID;
+  scenario_id: ID;
+  newcomer_id: ID;
+  status: "active" | "ended" | string;
+  started_at: string;
+  ended_at: string | null;
+  overall_score: number | null;
+  radar_scores: Record<string, number> | null;
+  badges_earned: ArenaBadge[] | null;
+  summary: string | null;
+}
+
+export interface ArenaBadge {
+  code: string;
+  label: string;
+  emoji: string;
+  description?: string | null;
+}
+
+export interface ArenaAnalysisFrame {
+  messageId: ID;
+  dimension: ArenaRadarDimension;
+  delta: number;
+  label: string;
+  color: ArenaMessageColor;
+  why?: string;
+}
+
+export interface ArenaMessage {
+  id: ID;
+  session_id: ID;
+  order_index: number;
+  sender: "newcomer" | "client" | string;
+  content: string;
+  ai_analysis: Record<string, unknown> | null;
+  color: ArenaMessageColor | null;
+  created_at: string | null;
+}
+
+export interface ArenaAlternative {
+  text: string;
+  why: string;
+  citation_doc_id?: number | null;
+  citation_title?: string | null;
+}
+
+export interface ArenaTranscriptEntry {
+  message_id: ID;
+  sender: string;
+  content: string;
+  color: ArenaMessageColor;
+  label?: string | null;
+  dimension?: ArenaRadarDimension | null;
+  alternatives: ArenaAlternative[];
+}
+
+export type ArenaRadarScores = Record<ArenaRadarDimension, number>;
+
+export interface ArenaDebrief {
+  session_id: ID;
+  overall_score: number;
+  radar_scores: ArenaRadarScores;
+  headline: string;
+  summary: string;
+  badges: ArenaBadge[];
+  strongest_dimension?: ArenaRadarDimension | null;
+  weakest_dimension?: ArenaRadarDimension | null;
+  next_step?: string | null;
+  transcript: ArenaTranscriptEntry[];
+}
+
+export interface ArenaLeaderboardEntry {
+  newcomer_id: ID;
+  name: string;
+  overall_score: number;
+  sessions_played: number;
+  streak: number;
+}
+
+export interface ArenaDashboard {
+  sessions_this_week: number;
+  avg_score: number;
+  weakest_team_dimension: ArenaRadarDimension | null;
+  leaderboard: ArenaLeaderboardEntry[];
+  recent_sessions: ArenaSession[];
+  dimension_averages: Record<string, number>;
+  flagged_newcomer_ids: ID[];
+}
+
+export interface NewcomerArenaSummary {
+  newcomer_id: ID;
+  sessions_played: number;
+  overall_score: number;
+  streak: number;
+  last_session_score: number | null;
+  radar_scores: ArenaRadarScores;
+  badges: ArenaBadge[];
+}
+
+export interface PersonalBotRequestInput {
+  newcomer_id: ID;
+  focus_dimensions?: ArenaRadarDimension[];
+  pain_text?: string;
+}
+
+export interface ArenaMessageCoach {
+  sender: "client" | "newcomer";
+  headline: string;
+  emotion_read: string;
+  relationship_moves: { title: string; body: string }[];
+  watch_out_for: string;
+  better_response: string;
+  skill_focus: ArenaRadarDimension;
+}
+
+export interface ArenaKbSnippet {
+  id: ID;
+  title: string;
+  document_type: string | null;
+  domain: string | null;
+  source: string | null;
+  snippet: string;
+}
+
+export interface ArenaKbOption {
+  id: ID;
+  title: string;
+  document_type: string | null;
+  domain: string | null;
+  scope: string | null;
+  preview: string;
+}
+
+export interface PersonalBotSuggestionSignal {
+  id: ID;
+  signal_type: string;
+  title: string;
+  severity: string;
+  occurrence_count: number;
+}
+
+export interface PersonalBotSuggestionReason {
+  dimension: ArenaRadarDimension;
+  source: "signal" | "trend";
+  text: string;
+  evidence?: string;
+}
+
+export interface PersonalBotSuggestions {
+  newcomer_id: ID;
+  focus_dimensions: ArenaRadarDimension[];
+  reasons: PersonalBotSuggestionReason[];
+  sessions_count: number;
+  dimension_averages?: Record<string, number>;
+  open_arena_signals: PersonalBotSuggestionSignal[];
+}
+
+export interface PersonalBotSpec {
+  title: string;
+  conversation_type: ArenaConversationType;
+  difficulty: number;
+  persona: ArenaPersonaDefinition;
+  goal_text: string;
+  success_criteria: string[];
+  description: string;
+  cover_emoji: string;
+}
+
+export type ArenaStreamEvent =
+  | { type: "user_saved"; messageId: ID }
+  | { type: "token"; delta: string }
+  | { type: "analysis"; messageId: ID; dimension: ArenaRadarDimension; delta: number; label: string; color: ArenaMessageColor; why?: string }
+  | { type: "done"; aiMessageId: ID | null }
+  | { type: "error"; message: string };
+
+export type ArenaHintEvent =
+  | { type: "ready"; sessionId: ID }
+  | { type: "hint"; text: string; mentor_id?: ID | null; session_id: ID };
+
+export type PersonalBotStreamEvent =
+  | { type: "phase"; phase: string; label: string }
+  | {
+      type: "done";
+      scenarioId: ID;
+      title: string;
+      description: string | null;
+      cover_emoji: string | null;
+      difficulty: number;
+      persona: ArenaPersonaDefinition;
+    }
+  | { type: "error"; message: string };
 

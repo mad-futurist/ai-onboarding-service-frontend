@@ -7,12 +7,20 @@ import { cn } from "@/lib/utils";
 interface EmptyStateProps {
   title: React.ReactNode;
   description?: React.ReactNode;
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactElement<{ className?: string }>;
   action?: React.ReactNode;
   className?: string;
 }
 
 export function EmptyState({ title, description, icon: Icon = Sparkles, action, className }: EmptyStateProps) {
+  const iconNode = React.isValidElement(Icon) ? (
+    React.cloneElement(Icon, {
+      className: cn("h-5 w-5 text-[color:var(--color-primary-active)]", Icon.props.className),
+    })
+  ) : (
+    <Icon className="h-5 w-5 text-[color:var(--color-primary-active)]" />
+  );
+
   return (
     <div
       className={cn(
@@ -21,7 +29,7 @@ export function EmptyState({ title, description, icon: Icon = Sparkles, action, 
       )}
     >
       <div className="grid h-12 w-12 place-items-center rounded-2xl ai-gradient-soft border border-[color:var(--color-primary-ring)]">
-        <Icon className="h-5 w-5 text-[color:var(--color-primary-active)]" />
+        {iconNode}
       </div>
       <h3 className="text-sm font-semibold tracking-tight text-[color:var(--color-fg)]">{title}</h3>
       {description ? (

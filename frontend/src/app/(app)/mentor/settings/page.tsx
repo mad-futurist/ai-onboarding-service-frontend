@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDemo } from "@/providers/demo-provider";
 import { useTheme } from "@/providers/theme-provider";
-import { resetDemo } from "@/services/demo";
+import { resetDemo, resetSalesDemo } from "@/services/demo";
 import { listSignalCatalog } from "@/services/signals";
 import { toApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -29,7 +29,7 @@ import {
   type ThemeOption,
 } from "@/lib/themes";
 import type { SignalCatalogGroup, SignalCatalogItem } from "@/types";
-import { AlertTriangle, Check, CheckCircle2, OctagonAlert, Palette, RefreshCcw, Settings as SettingsIcon, SlidersHorizontal, Type, Undo2 } from "lucide-react";
+import { AlertTriangle, BriefcaseBusiness, Check, CheckCircle2, OctagonAlert, Palette, RefreshCcw, Settings as SettingsIcon, SlidersHorizontal, Type, Undo2 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/settings/LanguageSwitcher";
 
 export default function SettingsPage() {
@@ -79,11 +79,31 @@ export default function SettingsPage() {
     onError: (err) => toast.error("Reset failed", { description: toApiError(err).message }),
   });
 
+  const resetSalesMut = useMutation({
+    mutationFn: resetSalesDemo,
+    onSuccess: async (seed) => {
+      toast.success("Sales demo database regenerated", {
+        description: `Recreated ${seed.personas?.length ?? 2} personas, ${seed.documents_created ?? 0} sales documents, ${seed.courses_created ?? 0} course, ${seed.tasks_created ?? 0} tasks and ${seed.signals_created ?? 0} signals.`,
+      });
+      qc.clear();
+      sessionStorage.removeItem("onbord.seeded.v1");
+      await refreshPersonas();
+    },
+    onError: (err) => toast.error("Sales reset failed", { description: toApiError(err).message }),
+  });
+
   const handleRegenerate = () => {
     const ok = window.confirm(
       "Regenerate database will delete all onboarding demo data in this workspace and recreate Oleg, Marina and Tanya. Continue?",
     );
     if (ok) resetMut.mutate();
+  };
+
+  const handleRegenerateSales = () => {
+    const ok = window.confirm(
+      "Rebase for sales team will delete all onboarding demo data and recreate only Oleg and Marina with sales documents, sales tasks, courses, Arena bot and sales signals. Continue?",
+    );
+    if (ok) resetSalesMut.mutate();
   };
 
   return (
@@ -283,11 +303,20 @@ export default function SettingsPage() {
           </Button>
           <Button
             variant="ai"
-            disabled={resetMut.isPending}
+            disabled={resetMut.isPending || resetSalesMut.isPending}
             onClick={handleRegenerate}
             data-demo-id="settings-regenerate"
           >
             <RefreshCcw className="h-4 w-4" /> {resetMut.isPending ? "Regenerating..." : "Regenerate database"}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={resetMut.isPending || resetSalesMut.isPending}
+            onClick={handleRegenerateSales}
+            data-demo-id="settings-rebase-sales"
+            className="border-[color:var(--color-primary)] text-[color:var(--color-primary-active)] hover:bg-[color:var(--color-primary-soft)]"
+          >
+            <BriefcaseBusiness className="h-4 w-4" /> {resetSalesMut.isPending ? "Rebasing sales..." : "Rebase for sales team"}
           </Button>
         </CardContent>
       </Card>

@@ -84,7 +84,14 @@ export const SIGNAL_TYPE_LABEL: Record<string, string> = {
   testing_friction: "Testing friction",
   architecture_friction: "Architecture friction",
   jira_workflow_friction: "Jira workflow friction",
+  price_list_friction: "Price list confusion",
+  company_info_friction: "Company info confusion",
   knowledge_friction: "Knowledge friction",
+  arena_low_opening: "Arena · weak openings",
+  arena_low_discovery: "Arena · weak discovery",
+  arena_low_objections: "Arena · weak objection handling",
+  arena_low_closing: "Arena · weak closing",
+  arena_low_product_knowledge: "Arena · weak product knowledge",
 };
 
 export type SignalToneTone = "positive" | "attention" | "critical";

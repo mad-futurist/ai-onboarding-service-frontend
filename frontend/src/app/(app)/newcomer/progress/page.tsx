@@ -20,6 +20,7 @@ import { ProgressHero } from "@/components/newcomer/progress/ProgressHero";
 import { WeeklyVelocity } from "@/components/newcomer/progress/WeeklyVelocity";
 import { MilestoneTrack } from "@/components/newcomer/progress/MilestoneTrack";
 import { TaskRow } from "@/components/newcomer/progress/TaskRow";
+import { ProgressArenaBlock } from "@/components/arena/ProgressArenaBlock";
 
 import { useDemo } from "@/providers/demo-provider";
 import { getNewcomerPlan } from "@/services/newcomers";
@@ -85,6 +86,8 @@ export default function NewcomerProgressPage() {
         </div>
         <MilestoneTrack tasks={tasks} />
       </div>
+
+      <ProgressArenaBlock newcomerId={newcomerId} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <TaskListCard

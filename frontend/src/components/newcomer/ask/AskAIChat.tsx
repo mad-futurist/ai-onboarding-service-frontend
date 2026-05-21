@@ -96,7 +96,7 @@ export function AskAIChat({
             <div className="rounded-2xl bg-white p-2 shadow-[var(--shadow-elevated)]">
               <Textarea
                 rows={4}
-                placeholder="Ask anything about your team, processes, docs…"
+                placeholder="Ask about pricing, company info, processes, docs..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 data-demo-id="ask-ai-input"
