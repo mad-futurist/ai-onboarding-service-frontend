@@ -48,11 +48,13 @@ interface PersonaCardProps {
 export function PersonaCard({ scenario, onEnter }: PersonaCardProps) {
   const locked = !!scenario.locked && !scenario.is_personal_bot;
   const accent = CONVERSATION_ACCENT[scenario.conversation_type] ?? CONVERSATION_ACCENT.discovery;
+  const scenarioSlug = slugifyScenarioTitle(scenario.title);
 
   return (
     <motion.div
       whileHover={{ y: locked ? 0 : -4, scale: locked ? 1 : 1.01 }}
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
+      data-demo-id={`arena-scenario-${scenarioSlug}`}
       className={cn(
         "relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] shadow-[var(--shadow-card)]",
         locked && "opacity-80",
@@ -119,7 +121,13 @@ export function PersonaCard({ scenario, onEnter }: PersonaCardProps) {
               <Lock className="h-3.5 w-3.5" /> Locked
             </Button>
           ) : (
-            <Button size="sm" variant="ai" onClick={onEnter} className="gap-1.5">
+            <Button
+              size="sm"
+              variant="ai"
+              onClick={onEnter}
+              className="gap-1.5"
+              data-demo-id={`arena-enter-${scenarioSlug}`}
+            >
               <Swords className="h-3.5 w-3.5" />
               Enter Arena
             </Button>
@@ -136,4 +144,14 @@ export function PersonaCard({ scenario, onEnter }: PersonaCardProps) {
       ) : null}
     </motion.div>
   );
+}
+
+function slugifyScenarioTitle(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }

@@ -227,12 +227,11 @@ export function PersonalBotModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="relative max-w-3xl overflow-hidden p-0">
-        <div className="relative">
-          <div className="absolute inset-0">
-            <AuroraBackground intensity="subtle" />
-          </div>
-          <div className="relative z-10 p-6">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-hidden p-0">
+        <div className="pointer-events-none absolute inset-0">
+          <AuroraBackground intensity="subtle" />
+        </div>
+        <div className="relative max-h-[calc(100dvh-2rem)] overflow-y-auto p-6">
             <AnimatePresence mode="wait">
               {stage === "brief" ? (
                 <StageBrief
@@ -282,7 +281,6 @@ export function PersonalBotModal({
                 />
               ) : null}
             </AnimatePresence>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

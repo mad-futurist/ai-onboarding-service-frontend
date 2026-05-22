@@ -15,6 +15,9 @@ const MENTOR_KEY = "onbord.mentor_id.v1";
 const NEWCOMER_KEY = "onbord.newcomer_id.v1";
 const GUIDED_DEMO_KEY = "onbord.guidedDemo.active.v1";
 const GUIDED_DEMO_STEP_KEY = "onbord.guidedDemo.step.v1";
+const GUIDED_DEMO_VARIANT_KEY = "onbord.guidedDemo.variant.v1";
+
+export type GuidedDemoVariant = "full" | "sales";
 
 interface DemoContextValue {
   ready: boolean;
@@ -29,8 +32,9 @@ interface DemoContextValue {
   activePersona: DemoPersona | null;
   guidedDemoActive: boolean;
   guidedDemoStep: number;
+  guidedDemoVariant: GuidedDemoVariant;
   setRole: (role: Role) => void;
-  startGuidedDemo: () => void;
+  startGuidedDemo: (variant?: GuidedDemoVariant) => void;
   stopGuidedDemo: () => void;
   setGuidedDemoStep: (step: number) => void;
   selectPersona: (
@@ -110,6 +114,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [personas, setPersonas] = React.useState<DemoPersona[]>([]);
   const [guidedDemoActive, setGuidedDemoActive] = React.useState(false);
   const [guidedDemoStepState, setGuidedDemoStepState] = React.useState(0);
+  const [guidedDemoVariant, setGuidedDemoVariant] =
+    React.useState<GuidedDemoVariant>("full");
 
   const seedMut = useMutation({
     mutationFn: seedDemo,
@@ -130,8 +136,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
       const guidedActive = window.sessionStorage.getItem(GUIDED_DEMO_KEY) === "1";
       const guidedStep = Number(window.sessionStorage.getItem(GUIDED_DEMO_STEP_KEY) ?? "0");
+      const storedGuidedVariant = window.sessionStorage.getItem(GUIDED_DEMO_VARIANT_KEY);
       setGuidedDemoActive(guidedActive);
       setGuidedDemoStepState(Number.isFinite(guidedStep) ? guidedStep : 0);
+      setGuidedDemoVariant(storedGuidedVariant === "sales" ? "sales" : "full");
     });
   }, []);
 
@@ -242,11 +250,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const startGuidedDemo = React.useCallback(() => {
+  const startGuidedDemo = React.useCallback((variant: GuidedDemoVariant = "full") => {
     setGuidedDemoActive(true);
+    setGuidedDemoVariant(variant);
     setGuidedDemoStep(0);
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem(GUIDED_DEMO_KEY, "1");
+      window.sessionStorage.setItem(GUIDED_DEMO_VARIANT_KEY, variant);
     }
   }, [setGuidedDemoStep]);
 
@@ -256,6 +266,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem(GUIDED_DEMO_KEY);
       window.sessionStorage.removeItem(GUIDED_DEMO_STEP_KEY);
+      window.sessionStorage.removeItem(GUIDED_DEMO_VARIANT_KEY);
     }
   }, []);
 
@@ -302,6 +313,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       activePersona,
       guidedDemoActive,
       guidedDemoStep: guidedDemoStepState,
+      guidedDemoVariant,
       setRole,
       startGuidedDemo,
       stopGuidedDemo,
@@ -323,6 +335,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       activePersona,
       guidedDemoActive,
       guidedDemoStepState,
+      guidedDemoVariant,
       setRole,
       startGuidedDemo,
       stopGuidedDemo,

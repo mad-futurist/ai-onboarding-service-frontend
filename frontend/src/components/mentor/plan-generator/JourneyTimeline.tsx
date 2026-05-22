@@ -80,7 +80,16 @@ export function JourneyTimeline({
   // Map a `day` to a percentage on the rail.
   const pct = (day: number) => (Math.max(0, Math.min(horizon, day)) / horizon) * 100;
 
-  const hasPeriods = journey.periods.length > 0;
+  // Display periods chronologically so a newly-added period lands after the previous one.
+  const periods = React.useMemo(
+    () =>
+      [...journey.periods].sort(
+        (a, b) => a.start_day - b.start_day || a.index - b.index,
+      ),
+    [journey.periods],
+  );
+
+  const hasPeriods = periods.length > 0;
 
   return (
     <section
@@ -106,7 +115,7 @@ export function JourneyTimeline({
             </h2>
             <p className="mt-1 text-sm text-[color:var(--color-fg-muted)]">
               {hasPeriods
-                ? `${journey.periods.length} period${journey.periods.length === 1 ? "" : "s"} · horizon ${horizon} days`
+                ? `${periods.length} period${periods.length === 1 ? "" : "s"} · horizon ${horizon} days`
                 : "No period generated yet — start the first one to lay the path."}
             </p>
           </div>
@@ -141,7 +150,7 @@ export function JourneyTimeline({
           {/* The rail itself */}
           <div className="relative mt-1 h-2 rounded-full bg-gradient-to-r from-[color:var(--color-border)] via-[color:var(--color-border)] to-[color:var(--color-border)]">
             {/* Filled segments per period */}
-            {journey.periods.map((p, idx) => {
+            {periods.map((p, idx) => {
               const meta = STATUS_META[p.status];
               return (
                 <motion.div
@@ -177,7 +186,7 @@ export function JourneyTimeline({
 
           {/* Connector lines from rail to cards */}
           <div className="relative mt-1 h-6">
-            {journey.periods.map((p) => {
+            {periods.map((p) => {
               const mid = (pct(p.start_day) + pct(p.end_day)) / 2;
               return (
                 <div
@@ -191,20 +200,20 @@ export function JourneyTimeline({
         </div>
 
         {/* Period cards (horizontal scroll on small screens, grid on large) */}
-        <div className="-mx-2 mt-2 overflow-x-auto pb-1">
+        <div className="-mx-2 mt-2 overflow-x-auto pt-4 pb-1">
           <div
             className={cn(
               "flex min-w-full gap-3 px-2",
-              journey.periods.length <= 3 && "lg:grid lg:grid-cols-4",
-              journey.periods.length >= 4 && "lg:grid",
+              periods.length <= 3 && "lg:grid lg:grid-cols-4",
+              periods.length >= 4 && "lg:grid",
             )}
             style={
-              journey.periods.length >= 4
-                ? { gridTemplateColumns: `repeat(${journey.periods.length + 1}, minmax(0,1fr))` }
+              periods.length >= 4
+                ? { gridTemplateColumns: `repeat(${periods.length + 1}, minmax(0,1fr))` }
                 : undefined
             }
           >
-            {journey.periods.map((p, idx) => (
+            {periods.map((p, idx) => (
               <PeriodCard
                 key={p.id}
                 period={p}
@@ -214,7 +223,7 @@ export function JourneyTimeline({
                 onAdjustPeriod={onAdjustPeriod}
               />
             ))}
-            <AddPeriodCard onClick={onAddPeriod} reduce={!!reduce} index={journey.periods.length} />
+            <AddPeriodCard onClick={onAddPeriod} reduce={!!reduce} index={periods.length} />
           </div>
         </div>
       </div>

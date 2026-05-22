@@ -154,7 +154,10 @@ export default function NewcomerProfilePage() {
   const pendingAdjustment = data.adjustments?.find((a) => a.status === "pending");
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
+    <div
+      className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6"
+      data-demo-id="mentor-newcomer-overview"
+    >
       <PageHeader
         eyebrow={newcomer.team}
         title={

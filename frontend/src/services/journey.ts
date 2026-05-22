@@ -46,7 +46,18 @@ function derivePeriods(
   newcomer: Newcomer | null,
 ): JourneyPeriod[] {
   const unique = dedupePlans(plans);
-  const startDate = newcomer?.start_date ? parseISO(newcomer.start_date) : null;
+
+  // Anchor the journey on the newcomer's start_date when known, otherwise on
+  // the earliest plan period_start. This avoids stacking every plan at D0 when
+  // the newcomer has no recorded start date.
+  let anchor: Date | null = newcomer?.start_date ? parseISO(newcomer.start_date) : null;
+  if (!anchor) {
+    for (const plan of unique) {
+      if (!plan.period_start) continue;
+      const parsed = parseISO(plan.period_start);
+      if (!anchor || parsed.getTime() < anchor.getTime()) anchor = parsed;
+    }
+  }
 
   const periods = unique
     .map((plan, idx) => {
@@ -55,13 +66,13 @@ function derivePeriods(
 
       let startDay = 0;
       let endDay = 30;
-      if (planStart && startDate) {
-        startDay = Math.max(0, differenceInCalendarDays(planStart, startDate));
+      if (planStart && anchor) {
+        startDay = Math.max(0, differenceInCalendarDays(planStart, anchor));
       } else {
         startDay = idx * 30;
       }
-      if (planEnd && startDate) {
-        endDay = Math.max(startDay + 1, differenceInCalendarDays(planEnd, startDate));
+      if (planEnd && anchor) {
+        endDay = Math.max(startDay + 1, differenceInCalendarDays(planEnd, anchor));
       } else if (planStart && planEnd) {
         endDay = startDay + Math.max(1, Math.floor((planEnd.getTime() - planStart.getTime()) / DAY_MS));
       } else {

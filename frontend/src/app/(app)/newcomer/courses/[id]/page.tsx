@@ -771,7 +771,12 @@ function LessonView({
             ? "Scroll to the end to auto-mark this lesson as done."
             : "Last lesson of the course — finish to celebrate."}
         </span>
-        <Button variant={isCompleted ? "outline" : "default"} size="sm" onClick={onToggleComplete}>
+        <Button
+          variant={isCompleted ? "outline" : "default"}
+          size="sm"
+          onClick={onToggleComplete}
+          data-demo-id="newcomer-course-mark-done"
+        >
           <CheckCircle2 className="h-3.5 w-3.5" />
           {isCompleted ? "Mark as not done" : "Mark as done"}
         </Button>

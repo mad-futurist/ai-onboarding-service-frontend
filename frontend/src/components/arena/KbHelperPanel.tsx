@@ -43,7 +43,10 @@ export function KbHelperPanel({ sessionId }: KbHelperPanelProps) {
   const [panelOpen, setPanelOpen] = React.useState(true);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
+    <div
+      className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]"
+      data-demo-id="arena-live-documents"
+    >
       <button
         type="button"
         onClick={() => setPanelOpen((open) => !open)}

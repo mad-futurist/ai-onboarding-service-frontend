@@ -204,6 +204,7 @@ function CoachTrigger({
     <button
       type="button"
       onClick={onClick}
+      data-demo-id="arena-message-coach"
       title="AI coach insight"
       className={cn(
         "mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-transparent text-[color:var(--color-fg-muted)] opacity-0 transition-all hover:bg-[color:var(--color-surface-muted)] hover:text-[color:var(--color-fg)] group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary-ring)]",

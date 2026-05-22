@@ -44,7 +44,10 @@ export default function ArenaDebriefPage() {
   const confettiTrigger = shouldCelebrate ? data.session_id : 0;
 
   return (
-    <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <div
+      className="relative mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6"
+      data-demo-id="arena-debrief-page"
+    >
       <Confetti trigger={confettiTrigger} />
       <div className="flex items-center justify-between">
         <Button asChild variant="ghost" size="sm" className="gap-1">
@@ -146,7 +149,7 @@ export default function ArenaDebriefPage() {
         </div>
       ) : null}
 
-      <div className="space-y-3">
+      <div className="space-y-3" data-demo-id="arena-debrief-transcript">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-muted)]">
           Full transcript — every line scored. Click a red message for alternatives.
         </div>

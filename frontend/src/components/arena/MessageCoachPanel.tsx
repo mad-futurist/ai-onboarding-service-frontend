@@ -20,6 +20,7 @@ export function MessageCoachPanel({ loading, data, isSelf }: MessageCoachPanelPr
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.2 }}
+      data-demo-id="arena-message-coach-panel"
       className={cn(
         "mt-1 overflow-hidden",
         isSelf ? "flex justify-end" : "flex justify-start",

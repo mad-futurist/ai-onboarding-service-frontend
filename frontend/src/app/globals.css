@@ -626,3 +626,7 @@ body.demo-active [data-radix-select-content],
 body.demo-active [data-sonner-toaster] {
   z-index: 90 !important;
 }
+
+body.demo-active [data-demo-id="arena-message-coach"] {
+  opacity: 1;
+}

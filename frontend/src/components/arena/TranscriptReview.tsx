@@ -53,6 +53,7 @@ export function TranscriptReview({ transcript }: TranscriptReviewProps) {
           >
             <button
               onClick={() => isRed && toggle(entry.message_id)}
+              data-demo-id={isRed ? "arena-transcript-red-message" : undefined}
               className={cn(
                 "flex w-full items-start gap-3 px-4 py-3 text-left",
                 isRed && "cursor-pointer hover:bg-rose-100/40",
@@ -90,6 +91,7 @@ export function TranscriptReview({ transcript }: TranscriptReviewProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
+                  data-demo-id="arena-transcript-alternatives"
                   className="overflow-hidden border-t border-rose-200"
                 >
                   <div className="space-y-2 px-4 py-3">

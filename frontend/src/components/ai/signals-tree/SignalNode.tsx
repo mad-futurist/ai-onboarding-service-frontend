@@ -50,6 +50,7 @@ export function SignalNode({ signal, onClick }: SignalNodeProps) {
         fresh && !reduced ? TONE_GLOW[tone] : "shadow-[var(--shadow-card)]",
       ].join(" ")}
       data-demo-id={tone === "attention" ? "signals-attention-signal" : undefined}
+      data-demo-alt-id={signal.signal_type.startsWith("arena_") ? "signals-arena-signal" : undefined}
     >
       {fresh && !reduced ? (
         <span

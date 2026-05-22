@@ -132,7 +132,10 @@ export default function SignalsCenterPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6">
+    <div
+      className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6"
+      data-demo-id="mentor-signals-page"
+    >
       <PageHeader
         eyebrow="AI Signals Center"
         title={

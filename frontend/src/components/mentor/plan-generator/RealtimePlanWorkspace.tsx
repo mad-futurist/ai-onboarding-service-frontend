@@ -396,7 +396,7 @@ export function RealtimePlanWorkspace({
                 <div className="text-sm font-semibold text-[color:var(--color-fg)]">Add guidance</div>
                 <Textarea
                   rows={5}
-                  placeholder="Example: make week 1 lighter, add a setup checkpoint, avoid infra tasks before day 5..."
+                  placeholder="Example: add discovery role-play, a CRM checkpoint, and pricing objection practice before live calls..."
                   value={commentDraft}
                   onChange={(event) => setCommentDraft(event.target.value)}
                 />

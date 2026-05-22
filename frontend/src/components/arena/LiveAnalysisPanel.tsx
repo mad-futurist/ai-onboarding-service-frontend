@@ -97,7 +97,10 @@ export function LiveAnalysisPanel({
 
       {/* Goal */}
       {scenario?.goal_text ? (
-        <div className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
+        <div
+          className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]"
+          data-demo-id="arena-live-goal"
+        >
           <button
             type="button"
             onClick={() => setGoalOpen((open) => !open)}
@@ -145,7 +148,10 @@ export function LiveAnalysisPanel({
       {Number.isFinite(sessionId) ? <KbHelperPanel sessionId={sessionId} /> : null}
 
       {/* Per-message analysis log */}
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-4">
+      <div
+        className="flex min-h-0 flex-1 flex-col rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-4"
+        data-demo-id="arena-live-comments"
+      >
         <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--color-fg-muted)]">
           <Trophy className="h-3 w-3" /> Message-by-message
         </div>

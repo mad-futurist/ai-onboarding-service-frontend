@@ -65,7 +65,10 @@ export default function SimulationChatPage() {
   }, [endMut, ended, openDebrief, sessionId]);
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-6rem)] max-w-7xl flex-col gap-3 overflow-hidden px-4 py-4 sm:px-6 lg:h-[calc(100vh-7rem)]">
+    <div
+      className="mx-auto flex h-[calc(100vh-6rem)] max-w-7xl flex-col gap-3 overflow-hidden px-4 py-4 sm:px-6 lg:h-[calc(100vh-7rem)]"
+      data-demo-id="arena-session-page"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="icon-sm">
@@ -95,6 +98,7 @@ export default function SimulationChatPage() {
             onClick={handleEnd}
             disabled={endMut.isPending}
             className="gap-1.5"
+            data-demo-id="arena-session-end"
           >
             <Sparkles className="h-3.5 w-3.5" />
             {endMut.isPending ? "Generating debrief…" : ended ? "Open debrief" : "End & debrief"}

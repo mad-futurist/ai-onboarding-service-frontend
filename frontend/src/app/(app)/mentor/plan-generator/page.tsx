@@ -59,10 +59,12 @@ export default function PlanGeneratorEntryPage() {
     notes: string;
     label: string;
     goal: string;
+    start: string;
+    end: string;
     sources: Set<ID>;
   } | null>(null);
   const [mentorNotes, setMentorNotes] = React.useState(
-    "Backend-leaning. Strong on APIs + SQL, weaker on deployment + infra. Lighter week 1 if possible.",
+    "Sales ramp. Strong on first outreach drafts, needs practice with discovery, CRM hygiene, KPI reporting, and price objections.",
   );
 
   const newcomersQ = useQuery({
@@ -136,6 +138,8 @@ export default function PlanGeneratorEntryPage() {
         mentor_notes: buildMentorNotes(mentorNotes, notesFinal, "live"),
         document_ids: liveSession ? Array.from(liveSession.sources) : Array.from(defaultSources),
         period_label: liveSession?.label,
+        period_start: liveSession?.start || undefined,
+        period_end: liveSession?.end || undefined,
         goal: liveSession?.goal || undefined,
       }),
     onSuccess: (resp) => {
@@ -157,6 +161,8 @@ export default function PlanGeneratorEntryPage() {
         notes: input.notes,
         label: input.label,
         goal: input.goal,
+        start: input.start,
+        end: input.end,
         sources: input.sources,
       });
     } else {
@@ -384,7 +390,7 @@ function MentorIntentCard({
           rows={5}
           value={notes}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="e.g. Backend-leaning, weak on infra. Lighter week 1 (intros booked). Prefer 30-min reading tasks."
+          placeholder="e.g. Sales ramp, strong on outreach drafts. Add discovery practice, CRM proof, KPI reporting, and pricing objection coaching."
         />
       </CardContent>
     </Card>

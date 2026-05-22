@@ -455,7 +455,7 @@ function PeriodStep({
             <Textarea
               rows={3}
               value={notes}
-              placeholder="Strong on APIs, weak on infra. Lighter week 1, intros booked."
+              placeholder="Strong on outreach drafts, needs discovery practice and CRM/KPI discipline."
               onChange={(e) => onNotesChange(e.target.value)}
               data-demo-id="period-flow-notes"
             />

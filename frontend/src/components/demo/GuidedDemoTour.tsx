@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useDemo } from "@/providers/demo-provider";
+import { useDemo, type GuidedDemoVariant } from "@/providers/demo-provider";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/constants";
 
@@ -1124,8 +1124,517 @@ const TOUR_STEPS: DemoTourStep[] = [
   },
 ];
 
-export function getDemoTourStepSummaries(): DemoTourStepSummary[] {
-  return TOUR_STEPS.map((step, index) => ({
+const SALES_TOUR_STEPS: DemoTourStep[] = [
+  {
+    id: "sales-navigation",
+    route: "/demo",
+    role: "mentor",
+    target: "nav-mentor",
+    title: "Start from navigation",
+    body: "This sales walkthrough is the short path: mentor cockpit, Marina's work, Arena coaching, and the signal that changes her plan. Open Overview from the sidebar.",
+    waitForClickTarget: "nav-mentor",
+  },
+  {
+    id: "sales-mentor-dashboard",
+    route: "/mentor",
+    role: "mentor",
+    target: "mentor-dashboard-overview",
+    title: "Mentor dashboard",
+    body: "The first time a screen appears, the sales tour lights the whole working surface before narrowing the story.",
+  },
+  {
+    id: "sales-dashboard-newcomers",
+    route: "/mentor",
+    role: "mentor",
+    target: "mentor-dashboard-newcomers",
+    title: "Focus on Marina's cohort",
+    body: "The newcomer cards surface progress and attention signals from the mentor cockpit.",
+  },
+  {
+    id: "sales-open-marina",
+    route: "/mentor",
+    role: "mentor",
+    target: "mentor-newcomer-marina-kovalenko",
+    title: "Open Marina",
+    body: "Click Marina to inspect the sales onboarding view behind the dashboard card.",
+    waitForClickTarget: "mentor-newcomer-marina-kovalenko",
+  },
+  {
+    id: "sales-marina-overview",
+    route: "/mentor/newcomers/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "mentor-newcomer-overview",
+    title: "Marina overview",
+    body: "Her overview brings plan progress, blocked work, signals, and AI adjustments onto one screen.",
+  },
+  {
+    id: "sales-open-marina-switcher",
+    route: "/mentor/newcomers/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "role-switcher-trigger",
+    title: "Step into Marina's workspace",
+    body: "Open the persona switcher to continue as the newcomer.",
+    waitForClickTarget: "role-switcher-trigger",
+  },
+  {
+    id: "sales-choose-marina",
+    route: "/mentor/newcomers/",
+    routeMatch: "prefix",
+    role: "mentor",
+    target: "role-persona-marina-kovalenko",
+    title: "View as Marina",
+    body: "Choose Marina Kovalenko.",
+    waitForClickTarget: "role-persona-marina-kovalenko",
+  },
+  {
+    id: "sales-marina-home",
+    route: "/newcomer",
+    role: "newcomer",
+    target: "newcomer-dashboard-overview",
+    title: "Marina's home",
+    body: "The newcomer screen starts with today's focus, plan context, and grounded help.",
+  },
+  {
+    id: "sales-nav-board",
+    route: "/newcomer",
+    role: "newcomer",
+    target: "nav-newcomer-kanban",
+    title: "Open the tasks board",
+    body: "Move from the home overview to Marina's task board.",
+    waitForClickTarget: "nav-newcomer-kanban",
+  },
+  {
+    id: "sales-board",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "newcomer-kanban-page",
+    title: "Task board",
+    body: "The board shows the full sales workstream before we zoom into one active task.",
+  },
+  {
+    id: "sales-open-board-task",
+    route: "/newcomer/kanban",
+    role: "newcomer",
+    target: "newcomer-kanban-first-active-task",
+    title: "Open an active task",
+    body: "Click one active task to see task context, sources, and Ask AI.",
+    waitForClickTarget: "newcomer-kanban-first-active-task",
+  },
+  {
+    id: "sales-task-detail",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-task-detail",
+    title: "Task context",
+    body: "The task detail is grounded in criteria, related documents, and the right next help channel.",
+  },
+  {
+    id: "sales-open-task-ai",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-task-chat",
+    title: "Ask AI from the task",
+    body: "Open the task-aware assistant.",
+    waitForClickTarget: "newcomer-task-chat",
+  },
+  {
+    id: "sales-send-task-question",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "task-ask-submit",
+    title: "Ask with task context",
+    body: "The prompt is ready. Send it to see a grounded answer.",
+    fill: [
+      {
+        target: "task-ask-input",
+        value: "What is the strongest first step for this sales task and which source should I read?",
+      },
+    ],
+    waitForClickTarget: "task-ask-submit",
+  },
+  {
+    id: "sales-task-answer",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "task-ask-latest-answer",
+    title: "Answer tied to the task",
+    body: "The answer is attached to Marina's task context instead of a generic chat.",
+  },
+  {
+    id: "sales-back-to-task",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "task-ask-back-to-task",
+    title: "Return to the task",
+    body: "Go back so the related sales document can open.",
+    waitForClickTarget: "task-ask-back-to-task",
+  },
+  {
+    id: "sales-open-document",
+    route: "/newcomer/tasks/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-task-first-source",
+    title: "Open a document",
+    body: "Tasks point into the knowledge base. Open the first source.",
+    waitForClickTarget: "newcomer-task-first-source",
+  },
+  {
+    id: "sales-document",
+    route: "/newcomer/knowledge/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "document-preview",
+    title: "Document preview",
+    body: "Read the source itself before asking AI to reshape it.",
+  },
+  {
+    id: "sales-open-mindmap",
+    route: "/newcomer/knowledge/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "document-tab-mindmap",
+    title: "Open the mind map",
+    body: "Switch from preview to a visual map of the document.",
+    waitForClickTarget: "document-tab-mindmap",
+  },
+  {
+    id: "sales-generate-mindmap",
+    route: "/newcomer/knowledge/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "document-mindmap-generate",
+    title: "Generate mind map",
+    body: "Generate the map from this sales source.",
+    waitForClickTarget: "document-mindmap-generate",
+  },
+  {
+    id: "sales-mindmap-result",
+    route: "/newcomer/knowledge/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "document-mindmap-result",
+    title: "Mind map generated",
+    body: "Marina can scan structure, branches, and key ideas before going deeper.",
+  },
+  {
+    id: "sales-nav-courses",
+    route: "/newcomer/knowledge/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "nav-newcomer-courses",
+    title: "Open courses",
+    body: "Continue to one focused sales course.",
+    waitForClickTarget: "nav-newcomer-courses",
+  },
+  {
+    id: "sales-courses",
+    route: "/newcomer/courses",
+    role: "newcomer",
+    target: "newcomer-courses-page",
+    title: "Sales courses",
+    body: "The course library is lit first, then we open the course assigned to Marina.",
+  },
+  {
+    id: "sales-open-course",
+    route: "/newcomer/courses",
+    role: "newcomer",
+    target: "newcomer-courses-first-course",
+    title: "Open one course",
+    body: "Open the first recommended course.",
+    waitForClickTarget: "newcomer-courses-first-course",
+  },
+  {
+    id: "sales-course-reader",
+    route: "/newcomer/courses/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-course-reader",
+    title: "Course reader",
+    body: "The reader keeps the lesson, takeaways, and progress in one workspace.",
+  },
+  {
+    id: "sales-mark-course-done",
+    route: "/newcomer/courses/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "newcomer-course-mark-done",
+    title: "Mark the lesson done",
+    body: "Mark this lesson as done to show course progress moving.",
+    waitForClickTarget: "newcomer-course-mark-done",
+  },
+  {
+    id: "sales-nav-arena",
+    route: "/newcomer/courses/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "nav-newcomer-arena",
+    title: "Open Arena",
+    body: "Move from learning into sales practice.",
+    waitForClickTarget: "nav-newcomer-arena",
+  },
+  {
+    id: "sales-arena-lobby",
+    route: "/newcomer/arena",
+    role: "newcomer",
+    target: "arena-lobby-page",
+    title: "Arena lobby",
+    body: "Arena is shown as a full screen first: scenarios, performance, and live practice entry points.",
+  },
+  {
+    id: "sales-open-skeptical-cfo",
+    route: "/newcomer/arena",
+    role: "newcomer",
+    target: "arena-scenario-skeptical-cfo",
+    title: "Skeptical CFO",
+    body: "Enter the Skeptical CFO sales scenario.",
+    waitForClickTarget: "arena-enter-skeptical-cfo",
+    advanceDelayAfterClick: 1200,
+  },
+  {
+    id: "sales-arena-session",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-session-page",
+    title: "Live sales simulation",
+    body: "The conversation screen is fully visible before the tour starts sending example lines.",
+  },
+  {
+    id: "sales-arena-good-message",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-session-send",
+    title: "Send a strong message",
+    body: "This opening asks for finance pain before pitching.",
+    fill: [
+      {
+        target: "arena-session-input",
+        value: "Before we talk tools, where does slow onboarding cost finance the most today?",
+      },
+    ],
+    waitForClickTarget: "arena-session-send",
+    advanceDelayAfterClick: 2600,
+  },
+  {
+    id: "sales-arena-bad-message",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-session-send",
+    title: "Send a weaker message",
+    body: "Now send a rushed pitch so the scoring and coach have contrast.",
+    fill: [
+      {
+        target: "arena-session-input",
+        value: "Our AI fixes onboarding fast, so should I send you the contract today?",
+      },
+    ],
+    waitForClickTarget: "arena-session-send",
+    advanceDelayAfterClick: 2600,
+  },
+  {
+    id: "sales-arena-coach-option",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-message-coach",
+    title: "AI coach on a message",
+    body: "Click the message coach option to inspect a better move.",
+    waitForClickTarget: "arena-message-coach",
+  },
+  {
+    id: "sales-arena-coach-panel",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-message-coach-panel",
+    title: "Coach feedback",
+    body: "Arena can explain the relationship move and stronger reply while practice is live.",
+  },
+  {
+    id: "sales-arena-documents",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-live-documents",
+    title: "Helper documents",
+    body: "Sales documents stay open beside the call.",
+  },
+  {
+    id: "sales-arena-goal",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-live-goal",
+    title: "Session goal",
+    body: "The target outcome and success criteria stay visible.",
+  },
+  {
+    id: "sales-arena-comments",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-live-comments",
+    title: "Live comments",
+    body: "Message-by-message feedback tracks what just happened.",
+  },
+  {
+    id: "sales-end-arena",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-session-end",
+    title: "End and debrief",
+    body: "End the practice session to open the debrief.",
+    waitForClickTarget: "arena-session-end",
+    advanceDelayAfterClick: 1800,
+  },
+  {
+    id: "sales-debrief",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-debrief-page",
+    title: "Debrief",
+    body: "The debrief screen is highlighted as a full sales coaching moment.",
+  },
+  {
+    id: "sales-transcript",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-debrief-transcript",
+    title: "Full transcript",
+    body: "Every message is scored in the transcript.",
+  },
+  {
+    id: "sales-open-better-message",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-transcript-red-message",
+    title: "Open a better answer",
+    body: "Click one red transcript line to see stronger alternatives.",
+    waitForClickTarget: "arena-transcript-red-message",
+  },
+  {
+    id: "sales-better-message",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "arena-transcript-alternatives",
+    title: "Best alternatives",
+    body: "The debrief turns one weak message into coached options.",
+  },
+  {
+    id: "sales-open-mentor-switcher",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "role-switcher-trigger",
+    title: "Return to Oleg",
+    body: "Switch back to the mentor to turn Arena evidence into a plan change.",
+    waitForClickTarget: "role-switcher-trigger",
+  },
+  {
+    id: "sales-choose-mentor",
+    route: "/newcomer/arena/session/",
+    routeMatch: "prefix",
+    role: "newcomer",
+    target: "role-persona-oleg-bondarenko",
+    title: "Choose Oleg",
+    body: "Re-enter the mentor workspace.",
+    waitForClickTarget: "role-persona-oleg-bondarenko",
+  },
+  {
+    id: "sales-nav-signals",
+    route: "/mentor",
+    role: "mentor",
+    target: "nav-mentor-signals",
+    title: "Open mentor signals",
+    body: "Open Signals from the mentor navigation.",
+    waitForClickTarget: "nav-mentor-signals",
+  },
+  {
+    id: "sales-signals",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "mentor-signals-page",
+    title: "Mentor signals",
+    body: "Signals keep Arena feedback actionable inside the mentor cockpit.",
+  },
+  {
+    id: "sales-open-arena-signal",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "signals-arena-signal",
+    title: "Take the Arena signal",
+    body: "Open Marina's Arena signal.",
+    waitForClickTarget: "signals-arena-signal",
+  },
+  {
+    id: "sales-regenerate-plan",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "signal-drawer-adjust-plan",
+    title: "Regenerate the plan",
+    body: "Use the signal drawer to start a signal-aware plan adjustment.",
+    waitForClickTarget: "signal-drawer-adjust-plan",
+  },
+  {
+    id: "sales-target-adjustment",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "adjust-entry-granular",
+    title: "Targeted changes",
+    body: "Choose targeted changes so Arena evidence becomes a focused plan update.",
+    waitForClickTarget: "adjust-entry-granular",
+  },
+  {
+    id: "sales-confirm-period",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "adjust-period-confirm",
+    title: "Confirm the period",
+    body: "Confirm the period the live adjustment should reshape.",
+    waitForClickTarget: "adjust-period-confirm",
+  },
+  {
+    id: "sales-generate-adjustment",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "period-adjustment-generate",
+    title: "Generate from the signal",
+    body: "Generate the draft from the Arena signal.",
+    waitForClickTarget: "period-adjustment-generate",
+  },
+  {
+    id: "sales-adjustment-live",
+    route: "/mentor/signals",
+    role: "mentor",
+    target: "period-adjustment-draft",
+    title: "Live plan update",
+    body: "The short sales demo ends with a live signal-driven plan draft ready for mentor review.",
+  },
+];
+
+function getTourSteps(variant: GuidedDemoVariant): DemoTourStep[] {
+  return variant === "sales" ? SALES_TOUR_STEPS : TOUR_STEPS;
+}
+
+export function getDemoTourStepSummaries(
+  variant: GuidedDemoVariant = "full",
+): DemoTourStepSummary[] {
+  return getTourSteps(variant).map((step, index) => ({
     index,
     id: step.id,
     title: step.title,
@@ -1141,6 +1650,7 @@ export function GuidedDemoTour() {
   const {
     guidedDemoActive,
     guidedDemoStep,
+    guidedDemoVariant,
     setGuidedDemoStep,
     stopGuidedDemo,
     setRole,
@@ -1153,7 +1663,8 @@ export function GuidedDemoTour() {
   const filledStepRef = React.useRef<string | null>(null);
   const pendingClickAdvanceRef = React.useRef<string | null>(null);
 
-  const step = TOUR_STEPS[guidedDemoStep] ?? null;
+  const tourSteps = getTourSteps(guidedDemoVariant);
+  const step = tourSteps[guidedDemoStep] ?? null;
   const targetPath = step ? pathOnly(step.route) : "/";
   const onTargetRoute = step ? routeMatches(pathname, targetPath, step.routeMatch) : false;
 
@@ -1169,12 +1680,12 @@ export function GuidedDemoTour() {
 
       window.setTimeout(() => {
         pendingClickAdvanceRef.current = null;
-        if (guidedDemoStep >= TOUR_STEPS.length - 1) {
+        if (guidedDemoStep >= tourSteps.length - 1) {
           stopGuidedDemo();
           return;
         }
         const nextIndex = guidedDemoStep + 1;
-        const nextStep = TOUR_STEPS[nextIndex];
+        const nextStep = tourSteps[nextIndex];
         setGuidedDemoStep(nextIndex);
         if (nextStep) {
           setRole(nextStep.role);
@@ -1189,7 +1700,7 @@ export function GuidedDemoTour() {
         }
       }, options?.delay ?? step.advanceDelayAfterClick ?? 650);
     },
-    [guidedDemoStep, router, setGuidedDemoStep, setRole, step, stopGuidedDemo],
+    [guidedDemoStep, router, setGuidedDemoStep, setRole, step, stopGuidedDemo, tourSteps],
   );
 
   React.useEffect(() => {
@@ -1318,7 +1829,7 @@ export function GuidedDemoTour() {
   const arrow = getArrowPosition(targetRect);
   const stageRect = spotlightRect ?? targetRect;
   const current = guidedDemoStep + 1;
-  const total = TOUR_STEPS.length;
+  const total = tourSteps.length;
   const waitingForClick = !!step.waitForClickTarget;
   const canAdvance = onTargetRoute && targetReady && !paused;
 
@@ -1445,7 +1956,7 @@ export function GuidedDemoTour() {
               >
                 {!canAdvance
                   ? "Skip step"
-                  : guidedDemoStep >= TOUR_STEPS.length - 1
+                  : guidedDemoStep >= tourSteps.length - 1
                     ? "Finish"
                     : "Next"}
                 <ChevronRight className="h-3.5 w-3.5" />

@@ -67,7 +67,10 @@ export default function ArenaLobbyPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <div
+      className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 space-y-6"
+      data-demo-id="arena-lobby-page"
+    >
       <PageHeader
         eyebrow="Customer Training Arena"
         title={

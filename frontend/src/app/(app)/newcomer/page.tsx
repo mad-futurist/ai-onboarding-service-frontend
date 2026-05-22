@@ -50,7 +50,10 @@ export default function NewcomerHomePage() {
   const phaseLabel = week <= 4 ? "Phase 1" : week <= 8 ? "Phase 2" : "Phase 3";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6">
+    <div
+      className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6"
+      data-demo-id="newcomer-dashboard-overview"
+    >
       <PageHeader
         eyebrow={`Day ${day} · Week ${week}`}
         title={

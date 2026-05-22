@@ -38,6 +38,7 @@ export function NewcomerInputBar({
     <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-4 py-3 sm:px-6">
       <div className="flex items-end gap-2">
         <Textarea
+          data-demo-id="arena-session-input"
           ref={ref}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -65,6 +66,7 @@ export function NewcomerInputBar({
             onClick={submit}
             disabled={isStreaming || disabled || !value.trim()}
             aria-label="Send"
+            data-demo-id="arena-session-send"
           >
             <SendHorizonal className="h-4 w-4" />
           </Button>

@@ -154,7 +154,10 @@ export default function NewcomerCoursesPage() {
   const loading = personal.isLoading || published.isLoading;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <div
+      className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6"
+      data-demo-id="newcomer-courses-page"
+    >
       {loading && !allVisibleCourses.length ? (
         <Skeleton className="h-56 rounded-[24px]" />
       ) : (

@@ -3,9 +3,11 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   ArrowRight,
+  BriefcaseBusiness,
   ChevronDown,
   GitBranch,
   GraduationCap,
@@ -29,6 +31,7 @@ import { cn } from "@/lib/utils";
 
 import { useDemo } from "@/providers/demo-provider";
 import { getDemoTourStepSummaries } from "@/components/demo/GuidedDemoTour";
+import { resetSalesDemo } from "@/services/demo";
 
 interface Act {
   id: number;
@@ -116,13 +119,16 @@ const SHOWCASE = [
 
 export default function DemoPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     setRole,
     newcomerId,
     guidedDemoActive,
+    guidedDemoVariant,
     startGuidedDemo,
     stopGuidedDemo,
     setGuidedDemoStep,
+    refreshPersonas,
   } = useDemo();
 
   const go = (href: string, role: "mentor" | "newcomer") => {
@@ -134,7 +140,10 @@ export default function DemoPage() {
     router.push(target);
   };
 
-  const stepSummaries = React.useMemo(() => getDemoTourStepSummaries(), []);
+  const stepSummaries = React.useMemo(
+    () => getDemoTourStepSummaries(guidedDemoActive ? guidedDemoVariant : "full"),
+    [guidedDemoActive, guidedDemoVariant],
+  );
   const [stepQuery, setStepQuery] = React.useState("");
   const filteredSteps = React.useMemo(() => {
     const q = stepQuery.trim().toLowerCase();
@@ -148,9 +157,18 @@ export default function DemoPage() {
   }, [stepSummaries, stepQuery]);
 
   const jumpToStep = (index: number) => {
-    if (!guidedDemoActive) startGuidedDemo();
+    if (!guidedDemoActive) startGuidedDemo("full");
     setGuidedDemoStep(index);
   };
+
+  const salesDemoMut = useMutation({
+    mutationFn: resetSalesDemo,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+      await refreshPersonas();
+      startGuidedDemo("sales");
+    },
+  });
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 space-y-6">
@@ -213,15 +231,29 @@ export default function DemoPage() {
                   <X className="h-4 w-4" /> Stop demo mode
                 </Button>
               ) : (
-                <Button
-                  type="button"
-                  variant="ai"
-                  onClick={startGuidedDemo}
-                  data-demo-id="demo-tour-start"
-                  className="shadow-[var(--shadow-ai)]"
-                >
-                  <PlayCircle className="h-4 w-4" /> Start demo mode
-                </Button>
+                <>
+                  <Button
+                    type="button"
+                    variant="ai"
+                    onClick={() => startGuidedDemo("full")}
+                    data-demo-id="demo-tour-start"
+                    className="shadow-[var(--shadow-ai)]"
+                  >
+                    <PlayCircle className="h-4 w-4" /> Start demo mode
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={salesDemoMut.isPending}
+                    onClick={() => salesDemoMut.mutate()}
+                    data-demo-id="demo-sales-tour-start"
+                  >
+                    <BriefcaseBusiness className="h-4 w-4" />
+                    {salesDemoMut.isPending
+                      ? "Preparing sales demo..."
+                      : "Start demo for sales teams"}
+                  </Button>
+                </>
               )}
               <Button type="button" variant="ghost" onClick={() => go("/mentor", "mentor")}>
                 Manual path <ArrowRight className="h-4 w-4" />
