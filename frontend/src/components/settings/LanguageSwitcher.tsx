@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { LOCALES } from "@/i18n/messages";
+import { LOCALES } from "@/i18n";
 import { useLocale } from "@/providers/locale-provider";
 
 export function LanguageSwitcher() {
