@@ -846,6 +846,152 @@ const uiTranslationsUk: Record<string, string> = {
   "The full loop, in one tour": "Повний цикл за один тур",
   "Setup → plan → grounded knowledge → courses → signals → adjustments → new hire onboarded → daily rhythm → submit → approve. Mentor and newcomer always on the same surface, AI doing the heavy lifting, humans deciding.":
     "Налаштування → план → знання з джерел → курси → сигнали → коригування → новий найм онбординг → щоденний ритм → надсилання → схвалення. Ментор і новачок завжди на одній поверхні, AI виконує важку роботу, люди вирішують.",
+  /*----/mentor/settings----**/
+  "Signal catalog": "Каталог сигналів адаптації",
+  "What the onboarding signal engine can surface today, grouped by outcome.":
+    "Що може виявити механізм адаптації сигналів сьогодні, згруповано за результатами.",
+  low: "низький",
+  medium: "середній",
+  high: "високий",
+  "Good signals": "Позитивні сигнали",
+  "Fast task completion": "Швидке виконання завдання",
+  When: "Умова",
+  "A task is moved to done within 24 hours of creation.":
+    "Завдання виконано протягом 24 годин із моменту створення.",
+  "Task title, created date, updated date, elapsed hours.":
+    "Назва завдання, дати створення та оновлення, витрачені години.",
+  Action: "Дія HR",
+  "Offer a stretch task or pull the next milestone forward.":
+    "Запропонувати складніше завдання або наблизити наступний етап.",
+  "MVP trigger": "Тригер",
+  "Set any onboarding task to done soon after it was created.":
+    "Завдання завершено невдовзі після створення.",
+  "Attention signals": "Сигнали уваги",
+  "Blocking signals": "Блокувальні сигнали",
+  "Healthy onboarding momentum worth reinforcing.":
+    "Здоровий темп адаптації, який варто підтримувати.",
+  "Steady onboarding progress": "Стабільний прогрес адаптації",
+  "At least three tasks are done and no task is currently blocked.":
+    "Виконано щонайменше три завдання, і наразі немає жодного заблокованого.",
+  "Completed task count and absence of blockers.":
+    "Кількість виконаних завдань та відсутність блокувань.",
+  "Keep the current plan pace and add optional depth if useful.":
+    "Дотримуватися поточного темпу плану та за потреби додати матеріали для поглиблення знань.",
+  "Mark 3 tasks done and keep blocked tasks at 0.":
+    "Позначити 3 завдання як виконані при 0 заблокованих завдань.",
+  "Early friction that should be clarified before it becomes blocking.":
+    "Початкові труднощі, які слід прояснити, перш ніж вони заблокують процес.",
+  "Deployment friction": "Труднощі з розгортанням системи",
+  "The newcomer asks repeated deployment questions or uses deployment docs repeatedly.":
+    "Новачок повторно ставить запитання щодо розгортання або неодноразово переглядає відповідну документацію.",
+  "Recent AI questions, repeated sources, and related task changes.":
+    "Нещодавні запитання до штучного інтелекту, повторювані джерела інформації та пов'язані зміни у завданнях.",
+  "Schedule a focused deployment walkthrough.":
+    "Запланувати цільову демонстрацію та детальний розбір процесу розгортання.",
+  "Ask 2+ deployment questions in the AI assistant.":
+    "Поставити 2 або більше запитань щодо розгортання в ШІ-помічнику.",
+  "Knowledge base friction": "Труднощі з базою знань",
+  "The same source appears repeatedly or AI answers receive repeated negative feedback.":
+    "Одне й те саме джерело з'являється повторно або відповіді ШІ регулярно отримують негативні відгуки.",
+  "Repeated source titles and negative answer feedback count.":
+    "Повторювані назви джерел та кількість негативних відгуків на відповіді.",
+  "Review the source and create a shorter role-specific guide.":
+    "Переглянути першоджерело та створити коротший посібник під конкретну роль.",
+  "Ask questions that repeatedly cite the same source, or send 3 negative feedbacks.":
+    "Поставити запитання, які неодноразово посилаються на одне й те саме джерело, або надіслати 3 негативні відгуки.",
+  "Price list confusion": "Плутанина з прайс-листом",
+  "The newcomer repeatedly asks about package prices, discount rules, or quoting guidance.":
+    "Новачок неодноразово запитує про вартість пакетів послуг, правила надання знижок або формування комерційних пропозицій.",
+  "Recent AI questions and repeated price-list source usage.":
+    "Нещодавні запитання до ШІ та повторне використання джерел із прайс-листами.",
+  "Review package fit, discount approval rules, and value framing before live calls.":
+    "Переглянути відповідність пакетів послуг, правила погодження знижок та аргументацію цінності перед живими дзвінками з клієнтами.",
+  "Ask 2+ price or discount questions in the AI assistant.":
+    "Поставити 2 або більше запитань щодо цін чи знижок у ШІ-помічнику.",
+  "Company information confusion": "Плутанина з інформацією про компанію",
+  "The newcomer repeatedly asks how to explain the company, ICP, proof points, or buyer context.":
+    "Новачок неодноразово запитує, як презентувати компанію, ідеальний портрет клієнта (ICP), ключові аргументи чи контекст покупця.",
+  "Recent AI questions and repeated company-profile source usage.":
+    "Нещодавні запитання до ШІ та повторне використання джерел із профілем компанії.",
+  "Run a positioning walkthrough with ICP, proof points, and buyer-specific talk tracks.":
+    "Провести розбір позиціонування компанії з урахуванням ICP, аргументів на користь продукту та сценаріїв розмови для конкретних покупців.",
+  "Ask 2+ company-positioning questions in the AI assistant.":
+    "Поставити 2 або більше запитань щодо позиціонування компанії в ШІ-помічнику.",
+  "The plan contains three or more deployment-related tasks.":
+    "План містить три або більше завдань, пов'язаних із розгортанням системи.",
+  "Deployment task count and task titles.":
+    "Кількість завдань із розгортання та їхні назви.",
+  "Merge similar tasks into one end-to-end exercise.":
+    "Об'єднати схожі завдання в одне наскрізне практичне завдання.",
+  "Create or keep 3 deployment tasks in the plan.":
+    "Створити або залишити в плані 3 завдання з розгортання.",
+  "Plan stall risk": "Ризик зупинки плану",
+  "Several tasks are queued or in progress, but no task is done yet.":
+    "Кілька завдань перебувають у черзі або в процесі виконання, але жодне ще не завершене.",
+  "Open task count and zero completed tasks.":
+    "Кількість відкритих завдань та відсутність виконаних.",
+  "Pick one starter task with the newcomer and define the next concrete action.":
+    "Обрати разом із новачком одне просте стартове завдання та визначити наступну конкретну дію.",
+  "Create 3+ todo/in-progress tasks and keep done tasks at 0.":
+    "Створити 3 або більше завдань у статусі «Зробити» чи «У процесі» при 0 виконаних завдань.",
+  "Task stuck in review": "Завдання застрягло на перевірці",
+  "A task has been in review for more than 3 days without a decision.":
+    "Завдання перебуває на перевірці понад 3 дні без ухвалення рішення.",
+  "Task title, time since the move to in_review.":
+    "Назва завдання, час із моменту переведення в статус «На перевірці».",
+  "Review the submission today or schedule a 15-minute sync with the newcomer.":
+    "Перевірити виконану роботу сьогодні або запланувати 15-хвилинну коротку зустріч із новачком.",
+  "Move a task to in_review and leave it there for 3+ days.":
+    "Перевести завдання у статус «На перевірці» та залишити його там на 3 або більше днів.",
+  "Signals that can stop the newcomer from progressing independently.":
+    "Сигнали, які можуть завадити новачкові просуватися далі самостійно.",
+  "One or more onboarding tasks are marked as blocked.":
+    "Одне або кілька завдань з адаптації позначені як заблоковані.",
+  "Blocked task count and task titles.":
+    "Кількість заблокованих завдань та їхні назви.",
+  "Clarify instructions, assign a helper, or adapt the plan.":
+    "Прояснити інструкції, призначити помічника або адаптувати план.",
+  "Mark any onboarding task as blocked.":
+    "Позначити будь-яке завдання з адаптації як заблоковане.",
+  "Access or permissions blocker": "Блокування доступу або дозволів",
+  "Access questions repeat or an access-related task/report is blocked.":
+    "Повторюються запитання щодо доступу або заблоковано завдання чи звіт, пов'язані з доступами.",
+  "Access questions, blocked task events, or blocked reports.":
+    "Запитання про доступи, події блокування завдань або заблоковані звіти.",
+  "Check accounts, repository access, VPN, and tool invitations.":
+    "Перевірити облікові записи, доступи до репозиторіїв, VPN та запрошення в інструменти.",
+  "Ask 2+ access questions, or report an access blocker.":
+    "Поставити 2 або більше запитань про доступи або повідомити про блокування через відсутність доступу.",
+  "Missing onboarding plan": "Відсутній план адаптації",
+  "The newcomer has no actionable tasks in their onboarding plan.":
+    "Новачок не має жодного активного завдання у своєму плані адаптації.",
+  "Zero onboarding tasks found for the newcomer.":
+    "Знайдено нуль завдань з адаптації для цього новачка.",
+  "Generate or assign a first-week plan before expecting autonomous progress.":
+    "Створити або призначити план на перший тиждень, перш ніж очікувати від працівника самостійного прогресу.",
+  "Create a newcomer without tasks, then run signal detection.":
+    "Створити профіль нового працівника без завдань, а потім запустити виявлення сигналів.",
+  "Task bounced from review repeatedly":
+    "Завдання постійно повертається з перевірки",
+  "A task has been returned from review at least twice.":
+    "Завдання повертали з перевірки щонайменше двічі.",
+  "Number of review return comments on the task.":
+    "Кількість коментарів про повернення завдання на доопрацювання.",
+  "Pair on the task in real time and clarify acceptance criteria.":
+    "Виконати завдання разом у режимі реального часу та чітко роз'яснити критерії прийняття результату.",
+  "Return a task from review with a comment at least twice.":
+    "Повернути завдання з перевірки з коментарем принаймні двічі.",
+  "Regenerate wipes the demo workspace and recreates the production demo personas, plans, documents, signals and calendar.":
+    "Регенерація повністю очищує демонстраційне робоче середовище та наново створює робочі демо-профілі, плани, документи, сигнали та календар.",
+  "Oleg Bondarenko": "Олег Бондаренко",
+  "Marina Kovalenko": "Марина Коваленко",
+  "Viewing as personas": "Перегляд від імені користувача",
+  "Backend Developer · Payments": "Backend-розробник · Платежі",
+  "Regenerate database": "Перестворити базу даних",
+  "Rebase for sales team": "Переналаштувати для команди продажів",
+  "Tanya Petrova": "Таня Петрова",
+  "Marina Kovalenko (id #99)": "Марина Коваленко (id #99)",
+  "Oleg Bondarenko (id #150)": "Олег Бондаренко (id #150)",
 };
 
 export default uiTranslationsUk;
