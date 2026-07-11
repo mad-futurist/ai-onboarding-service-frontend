@@ -1061,6 +1061,109 @@ const uiTranslationsUk: Record<string, string> = {
   h: "год",
   "mentor work absorbed": "рутинної роботи ментора взято на себе",
   confidence: "достовірність",
+  /*----/mentor/newcomers/new----*/
+  "Onboarding setup": "Налаштування адаптації",
+  "Add a newcomer": "Додати новачка",
+  "Tell AI who's joining the team - it personalizes the plan and crafts a calibration skill check.":
+    "Розкажіть ШІ, хто приєднується до команди — це допоможе персоналізувати план та створити калібрувальну перевірку навичок.",
+  Profile: "Профіль",
+  Step: "Крок",
+  "Skills & gaps": "Навички та прогалини",
+  "Step 4 / Review": "Крок 4 / Перевірка даних",
+  "Full name": "Повне ім'я",
+  "Work email": "Робоча пошта",
+  "tanya@company.com": "tanya@company.com",
+  "This profile becomes the basis of the AI-generated onboarding plan. You can edit anything later.":
+    "Цей профіль стане основою для плану адаптації, створеного ШІ. Ви зможете відредагувати будь-що пізніше.",
+  Required: "Обов’язково",
+  "Invalid email": "Недійсна електронна адреса",
+  Role: "Роль",
+  Seniority: "Рівень (Seniority)",
+  Середній: "Середній",
+  Team: "Команда",
+  Payments: "Платежі",
+  "Start date": "Дата початку",
+  "Main goal for the first month": "Головна мета на перший місяць",
+  "Ship first backend PR within 2 weeks":
+    "Опублікувати перший backend PR протягом 2 тижнів",
+  "Known skills": "Відомі навички",
+  "Python, PostgreSQL, REST APIs": "Python, PostgreSQL, REST APIs",
+  "Comma-separated. The AI uses these to deprioritize redundant tasks.":
+    "Розділяйте комами. ШІ використовує їх, щоб знизити пріоритет зайвих завдань.",
+  "Known gaps": "Відомі прогалини",
+  "Deployment, internal architecture": "Деплой, внутрішня архітектура",
+  "What you suspect they'll need to learn. AI uses this to seed the right pairing sessions and docs.":
+    "Що їм, на вашу думку, доведеться вивчити. ШІ використовує це для підбору парних сесій та документації.",
+  "Describe what you want to probe. The AI uses the role context, your notes and the selected sources to design a short skill check the newcomer takes on day 1.":
+    "Опишіть, що ви хочете перевірити. ШІ використає контекст ролі, ваші нотатки та вибрані джерела, щоб створити короткий тест, який новачок складе в перший день.",
+  "Review newcomer": "Переглянути профіль новачка",
+  "Not specified": "Не вказано",
+  "No skill check generated yet. The newcomer will skip the day-1 test if you finish without one.":
+    "Тест для перевірки навичок ще не згенеровано. Новачок пропустить тестування в перший день, якщо ви завершите налаштування без нього.",
+  "Couldn't add": "Не вдалося додати",
+  "User with this email already exists":
+    "Користувач із цією електронною поштою вже існує",
+  /*----/mentor/knowledge-base----*/
+  "Feed the AI with your company knowledge":
+    "Наповнюйте ШІ знаннями вашої компанії",
+  "Add handbooks, architecture docs, runbooks. The AI grounds plans and answers in what your team actually knows.":
+    "Додавайте довідники, архітектурну документацію, інструкції (runbooks). ШІ будуватиме плани та відповіді на основі реального досвіду вашої команди.",
+  "Browse & Audit": "Перегляд та аудит",
+  "Search title…": "Пошук за назвою…",
+  "All domains": "Усі домени",
+  "All types": "Усі типи",
+  "14 results": "14 результатів",
+  technical: "технічний",
+  team: "команда",
+  "3 docs": "3 док.",
+  "Чекліст code review": "Чекліст code review",
+  checklist: "чекліст",
+  "for backend_developer": "для backend_developer",
+  "Посібник із deployment": "Посібник із deployment",
+  guide: "гайд",
+  "Огляд архітектури команди Payments": "Огляд архітектури команди Payments",
+  architecture: "архітектура",
+  sales: "продажі",
+  role: "роль",
+  "Основи продажів: ліди, подальші дії, CRM":
+    "Основи продажів: ліди, подальші дії, CRM",
+  "for sales_manager": "для sales_manager",
+  "Заперечення у продажах, кейси та AI-клієнти":
+    "Заперечення у продажах, кейси та AI-клієнти",
+  playbook: "плейбук",
+  "Що має вміти менеджер з продажів": "Що має вміти менеджер з продажів",
+  reference: "довідник",
+  "Щоденник задач KPI продажів": "Щоденник задач KPI продажів",
+  "Регламент роботи відділу продажів 2026":
+    "Регламент роботи відділу продажів 2026",
+  policy: "політика",
+  process: "процес",
+  "1 doc": "1 док.",
+  "Посібник із Jira workflow": "Посібник із Jira workflow",
+  hr: "HR",
+  enterprise: "компанія",
+  "Company Handbook": "Company Handbook (Довідник компанії)",
+  handbook: "довідник",
+  "for everyone": "для всіх",
+  general: "загальне",
+  "Orynt Company Information":
+    "Orynt Company Information (Інформація про компанію)",
+  company_profile: "профіль компанії",
+  "for sales_manager,bdr,account_executive,all":
+    "для sales_manager,bdr,account_executive,all",
+  finance: "фінанси",
+  "Orynt 2026 Price List": "Orynt 2026 Price List (Прайс-лист)",
+  price_list: "прайс-лист",
+  product: "продукт",
+  "Опис продукту v3 - AI-агент онбордингу продажів":
+    "Опис продукту v3 - AI-агент онбордингу продажів",
+  "Посадова інструкція менеджера з продажів":
+    "Посадова інструкція менеджера з продажів",
+  "Topics the AI detected in your KB — and the gaps it thinks you should fill.":
+    "Теми, які ШІ виявив у вашій базі знань, та прогалини, які, на його думку, варто заповнити.",
+  "Add documents and we'll surface the topics they cover.":
+    "Додайте документи, і ми відобразимо теми, які вони охоплюють.",
+  "Missing context": "Відсутній контекст",
 };
 
 export default uiTranslationsUk;
