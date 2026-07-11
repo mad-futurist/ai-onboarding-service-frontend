@@ -992,6 +992,75 @@ const uiTranslationsUk: Record<string, string> = {
   "Tanya Petrova": "Таня Петрова",
   "Marina Kovalenko (id #99)": "Марина Коваленко (id #99)",
   "Oleg Bondarenko (id #150)": "Олег Бондаренко (id #150)",
+  /*----/mentor----**/
+  "Good day, Oleg": "Добрий день, Олеже",
+  "AI is watching 2 onboardings. 2 need a look from you.":
+    "ШІ відстежує 2 процеси адаптації. 2 з них потребують вашої уваги.",
+  "Open knowledge base": "Відкрити базу знань",
+  signals: "сигнал",
+  drafts: "чернеток",
+  saved: "заощаджено",
+  "· last 24h": "· за останні 24 год",
+  "Active newcomers": "Активні новачки",
+  "Across 2 teams": "У 2 командах",
+  "Needs your eyes": "Потребують уваги",
+  "1 flagged · 1 blocked": "1 позначений · 1 заблокований",
+  "Average progress": "Середній прогрес",
+  "Across 2 active plans": "У 2 активних планах",
+  "Hours AI saved you": "Годин заощаджено ШІ",
+  "This week, vs. doing it manually": "Цього тижня, порівняно з ручною роботою",
+  "What needs you today": "Що потребує вашої уваги сьогодні",
+  Tanya: "Таня",
+  "Backend Developer": "Backend-розробник",
+  "AI noticed: Готовність до deployment ще не підтверджена":
+    "ШІ помітив: Готовність до розгортання системи ще не підтверджена",
+  Marina: "Марина",
+  "Менеджер з продажів / BDR": "Менеджер з продажів / BDR",
+  "1 blocked tasks — a 15-min call usually unblocks the week":
+    "1 заблоковане завдання — 15-хвилинний зідзвон зазвичай розблоковує тиждень",
+  "What AI handled overnight": "Що ШІ зробив за ніч",
+  "Drafted onboarding reply for Tanya":
+    "Створив чернетку відповіді щодо адаптації для Тані",
+  "Summarized week 1 progress for Marina":
+    "Підготував підсумок прогресу за 1-й тиждень для Марини",
+  "Your newcomers": "Ваші новачки",
+  "All (2)": "Усі (2)",
+  "Needs eyes (2)": "Потребують уваги (2)",
+  "On track (0)": "Усе за планом (0)",
+  TP: "ТП",
+  "3/8 tasks done": "3/8 завдань виконано",
+  "What AI noticed": "Що помітив ШІ",
+  MK: "МК",
+  "Менеджер з продажів / BDR · Продажі": "Менеджер з продажів / BDR · Продажі",
+  "1 blocked": "1 заблоковано",
+  "Готовність до deployment ще не підтверджена":
+    "Готовність до розгортання системи ще не підтверджена",
+  "2 days ago": "2 дні тому",
+  "Deployment Readiness Attention": "Увага: готовність до розгортання системи",
+  "confidence 82%": "достовірність 82%",
+  "Cohort heartbeat": "Пульс когорти",
+  "Each column is a newcomer. Taller bars mean more shipped. Colored caps mean AI noticed something.":
+    "Кожен стовпець — це новачок. Вищі стовпці означають більше виконаних завдань. Кольорові позначки вгорі означають, що ШІ щось помітив.",
+  "Mentor moves": "Дії ментора",
+  "Three things you could do in one click right now.":
+    "Три речі, які ви можете зробити в один клік просто зараз.",
+  "Check in with Marina": "Зв'язатися з Мариною",
+  "They have 1 blocked tasks. A 15-min call usually unblocks the week.":
+    "Вона має 1 заблоковане завдання. 15-хвилинний зідзвон зазвичай розблоковує тиждень.",
+  "Schedule 15 min": "Запланувати 15 хв",
+  "Adjust Tanya's plan": "Скоригувати план Тані",
+  "AI noticed Готовність до deployment ще не підтверджена. Want to reshape the next two weeks around it?":
+    "ШІ помітив: «Готовність до розгортання системи ще не підтверджена». Бажаєте перебудувати наступні два тижні навколо цього?",
+  "This week in numbers": "Цей тиждень у цифрах",
+  "What the AI and you shipped together since Monday.":
+    "Що ви та ШІ реалізували разом із понеділка.",
+  "Mark as done 🎉": "Позначити як виконане 🎉",
+  "tasks shipped": "завдань виконано",
+  "signals resolved": "сигналів опрацьовано",
+  "AI drafts you approved": "чернеток ШІ, які ви схвалили",
+  h: "год",
+  "mentor work absorbed": "рутинної роботи ментора взято на себе",
+  confidence: "достовірність",
 };
 
 export default uiTranslationsUk;
