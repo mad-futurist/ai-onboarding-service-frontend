@@ -2,12 +2,7 @@
 
 import * as React from "react";
 
-import {
-  formatMessage,
-  MESSAGES,
-  UI_TRANSLATIONS_UK,
-  type Locale,
-} from "@/i18n/messages";
+import { MESSAGES, formatMessage, uiTranslationsUk, type Locale } from "@/i18n";
 
 const STORAGE_KEY = "onbord.locale.v1";
 const DEFAULT_LOCALE: Locale = "uk";
@@ -83,9 +78,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
           const original =
             stored && current !== stored && current !== translatedStored
               ? current
-              : stored ?? current;
+              : (stored ?? current);
           if (!stored) element.setAttribute(originalAttr, original);
-          else if (original !== stored) element.setAttribute(originalAttr, original);
+          else if (original !== stored)
+            element.setAttribute(originalAttr, original);
           const translated = translate(original);
           if (current !== translated) element.setAttribute(attr, translated);
         } else if (stored != null) {
@@ -109,7 +105,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         const original =
           stored && current !== stored && current !== translatedStored
             ? current
-            : stored ?? current;
+            : (stored ?? current);
         textOriginals.set(node, original);
         const translated = translate(original);
         if (current !== translated) node.nodeValue = translated;
@@ -192,11 +188,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const TRANSLATABLE_ATTRIBUTES = [
-  "aria-label",
-  "placeholder",
-  "title",
-] as const;
+const TRANSLATABLE_ATTRIBUTES = ["aria-label", "placeholder", "title"] as const;
 
 function translateUiString(value: string): string {
   if (!value.trim()) return value;
@@ -206,8 +198,8 @@ function translateUiString(value: string): string {
   const text = value.trim().replace(/\u00a0/g, " ");
   const normalized = normalizeUiText(text);
   const translated =
-    UI_TRANSLATIONS_UK[text] ??
-    UI_TRANSLATIONS_UK[normalized] ??
+    uiTranslationsUk[text] ??
+    uiTranslationsUk[normalized] ??
     translateSharedTerms(normalized);
 
   return `${leading}${translated}${trailing}`;

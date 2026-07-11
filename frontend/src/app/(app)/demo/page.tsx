@@ -22,7 +22,13 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -52,7 +58,11 @@ const ACTS: Act[] = [
     links: [
       { label: "Mentor cockpit", href: "/mentor", role: "mentor" },
       { label: "Knowledge base", href: "/mentor/knowledge", role: "mentor" },
-      { label: "AI Plan Generator", href: "/mentor/plan-generator", role: "mentor" },
+      {
+        label: "AI Plan Generator",
+        href: "/mentor/plan-generator",
+        role: "mentor",
+      },
     ],
     icon: Activity,
   },
@@ -85,7 +95,8 @@ const ACTS: Act[] = [
     title: "Act 4 — Author courses & onboard a new hire",
     message:
       "Mentor drafts a short HR/process course from selected sources, reviews it, and approves it. Then adds a brand-new hire (Noa Benali), generates a 2-question skill check, and Noa takes the test — triggering plan generation in the background.",
-    outcome: "The system scales: courses and new newcomers in minutes, not days.",
+    outcome:
+      "The system scales: courses and new newcomers in minutes, not days.",
     links: [
       { label: "Courses", href: "/mentor/courses", role: "mentor" },
       { label: "Add newcomer", href: "/mentor/newcomers/new", role: "mentor" },
@@ -97,7 +108,8 @@ const ACTS: Act[] = [
     title: "Act 5 — Daily rhythm & closing the loop",
     message:
       "Switch back to Marina. Notifications keep her in sync, the Progress page shows momentum, the Calendar lets her schedule a weekly sync (the dialog is bright, not in shadow), her Kanban submits a task for review. Then back to mentor — same task in his review queue, one click to approve. Loop closed.",
-    outcome: "Both sides share the same surface, AI does the lifting, humans decide.",
+    outcome:
+      "Both sides share the same surface, AI does the lifting, humans decide.",
     links: [
       { label: "Progress", href: "/newcomer/progress", role: "newcomer" },
       { label: "Calendar", href: "/newcomer/calendar", role: "newcomer" },
@@ -141,7 +153,8 @@ export default function DemoPage() {
   };
 
   const stepSummaries = React.useMemo(
-    () => getDemoTourStepSummaries(guidedDemoActive ? guidedDemoVariant : "full"),
+    () =>
+      getDemoTourStepSummaries(guidedDemoActive ? guidedDemoVariant : "full"),
     [guidedDemoActive, guidedDemoVariant],
   );
   const [stepQuery, setStepQuery] = React.useState("");
@@ -176,7 +189,8 @@ export default function DemoPage() {
         eyebrow="Demo scenario"
         title={
           <>
-            Show the full <span className="ai-gradient-text">AI onboarding</span> loop
+            Show the full{" "}
+            <span className="ai-gradient-text">AI onboarding</span> loop
           </>
         }
         description="A richer demo path for the current product: mentor setup, grounded knowledge, plan generation, courses, signals, meetings, and the newcomer workspace."
@@ -198,7 +212,11 @@ export default function DemoPage() {
               Demo mode points, fills, and waits for your click.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[color:var(--color-fg-muted)]">
-              Use it during a pitch when you want the app to guide the room: spotlight overlays dim the rest of the UI, arrows pulse on the next control, and form fields fill with demo data. Every navigation and action still waits for a user click, with a Do it helper when you want the tour to perform the highlighted action.
+              Use it during a pitch when you want the app to guide the room:
+              spotlight overlays dim the rest of the UI, arrows pulse on the
+              next control, and form fields fill with demo data. Every
+              navigation and action still waits for a user click, with a Do it
+              helper when you want the tour to perform the highlighted action.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {SHOWCASE.map((item) => (
@@ -218,16 +236,24 @@ export default function DemoPage() {
               </div>
               <div>
                 <div className="text-sm font-semibold text-[color:var(--color-fg)]">
-                  {guidedDemoActive ? "Demo mode is running" : "Start the guided mode"}
+                  {guidedDemoActive
+                    ? "Demo mode is running"
+                    : "Start the guided mode"}
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-[color:var(--color-fg-muted)]">
-                  The tour is deliberate: it never clicks by itself. You can click the target, or use the Do it helper in the tour panel to perform the highlighted action.
+                  The tour is deliberate: it never clicks by itself. You can
+                  click the target, or use the Do it helper in the tour panel to
+                  perform the highlighted action.
                 </p>
               </div>
             </div>
             <div className="mt-4 flex gap-2">
               {guidedDemoActive ? (
-                <Button type="button" variant="outline" onClick={stopGuidedDemo}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={stopGuidedDemo}
+                >
                   <X className="h-4 w-4" /> Stop demo mode
                 </Button>
               ) : (
@@ -255,7 +281,11 @@ export default function DemoPage() {
                   </Button>
                 </>
               )}
-              <Button type="button" variant="ghost" onClick={() => go("/mentor", "mentor")}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => go("/mentor", "mentor")}
+              >
                 Manual path <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -304,7 +334,10 @@ export default function DemoPage() {
                       <span className="tabular-nums text-[color:var(--color-primary)]">
                         #{s.index + 1}
                       </span>
-                      <Badge tone={s.role === "mentor" ? "brand" : "ai"} size="sm">
+                      <Badge
+                        tone={s.role === "mentor" ? "brand" : "ai"}
+                        size="sm"
+                      >
                         {s.role}
                       </Badge>
                       <span className="truncate text-[color:var(--color-fg-muted)]">
@@ -331,7 +364,9 @@ export default function DemoPage() {
             )}
           </ol>
           <p className="text-[11px] text-[color:var(--color-fg-muted)]">
-            Tip: starting at a deep step assumes earlier setup already happened in the running demo (personas selected, plans generated, etc.). Use Regenerate database from settings first if you hit empty pages.
+            Tip: starting at a deep step assumes earlier setup already happened
+            in the running demo (personas selected, plans generated, etc.). Use
+            Regenerate database from settings first if you hit empty pages.
           </p>
         </div>
       </details>
@@ -354,13 +389,17 @@ export default function DemoPage() {
                         </Badge>
                         <CardTitle className="text-base">{act.title}</CardTitle>
                       </div>
-                      <CardDescription className="mt-1">{act.message}</CardDescription>
+                      <CardDescription className="mt-1">
+                        {act.message}
+                      </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-muted)]/45 px-3 py-2 text-xs text-[color:var(--color-fg-muted)]">
-                    <span className="font-medium text-[color:var(--color-fg)]">Show: </span>
+                    <span className="font-medium text-[color:var(--color-fg)]">
+                      Show:{" "}
+                    </span>
                     {act.outcome}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -373,7 +412,9 @@ export default function DemoPage() {
                         data-demo-id={`demo-act-${act.id}-${index}`}
                         className={cn(index === 0 && "shadow-sm")}
                       >
-                        {index === 0 ? <Sparkles className="h-3.5 w-3.5" /> : null}
+                        {index === 0 ? (
+                          <Sparkles className="h-3.5 w-3.5" />
+                        ) : null}
                         {link.label}
                         <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
