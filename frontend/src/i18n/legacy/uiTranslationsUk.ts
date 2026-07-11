@@ -1164,6 +1164,46 @@ const uiTranslationsUk: Record<string, string> = {
   "Add documents and we'll surface the topics they cover.":
     "Додайте документи, і ми відобразимо теми, які вони охоплюють.",
   "Missing context": "Відсутній контекст",
+  /*----/newcomer/dashboard----*/
+  Day: "День",
+  Welcome: "Ласкаво просимо",
+  "Current focus: Team & codebase basics. Only what matters today - your full план is one click away.":
+    "Поточний фокус: Основи команди та кодової бази. Тільки те, що важливо сьогодні — ваш повний план доступний в один клік.",
+  "This week's goal": "Мета на цей тиждень",
+  "Be ready to pick your first ticket":
+    "Бути готовим узяти в роботу свій перший тікет",
+  "Phase 1": "Етап 1",
+  "Day 1 of 90": "День 1 із 90",
+  "0 of 0 завдання done": "0 з 0 завдань виконано",
+  "Up next": "Далі за планом",
+  "From your план.": "З вашого плану.",
+  "· Read Payments overview": "· Прочитати огляд Payments",
+  "· Meet Ana at 14:00": "· Зустріч з Аною о 14:00",
+  Today: "Сьогодні",
+  "What you should focus on right now.":
+    "Те, на чому варто зосередитися прямо зараз.",
+  "Nothing scheduled for today": "На сьогодні нічого не заплановано",
+  "Your план will populate this list once your ментор approves it.":
+    "Цей список заповниться, щойно ваш ментор затвердить план.",
+  "Picked by AI based on this week's focus.":
+    "Підібрано ШІ на основі фокусу цього тижня.",
+  "Payments architecture overview": "Огляд архітектури платежів",
+  "Engineering · Doc": "Інженерія · Док.",
+  "Code review checklist": "Чекліст рев'ю коду",
+  "Deployment guide": "Посібник із розгортання",
+  "Pointage process": "Процес оцінювання",
+  "Ask AI anything": "Запитайте ШІ про що завгодно",
+  AI: "ШІ",
+  "Grounded answers from your team's документи + people to ask.":
+    "Обґрунтовані відповіді на основі документів вашої команди + контакти колег, у яких можна запитати.",
+  Відкрити: "Відкрити",
+  "Where is the розгортання посібник?": "Де знайти посібник із розгортання?",
+  "Who reviews my PR?": "Хто робить рев'ю мого PR?",
+  "How does pointage work?": "Як працює оцінювання?",
+  "What if I'm blocked?": "Що робити, якщо я заблокований?",
+  "Marko Ivanov": "Марко Іванов",
+  "Victor Lutsenko": "Віктор Луценко",
+  "Ana Korovai": "Ана Коровай",
 };
 
 export default uiTranslationsUk;
